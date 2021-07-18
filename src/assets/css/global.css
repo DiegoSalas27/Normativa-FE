@@ -1,0 +1,73 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: 'Roboto';
+}
+
+html {
+  min-height: 100%; /* make sure it is at least as tall as the viewport */
+  position: relative;
+}
+
+body{
+  height:100%; /* force the BODY element to match the height of the HTML element */
+}
+
+::placeholder { 
+  color: var(--placeholder);
+}
+
+#main {
+  margin-left: 220px;
+  margin-top: 100px;
+  text-align: center;
+}
+
+.impact {
+  font-weight: bold;
+  font-size: 30px;
+}
+
+.action-button {
+  background: var(--primary-color);
+  border-radius: 5px;
+  padding: 10px 45px 10px 45px;
+  width: 140px;
+  color: white;
+}
+
+button,
+button:active,
+button:focus {
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+  -moz-outline-style: none;
+}
+
+button:hover {
+  background: var(--primary-variant);
+}
+
+
+input, .select {
+  border: 1px solid var(--placeholder);
+  border-radius: 4px;
+  padding: 5px;
+  padding-left: 10px;
+  outline: none;
+}
+
+input:focus {
+  border-color: var(--primary-color); 
+}
+
+
+.errorMessage {
+  color: var(--error);
+  margin-top: 0.5rem;
+  font-size: 0.7rem;
+}
+

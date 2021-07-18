@@ -1,0 +1,16 @@
+:root {
+  --primary-color: #4B5093;
+  --primary-variant: #3c3E7E;
+  --secondary-color: #7DCA67;
+  --secondary-variant: #5CA553;
+  --accent: #616161;
+  --placeholder: #C6C6C6;
+  --error: #F44336;
+  --success: #00E676;
+  --warning: #FFEA00;
+  --danger: #E53935;
+  --box-shadow: rgba(0, 0, 0, 0.26);
+  --nav-bg: rgb(31, 31, 31);
+  --footer: #1f1f41;
+  --linear-gradient: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgb(41, 41, 41));
+}
