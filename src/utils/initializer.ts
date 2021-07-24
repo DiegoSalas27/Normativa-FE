@@ -1,5 +1,6 @@
-import { User } from '../interfaces/user.interface';
-export const emptyUser = (): User => ({
+import { IUser } from '../interfaces/user.interface';
+import { IDataSource } from '../interfaces/dataSource';
+export const emptyUser = (): IUser => ({
   nombres: '',
 	apellidos: '',
 	nombreCompleto: '',
@@ -7,8 +8,15 @@ export const emptyUser = (): User => ({
 	token: '',
 	email: '',
 	username: '',
-	imagen: null,
+	imagen: '',
 	phoneNumber: '',
 	fechaNacimiento: null,
+	especialidad: '',
 	rol: null
 });
+
+export const emptyDataSource = <T>(): IDataSource<T> => ({
+	listaRecords: [],
+  numeroPaginas: 0,
+  totalRecords: 0,
+})

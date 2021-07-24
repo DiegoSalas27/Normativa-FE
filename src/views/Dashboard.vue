@@ -23,10 +23,12 @@
 <script lang="ts">
 import NavBar from "@/components/layout/NavBar.vue";
 import SideBar from "@/components/layout/SideBar.vue";
-import { User } from "../interfaces/user.interface";
+import { IUser } from "../interfaces/user.interface";
 import { urlConstants } from "../common/constants";
+import { emptyUser } from '../utils/initializer';
+import { defineComponent } from "@vue/runtime-core";
 
-export default {
+export default defineComponent({
   props: ["userInfo"],
   components: {
     NavBar,
@@ -34,7 +36,7 @@ export default {
   },
   data() {
     return {
-      userInfoJson: null as User,
+      userInfoJson: emptyUser() as IUser,
       rolUserActions: [
         {
           src: require("@/assets/images/alta.png"),
@@ -79,16 +81,15 @@ export default {
           }),
         });
 
-        const userInfo = (await response.json()) as User;
+        const userInfo = (await response.json()) as IUser;
 
         this.userInfoJson = userInfo;
       } catch (error) {
-        this.error = true;
-        this.message = "Favor de llenar los campos con valores permitidos";
+        console.log(error);
       }
     })();
   },
-};
+});
 </script>
 
 <style scoped>

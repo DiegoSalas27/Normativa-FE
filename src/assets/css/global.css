@@ -22,6 +22,11 @@ body{
   margin-left: 220px;
   margin-top: 100px;
   text-align: center;
+  transition: 500ms;
+}
+
+.expand {
+  margin-left: 120px !important;
 }
 
 .impact {
@@ -71,3 +76,7 @@ input:focus {
   font-size: 0.7rem;
 }
 
+.error {
+  color: var(--error);
+  font-weight: lighter !important;
+}

@@ -2,42 +2,47 @@
   <table className="grid">
     <thead className="header-grid">
       <tr>
-        <th v-if="actions.length > 0">
+        <th v-if="actions?.length > 0">
           <input type="checkbox" id="checkbox" v-model="massiveCheck" />
         </th>
         <th v-for="column in columns" :key="column.field">
           {{ column.title }}
         </th>
-        <th v-if="actions.length > 0">Acciones</th>
+        <th v-if="actions?.length > 0">Acciones</th>
       </tr>
     </thead>
-    <div v-if="dataSource.length === 0">
+    <div
+      v-if="dataSource.listaRecords && dataSource.listaRecords?.length === 0"
+    >
       <br />
       <h3>No hay datos registrados</h3>
     </div>
 
     <tbody>
       <tr v-for="(row, index) in rows" :key="row">
-        <td v-if="actions.length > 0">
+        <td v-if="actions?.length > 0">
           <input
-            v-if="dataSource[index]"
+            v-if="dataSource.listaRecords && dataSource.listaRecords[index]"
             type="checkbox"
-            :id="dataSource[index].id"
-            :value="dataSource[index].id"
+            :id="dataSource.listaRecords[index].id"
+            :value="dataSource.listaRecords[index].id"
             v-model="checkedEntities"
           />
         </td>
         <td v-for="column in columns" :key="column.field">
-          {{ getValue(column.field, dataSource, row - 1) }}
+          {{ getValue(column.field, dataSource.listaRecords, row - 1) }}
         </td>
         <td>
           <span v-for="action in actions" :key="action.type">
             <i
-              v-if="dataSource[index]"
+              v-if="dataSource.listaRecords[index]"
               :class="action.icon"
-              style="margin-left: 18px;"
+              style="margin-left: 18px"
               @click="
-                action.method(dataSource[index].id, dataSource[index].entity)
+                action.method(
+                  dataSource.listaRecords[index].id,
+                  dataSource.listaRecords[index].entity
+                )
               "
             ></i>
           </span>
@@ -45,20 +50,25 @@
       </tr>
     </tbody>
   </table>
+  <div v-for="page in dataSource.numeroPaginas" :key="page" class="pageButton" @click="goPage(page)">
+    {{ page }}
+  </div>
 </template>
 
 <script lang="ts">
 import { calculateAge } from "../../utils/formater";
-import { User } from '../../interfaces/user.interface';
+import { defineComponent } from "@vue/runtime-core";
+import DataSource from "../../models/DataSource";
+import User from "../../models/User";
 
-export default {
+export default defineComponent({
   props: {
     columns: {
       type: Array,
       required: true,
     },
     dataSource: {
-      type: Array,
+      type: DataSource,
       required: true,
     },
     config: {
@@ -74,19 +84,29 @@ export default {
       type: Function,
       required: false,
     },
+    rows: {
+      type: Number,
+      required: false,
+      default: 5,
+    },
+    pages: {
+      type: Number,
+      required: true,
+    }
   },
-  emits: ["selectedList"],
+  emits: ["selectedList", "movePage"],
   data() {
     return {
-      rows: 5,
       massiveCheck: false,
-      checkedEntities: [],
+      checkedEntities: [] as string[],
     };
   },
   watch: {
     massiveCheck(): void {
       if (this.massiveCheck) {
-        this.checkedEntities = this.dataSource.map((data: User) => data.id);
+        this.checkedEntities = (
+          this.dataSource as DataSource<User>
+        ).listaRecords.map((user) => user.id as string);
       } else {
         this.checkedEntities = [];
       }
@@ -96,18 +116,28 @@ export default {
     },
   },
   methods: {
-    getValue(columnField: string, data: any, row: number): any {
-      if (data[row]) {
-        if (columnField === "fechaNacimiento") {
-          return calculateAge(data[row][columnField]);
+    goPage(pageNumber: number): void {
+      this.$emit("movePage", pageNumber);
+    },
+    getValue(
+      columnField: string,
+      data: any[],
+      row: number
+    ): string | number | undefined {
+      // debugger
+      if (data) {
+        if (data[row]) {
+          if (columnField === "fechaNacimiento") {
+            return calculateAge(data[row][columnField]);
+          }
+          return data[row][columnField];
+        } else {
+          return "";
         }
-        return data[row][columnField];
-      } else {
-        return "";
       }
     },
-  },
-};
+  }
+});
 </script>
 
 <style scoped>
@@ -129,7 +159,7 @@ export default {
   border-radius: 2px;
   border-collapse: collapse; /*delete inner border*/
   box-shadow: 0 0.1px 5px var(--accent);
-  width: 90%;
+  width: 95%;
 }
 
 /* .header-grid  {
@@ -137,6 +167,7 @@ export default {
 } */
 
 .header-grid tr th {
+  height: 71px;
   padding: 25px 0;
   background-color: #ecf3ff;
 }
@@ -152,6 +183,7 @@ tbody tr:last-child {
 }
 
 tbody tr td {
+  height: 71px;
   padding: 25px 10px;
 }
 
@@ -180,4 +212,25 @@ i:hover {
 .fas.fa-edit {
   color: #3378ff;
 }
+
+.pageButton {
+  display: inline-block;
+  background: var(--primary-variant);
+  width: 40px;
+  height: 40px;
+  margin-right: 5px;
+  margin-left: 5px;
+  margin-top: 20px;
+  line-height: 20px;
+  color: white;
+  font-weight: bold;
+  padding-top: 8px;
+  border: 2px solid var(--primary-color);
+  cursor: pointer;
+}
+
+.pageButton:hover {
+  opacity: 0.9;
+}
+
 </style>

@@ -25,8 +25,9 @@
 <script lang="ts">
 import HorizontalFlexList from "@/components/ui/HorizontalFlexList.vue";
 import TheFooter from "@/components/layout/TheFooter.vue";
+import { defineComponent } from "@vue/runtime-core";
 
-export default {
+export default defineComponent({
   components: {
     HorizontalFlexList,
     TheFooter,
@@ -58,7 +59,7 @@ export default {
       this.$router.push('/auth');
     }
   }
-};
+});
 </script>
 
 <style scoped>

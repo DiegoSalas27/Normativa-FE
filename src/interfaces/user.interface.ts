@@ -1,5 +1,6 @@
-export interface User {
+export interface IUser {
 	id?: string;
+	nombre?: string;
 	nombres?: string;
 	apellidos?: string;
 	nombreCompleto?: string;
@@ -7,17 +8,24 @@ export interface User {
 	token?: string;
 	email?: string;
 	username?: string;
-	imagen?: any;
-	phoneNumber?: any;
-	fechaNacimiento?: string;
+	imagen?: string;
+	phoneNumber?: string;
+	fechaNacimiento: any;
 	rol?: any;
 	entity?: string;
+	codigo?: string;
+	especialidad?: string;
 }
 
-export interface tokenUser {
+export interface TokenUser {
 	nameid: string,
   role: string,
   nbf: number,
   exp: number,
   iat: number
+}
+
+export interface AuthUser {
+	user: string;
+	password: string;
 }

@@ -15,8 +15,11 @@
     <section id="left-side">
       <h1>Perfil de usuario</h1>
       <img :src="getUserImage" :alt="getUserImage" class="userImage" />
+      <h1 v-if="userInfoJson.codigo">Código</h1>
+      <p v-if="userInfoJson.codigo">{{ userInfoJson.codigo }}</p>
     </section>
     <section id="right-side">
+      <h1 class="titleProfile">{{ titleProfile }}</h1>
       <button class="action-button" @click="submit()">
         {{ displayButtonText }}
       </button>
@@ -32,6 +35,9 @@
           :placeholder="userInfoJson?.nombres"
           v-model.trim="userInfoJson.nombres"
         />
+        <p class="error" v-if="validationForm.nombres">
+          {{ validationForm.nombres }}
+        </p>
       </div>
       <div v-if="update" style="display: inline-block">
         <h1>Apellidos</h1>
@@ -42,6 +48,9 @@
           :placeholder="userInfoJson?.apellidos"
           v-model.trim="userInfoJson.apellidos"
         />
+        <p class="error" v-if="validationForm.apellidos">
+          {{ validationForm.apellidos }}
+        </p>
       </div>
 
       <div class="flex-items">
@@ -55,17 +64,37 @@
             :placeholder="userInfoJson?.email"
             v-model.trim="userInfoJson.email"
           />
+          <p class="error" v-if="validationForm.email">
+            {{ validationForm.email }}
+          </p>
         </div>
-        <div class="info-field">
+        <div
+          class="info-field"
+          v-if="
+            userInfoJson?.rol == 'Analistas' ||
+            userInfoJson?.rol == 'Alta gerencia'
+          "
+        >
           <p>Especialidad</p>
-          <i class="fas fa-graduation-cap"></i> &nbsp;&nbsp;&nbsp;
-          <span v-if="!update">{{ userInfoJson?.email }}</span>
-          <input
+          <i class="fas fa-user-shield"></i> &nbsp;&nbsp;&nbsp;
+          <span v-if="!update">{{ userInfoJson?.especialidad }}</span>
+          <select
             v-if="update"
-            type="email"
-            :placeholder="userInfoJson?.email"
-            v-model.trim="userInfoJson.email"
-          />
+            class="select"
+            v-model="userInfoJson.especialidad"
+            name="especialidad"
+          >
+            <option
+              v-for="especialidad in especialidades"
+              :key="especialidad"
+              :value="especialidad.descripcion"
+            >
+              {{ especialidad.descripcion }}
+            </option>
+          </select>
+          <p class="error" v-if="validationForm.especialidad">
+            {{ validationForm.especialidad }}
+          </p>
         </div>
       </div>
 
@@ -79,6 +108,12 @@
           placeholder="**********"
           v-model.trim="userInfoJson.password"
         />
+        <p
+          class="error"
+          v-if="validationForm.password && !skipPasswordValidation"
+        >
+          {{ validationForm.password }}
+        </p>
       </div>
       <div class="info-field">
         <p>Telefono</p>
@@ -90,6 +125,9 @@
           :placeholder="userInfoJson?.phoneNumber"
           v-model.trim="userInfoJson.phoneNumber"
         />
+        <p class="error" v-if="validationForm.phoneNumber">
+          {{ validationForm.phoneNumber }}
+        </p>
       </div>
       <div class="info-field">
         <p>Fecha de nacimiento</p>
@@ -111,6 +149,9 @@
               : null
           "
         />
+        <p class="error" v-if="validationForm.fechaNacimiento">
+          {{ validationForm.fechaNacimiento }}
+        </p>
       </div>
       <div class="info-field">
         <p>Rol</p>
@@ -120,6 +161,7 @@
           v-if="update"
           class="select"
           v-model="userInfoJson.rol"
+          @change="(e) => changedRol(e.target.value)"
           name="rol"
         >
           <option v-for="rol in roles" :key="rol" :value="rol.name">
@@ -132,14 +174,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent } from "vue";
 import jwt_decode from "jwt-decode";
 import NavBar from "@/components/layout/NavBar.vue";
 import SideBar from "@/components/layout/SideBar.vue";
-import { tokenUser, User } from "../interfaces/user.interface";
+import { TokenUser, IUser } from "../interfaces/user.interface";
 import Modal from "../components/ui/Modal.vue";
 import { emptyUser } from "../utils/initializer";
 import { rol, urlConstants } from "../common/constants";
+import { Especialidad } from "../interfaces/especialidad.interface";
+import {
+  validateEmail,
+  validateNotEmpty,
+  validatePassword,
+  validatePhone,
+} from "../common/utils";
+import { calculateAge } from "../utils/formater";
+import { IDataSource } from "../interfaces/dataSource";
 
 export default defineComponent({
   name: "Profile",
@@ -159,13 +210,22 @@ export default defineComponent({
       roles: [],
       formIsValid: true,
       error: false,
-      userAdmin: emptyUser() as User,
-      userInfoJson: emptyUser() as User,
+      userAdmin: emptyUser() as IUser,
+      userInfoJson: emptyUser() as IUser,
       update: false,
       userImage: null,
-      message: null,
+      message: null as string | null,
       loading: false,
+      titleProfile: "",
+      especialidades: [] as Especialidad[],
+      validationForm: {} as Partial<IUser>,
+      skipPasswordValidation: false,
     };
+  },
+  watch: {
+    userInfoJson() {
+      console.log(this.userInfoJson);
+    },
   },
   computed: {
     displayButtonText(): string {
@@ -174,7 +234,7 @@ export default defineComponent({
       }
       return "Editar";
     },
-    getUserImage() {
+    getUserImage(): string {
       const userImage =
         this.userInfoJson && this.userInfoJson.imagen
           ? this.userInfoJson.imagen
@@ -183,89 +243,198 @@ export default defineComponent({
     },
   },
   methods: {
+    async changedRol(rolName: string): Promise<void> {
+      await this.fetchEspecialidades(rolName);
+    },
     handleError() {
       this.message = null;
     },
-    setDate(e) {
-      this.userInfoJson.fechaNacimiento = e.target.value;
+    setDate(event: { target: HTMLInputElement }) {
+      this.userInfoJson.fechaNacimiento = event.target.value;
     },
+    calculateRolDisplay() {
+      switch (this.$route.name) {
+        case urlConstants.ADMINISTRADOR:
+          this.titleProfile = "";
+          break;
+        case urlConstants.PROFILE_ANALISTA:
+          this.titleProfile = "REGISTRAR ANALISTA";
+          this.userInfoJson.rol = rol.ANALISTA;
+          break;
+        case urlConstants.PROFILE_JEFE_DE_RIESGOS:
+          this.titleProfile = "REGISTRAR JEFE DE RIESGOS";
+          console.log(rol.JEFE_DE_RIESGOS);
+          this.userInfoJson.rol = rol.JEFE_DE_RIESGOS;
+          break;
+        case urlConstants.PROFILE_ALTA_GERENCIA:
+          this.titleProfile = "REGISTRAR MIEMBRO";
+          this.userInfoJson.rol = rol.ALTA_GERENCIA;
+          break;
+      }
+    },
+    async fetchEspecialidades(rolName: string): Promise<void> {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/especialidad/lista/${rolName}`,
+          {
+            method: "GET",
+            headers: new Headers({
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+          }
+        );
+
+        this.especialidades = await response.json();
+        this.userInfoJson.especialidad = this.especialidades[0].descripcion;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    // performValidation() {},
     async submit(): Promise<void> {
       if (!this.update) {
         this.update = true;
         return;
       }
 
-      this.loading = true;
+      this.validationForm = {};
+      const jsonToValidate: Partial<IUser> = { ...this.userInfoJson };
+      delete jsonToValidate.imagen;
+      delete jsonToValidate.nombreCompleto;
+      delete jsonToValidate.token;
+      delete jsonToValidate.username;
+      delete jsonToValidate.entity;
+      delete jsonToValidate.id;
+      delete jsonToValidate.nombre;
+      delete jsonToValidate.codigo;
+      delete jsonToValidate.especialidad;
+
+      let isValid = validateNotEmpty(jsonToValidate, this.validationForm);
+      let age = null;
+
+      jsonToValidate.fechaNacimiento !== null &&
+        jsonToValidate.fechaNacimiento !== "" &&
+        (age = calculateAge(jsonToValidate.fechaNacimiento as string));
+
+      if (age !== null && age <= 18) {
+        this.validationForm.fechaNacimiento = "La edad míninma es de 18 años";
+        isValid = false;
+      }
+
+      if (age !== null && age >= 101) {
+        this.validationForm.fechaNacimiento = "La edad máxima es de 100 años";
+        isValid = false;
+      }
 
       if (
-        this.userInfoJson.nombres === "" ||
-        this.userInfoJson.apellidos === "" ||
-        this.userInfoJson.password === ""
+        jsonToValidate.email !== null &&
+        jsonToValidate.email !== "" &&
+        !validateEmail(jsonToValidate.email as string)
       ) {
-        this.formIsValid = false;
-        return;
+        this.validationForm.email = "El email no tiene el formato correcto";
+        isValid = false;
       }
-      this.formIsValid = true;
-      this.error = false;
 
-      if (this.$route.name !== "Profile" && !this.$route.params.id) {
-        try {
-          const response = await fetch(
-            "http://localhost:5000/api/usuario/registrar",
-            {
-              method: "POST",
+      if (
+        jsonToValidate.password !== null &&
+        jsonToValidate.password !== "" &&
+        !this.skipPasswordValidation &&
+        !validatePassword(jsonToValidate.password as string)
+      ) {
+        this.validationForm.password =
+          "La contraseña debe ser lo suficientemente segura";
+        isValid = false;
+      }
+
+      if (
+        jsonToValidate.phoneNumber !== null &&
+        jsonToValidate.phoneNumber !== "" &&
+        !validatePhone(jsonToValidate.phoneNumber as string)
+      ) {
+        this.validationForm.phoneNumber =
+          "El teléfono no tiene el formato correcto";
+        isValid = false;
+      }
+
+      if (isValid) {
+        this.loading = true;
+
+        if (
+          this.userInfoJson.nombres === "" ||
+          this.userInfoJson.apellidos === "" ||
+          this.userInfoJson.password === ""
+        ) {
+          this.formIsValid = false;
+          return;
+        }
+        this.formIsValid = true;
+        this.error = false;
+
+        if (
+          this.$route.name !== "Profile" &&
+          !this.$route.params.id &&
+          this.titleProfile != "JEFE DE RIESGOS"
+        ) {
+          try {
+            const response = await fetch(
+              "http://localhost:5000/api/usuario/registrar",
+              {
+                method: "POST",
+                headers: new Headers({
+                  "Content-Type": "application/json",
+                  Authorization: "Bearer " + localStorage.getItem("token"),
+                }),
+                body: JSON.stringify(this.userInfoJson),
+              }
+            );
+
+            const userInfo = await response.json();
+
+            this.loading = false;
+
+            this.error = false;
+            this.message = "¡El usuario ha sido registrado exitósamente!";
+
+            setTimeout(() => {
+              this.$router.replace({
+                name: "Dashboard",
+                params: { userInfo: JSON.stringify(userInfo) },
+              });
+            }, 2000);
+          } catch (error) {
+            this.error = true;
+            this.message = "Favor de llenar los campos con valores permitidos";
+          }
+        } else {
+          try {
+            const response = await fetch("http://localhost:5000/api/usuario", {
+              method: "PUT",
               headers: new Headers({
                 "Content-Type": "application/json",
                 Authorization: "Bearer " + localStorage.getItem("token"),
               }),
               body: JSON.stringify(this.userInfoJson),
-            }
-          );
-
-          const userInfo = await response.json();
-
-          this.loading = false;
-
-          this.error = false;
-          this.message = "¡El usuario ha sido registrado exitósamente!";
-
-          setTimeout(() => {
-            this.$router.replace({
-              name: "Dashboard",
-              params: { userInfo: JSON.stringify(userInfo) },
             });
-          }, 2000);
-        } catch (error) {
-          this.error = true;
-          this.message = "Favor de llenar los campos con valores permitidos";
-        }
-      } else {
-        try {
-          const response = await fetch("http://localhost:5000/api/usuario", {
-            method: "PUT",
-            headers: new Headers({
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + localStorage.getItem("token"),
-            }),
-            body: JSON.stringify(this.userInfoJson),
-          });
 
-          const userInfo = await response.json();
+            const userInfo = await response.json();
 
-          this.loading = false;
+            this.loading = false;
 
-          this.error = false;
-          this.message = "¡Los datos se modificaron éxito!";
+            this.error = false;
+            this.message = "¡Los datos se modificaron éxito!";
 
-          setTimeout(() => {
-            this.$router.replace({
-              name: "Dashboard",
-              params: { userInfo: JSON.stringify(userInfo) },
-            });
-          }, 2000);
-        } catch (error) {
-          this.error = true;
-          this.message = "Favor de llenar los campos con valores permitidos";
+            setTimeout(() => {
+              this.$router.replace({
+                name: "Dashboard",
+                params: { userInfo: JSON.stringify(userInfo) },
+              });
+            }, 2000);
+          } catch (error) {
+            this.error = true;
+            this.message = "Favor de llenar los campos con valores permitidos";
+          }
         }
       }
     },
@@ -286,6 +455,15 @@ export default defineComponent({
         console.log(error);
       }
 
+      this.calculateRolDisplay();
+
+      if (
+        this.userInfoJson.rol == rol.ANALISTA ||
+        this.userInfoJson.rol == rol.ALTA_GERENCIA
+      ) {
+        this.fetchEspecialidades(this.userInfoJson.rol);
+      }
+
       if (
         this.$route.name !== "Profile" &&
         this.$route.path !== urlConstants.PROFILE_JEFE_DE_RIESGOS &&
@@ -297,7 +475,7 @@ export default defineComponent({
       if (this.$route.path === urlConstants.PROFILE_JEFE_DE_RIESGOS) {
         try {
           const response = await fetch(
-            `http://localhost:5000/api/usuario/listar/${rol.JEFE_DE_RIESGOS}`,
+            `http://localhost:5000/api/usuario/listar/${rol.JEFE_DE_RIESGOS}?page=1&quantity=1`,
             {
               method: "GET",
               headers: new Headers({
@@ -306,10 +484,14 @@ export default defineComponent({
               }),
             }
           );
-          const resp = (await response.json()) as User[];
-          resp.length > 0 && (this.userInfoJson =  resp[0]);
+          const resp = (await response.json()) as IDataSource<IUser>;
+          console.log(resp);
+          resp.listaRecords.length > 0 &&
+            ((this.userInfoJson = resp.listaRecords[0]),
+            (this.titleProfile = "JEFE DE RIESGOS"),
+            (this.skipPasswordValidation = true));
 
-          if (this.userInfoJson.length === 0) {
+          if (resp.listaRecords.length === 0) {
             this.update = false;
           } else {
             this.update = true;
@@ -332,9 +514,18 @@ export default defineComponent({
             }
           );
 
-          const userInfo = (await response.json()) as User;
+          const userInfo = (await response.json()) as IUser;
+
+          userInfo.rol == rol.ANALISTA &&
+            (this.titleProfile = "ANALISTA " + userInfo.codigo);
+          userInfo.rol == rol.ALTA_GERENCIA &&
+            (this.titleProfile = "MIEMBRO " + userInfo.codigo);
 
           this.userInfoJson = userInfo;
+          !this.userInfoJson.especialidad &&
+            (this.userInfoJson.especialidad =
+              this.especialidades[0].descripcion);
+          this.skipPasswordValidation = true;
         } catch (error) {
           this.error = true;
           this.message = "Favor de llenar los campos con valores permitidos";
@@ -342,7 +533,7 @@ export default defineComponent({
       }
 
       const token = localStorage.getItem("token");
-      var decoded: tokenUser = jwt_decode(token);
+      var decoded: TokenUser = jwt_decode(token as string);
 
       if (decoded.role === "Administrador") {
         try {
@@ -354,11 +545,12 @@ export default defineComponent({
             }),
           });
 
-          const userInfo = (await response.json()) as User;
+          const userInfo = (await response.json()) as IUser;
 
           this.userAdmin = { ...userInfo };
           this.$route.name === "Profile" &&
-            (this.userInfoJson = { ...userInfo });
+            ((this.userInfoJson = { ...userInfo }),
+            (this.skipPasswordValidation = true));
         } catch (error) {
           this.error = true;
           this.message = "Favor de llenar los campos con valores permitidos";
@@ -394,6 +586,14 @@ export default defineComponent({
   position: absolute;
   top: -50px;
   right: 50px;
+}
+
+#right-side .titleProfile {
+  position: absolute;
+  top: -50px;
+  right: 55%;
+  font-weight: bold;
+  font-size: 22px;
 }
 
 .userImage {

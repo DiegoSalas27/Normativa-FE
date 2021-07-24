@@ -1,19 +1,22 @@
 <template>
   <div class="header">
-    <p @click="goToDashboard()" class="dashboardText">Normativa: Dashboard</p>
+    <p @click="goToDashboard()" class="dashboardText">Sistema Experto de Monitoreo</p>
     <p>Bienvenido: {{ name + ' ' + lastName }}</p>
   </div>
 </template>
 
 <script lang="ts">
-export default {
+import { defineComponent } from "@vue/runtime-core";
+
+export default defineComponent({
   props: ["name", "lastName"],
   methods: {
     goToDashboard() {
       this.$router.push('/dashboard');
     }
   }
-};
+});
+
 </script>
 
 <style scoped>

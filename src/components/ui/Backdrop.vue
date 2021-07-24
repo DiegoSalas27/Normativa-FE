@@ -4,7 +4,9 @@
 </template>
 
 <script lang="ts">
-export default {
+import { defineComponent } from "@vue/runtime-core"
+
+export default defineComponent({
   props: {
      show: {
       type: Boolean,
@@ -21,7 +23,8 @@ export default {
       this.closable && this.$emit('close');
     },
   }
-}
+});
+
 </script>
 
 <style scoped>

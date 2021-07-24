@@ -1,5 +1,6 @@
 import { IColumnsGrid } from '../interfaces/grid.interface';
 export const urlConstants = {
+  ADMINISTRADOR: 'Profile',
   ALTA_GERENCIA: 'AltaGerencia',
   PROFILE_ALTA_GERENCIA: 'ProfileAltaGerencia',
   PROFILE_ANALISTA: 'ProfileAnalista',
@@ -9,7 +10,10 @@ export const urlConstants = {
 }
 
 export const rol = {
+  ANALISTA: 'Analistas',
   JEFE_DE_RIESGOS: 'Jefe de riesgos',
+  ADMINISTRADOR: 'Administrador',
+  ALTA_GERENCIA: 'Alta gerencia'
 }
 
 export const columnsRolList: IColumnsGrid[] = [

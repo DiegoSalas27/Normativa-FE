@@ -17,9 +17,10 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from "@vue/runtime-core";
 import Backdrop from "../ui/Backdrop.vue";
 
-export default {
+export default defineComponent({
   components: {
     Backdrop,
   },
@@ -50,7 +51,7 @@ export default {
       required: false,
     },
   },
-  emits: ["close", "confirm", "cancel"],
+  emits: ["confirmMassive", "close", "confirm", "cancel"],
   methods: {
     tryClose(): void {
       this.$emit("close");
@@ -66,7 +67,8 @@ export default {
       this.$emit("cancel");
     },
   },
-};
+});
+
 </script>
 <style scoped>
 .modal {

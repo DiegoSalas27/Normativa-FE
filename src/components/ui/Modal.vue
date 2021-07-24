@@ -12,8 +12,9 @@
 <script lang="ts">
 import Spinner from '../ui/Spinner.vue';
 import Backdrop from '../ui/Backdrop.vue';
+import { defineComponent } from '@vue/runtime-core';
 
-export default {
+export default defineComponent({
   components: {
     Spinner,
     Backdrop
@@ -47,7 +48,8 @@ export default {
       this.$emit('close');
     },
   }
-}
+})
+
 </script>
 <style scoped>
 .modal {

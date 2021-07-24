@@ -11,6 +11,9 @@
             placeholder="Usuario"
             v-model.trim="user"
           />
+          <p class="error" v-if="validationForm.user">
+            {{ validationForm.user }}
+          </p>
         </div>
         <div class="form-control">
           <input
@@ -19,11 +22,13 @@
             placeholder="Contraseña"
             v-model.trim="password"
           />
+          <p class="error" v-if="validationForm.password">
+            {{ validationForm.password }}
+          </p>
         </div>
-        <p v-if="!formIsValid">
-          Por favor ingrese un usuario o contraseña correcto
-        </p>
-        <base-button mode="action-button">{{ submitButtonCaption }}</base-button>
+        <base-button mode="action-button">{{
+          submitButtonCaption
+        }}</base-button>
         <!-- <base-button type="button" mode="flat" @click="switchAuthMode"
             >{{ switchModeButtonCaption }}
           </base-button> -->
@@ -33,10 +38,13 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from "@vue/runtime-core";
+import { handleErrors, validateEmail, validatePassword } from "../common/utils";
 import BaseButton from "../components/ui/BaseButton.vue";
 import BaseCard from "../components/ui/BaseCard.vue";
-import { User } from '../interfaces/user.interface';
-export default {
+import { AuthUser, IUser } from "../interfaces/user.interface";
+
+export default defineComponent({
   components: {
     BaseButton,
     BaseCard,
@@ -48,6 +56,7 @@ export default {
       formIsValid: true,
       mode: "login",
       error: null,
+      validationForm: {} as AuthUser,
     };
   },
   computed: {
@@ -68,35 +77,61 @@ export default {
   },
   methods: {
     async submitForm(): Promise<void> {
-      if (this.user === "" || this.password === "") {
-        this.formIsValid = false;
-        return;
-      }
+      this.validationForm = {} as AuthUser;
       this.formIsValid = true;
-      this.error = null;
 
-      try {
-        const response = await fetch(
-          "http://localhost:5000/api/usuario/login",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              Email: this.user,
-              Password: this.password,
-            }),
-          }
-        );
+      if (this.user === "") {
+        this.validationForm["user"] = "El usuario es obligatorio";
+        this.formIsValid = false;
+      }
 
-        const userInfo = await response.json() as User;
+      if (this.password === "") {
+        this.validationForm["password"] = "La contraseña es obligatoria";
+        this.formIsValid = false;
+      }
 
-        localStorage.setItem('token', userInfo.token);
+      if (this.user !== "" && this.user !== null && !validateEmail(this.user)) {
+        this.validationForm["user"] = "El email no tiene el formato correcto";
+        this.formIsValid = false;
+      }
 
-        this.$router.replace({name: 'Dashboard'});
-      } catch (error) {
-        console.log(error);
+      if (
+        this.password !== null &&
+        this.password !== "" &&
+        !validatePassword(this.password)
+      ) {
+        this.validationForm["password"] =
+          "La contraseña debe ser lo suficientemente segura";
+        this.formIsValid = false;
+      }
+
+      if (this.formIsValid) {
+        try {
+          const response = await fetch(
+            "http://localhost:5000/api/usuario/login",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                Email: this.user,
+                Password: this.password,
+              }),
+            }
+          );
+
+          await handleErrors(response)
+
+          const userInfo = (await response.json()) as IUser;
+
+          localStorage.setItem("token", userInfo.token as string);
+
+          this.$router.replace({ name: "Dashboard" });
+        } catch (error) {
+          const errorObj = JSON.parse(error.message);
+          this.validationForm.password = errorObj.errores.usuario;
+        }
       }
     },
     switchAuthMode(): void {
@@ -107,7 +142,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 

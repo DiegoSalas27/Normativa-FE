@@ -3,7 +3,10 @@
     :name="userInfoJson?.nombres"
     :lastName="userInfoJson?.apellidos"
   ></nav-bar>
-  <side-bar :user="userInfoJson"></side-bar>
+  <side-bar 
+    :user="userInfoJson"
+    @minimized="expandMain"
+  ></side-bar>
   <confirmation-modal
     :error="null"
     :show="showModalConfirmation"
@@ -20,7 +23,7 @@
     :error="error"
     :loading="loading"
   ></modal>
-  <section id="main">
+  <section id="main" :class="{expand: expand}">
     <div>
       <h2>ADMINISTRACIÓN DE {{ calculateUser() }}</h2>
       <button class="action-button massive" @click="deleteMassive()">
@@ -33,6 +36,8 @@
       :columns="columns"
       :config="config"
       :actions="actions"
+      :rows="5"
+      @movePage="movePage"
       @selectedList="selectedList"
     ></grid>
   </section>
@@ -45,9 +50,11 @@ import Grid from "@/components/ui/Grid.vue";
 import ConfirmationModal from "@/components/ui/ConfirmationModal.vue";
 import Modal from "../components/ui/Modal.vue";
 import { actions, entity, urlConstants } from "@/common/constants";
-import { User } from "../interfaces/user.interface";
+import { IUser } from "../interfaces/user.interface";
 import { columnsRolList } from "../common/constants";
 import { defineComponent } from "@vue/runtime-core";
+import { IDataSource } from '../interfaces/dataSource';
+import { emptyDataSource } from "../utils/initializer";
 
 export default defineComponent({
   components: {
@@ -61,8 +68,8 @@ export default defineComponent({
     return {
       profileUrl: "",
       userRol: "",
-      userInfoJson: null as User,
-      dataSource: [],
+      userInfoJson: null as unknown as IUser,
+      dataSource: emptyDataSource() as IDataSource<IUser>,
       columns: columnsRolList,
       config: {
         deleteEntity: "",
@@ -76,15 +83,25 @@ export default defineComponent({
       showModalConfirmation: false,
       id: "",
       entity: "",
-      message: null,
+      message: null as unknown as string | null,
       loading: false,
       error: false,
-      entityList: [] as User[],
+      entityList: [] as string[],
       massiveDelete: false,
+      expand: false,
+      page: 1,
+      quantity: 5,
     };
   },
   methods: {
-    selectedList(entityList: User): void {
+    movePage(pageNumber: number) {
+      this.page = pageNumber;
+      this.listUsersByRol();
+    },
+    expandMain(value: boolean): void {
+      this.expand = !value;
+    },
+    selectedList(entityList: string[]): void {
       this.entityList = entityList;
     },
     handleError(): void {
@@ -110,7 +127,7 @@ export default defineComponent({
     async listUsersByRol(): Promise<void> {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/usuario/listar/${this.userRol}`,
+          `http://localhost:5000/api/usuario/listar/${this.userRol}?page=${this.page}&quantity=${this.quantity}`,
           {
             method: "GET",
             headers: new Headers({
@@ -120,7 +137,7 @@ export default defineComponent({
           }
         );
 
-        this.dataSource = (await response.json()) as User[];
+        this.dataSource = (await response.json()) as IDataSource<IUser>;
       } catch (error) {
         console.log(error);
       }
@@ -137,6 +154,7 @@ export default defineComponent({
         this.message = "Debe seleccionar al menos un usuario";
         this.error = true;
       }
+      this.page = 1;
     },
     register(): void {
       this.$router.push(this.profileUrl);
@@ -151,6 +169,7 @@ export default defineComponent({
       this.entity = entity;
       this.modalTitle = "Está seguro que desea eliminar " + entity + "?";
       this.showModalConfirmation = true;
+      this.page = 1;
     },
     async confirmMassiveDelete(): Promise<void> {
       console.log(this.entityList);
@@ -215,7 +234,6 @@ export default defineComponent({
   },
   mounted() {
     (async () => {
-      await this.listUsersByRol();
       try {
         const response = await fetch("http://localhost:5000/api/usuario", {
           method: "GET",
@@ -225,12 +243,13 @@ export default defineComponent({
           }),
         });
 
-        const userInfo = (await response.json()) as User;
+        const userInfo = (await response.json()) as IUser;
 
         this.userInfoJson = userInfo;
       } catch (error) {
         console.log(error);
       }
+       await this.listUsersByRol();
     })();
   },
 });
