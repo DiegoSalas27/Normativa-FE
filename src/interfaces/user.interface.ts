@@ -1,3 +1,4 @@
+import { IRol } from './roles.interface';
 export interface IUser {
 	id?: string;
 	nombre?: string;

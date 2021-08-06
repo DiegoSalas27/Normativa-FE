@@ -1,12 +1,4 @@
 <template>
-  <nav-bar
-    :name="userInfoJson?.nombres"
-    :lastName="userInfoJson?.apellidos"
-  ></nav-bar>
-  <side-bar 
-    :user="userInfoJson"
-    @minimized="expandMain"
-  ></side-bar>
   <confirmation-modal
     :error="null"
     :show="showModalConfirmation"
@@ -44,12 +36,10 @@
 </template>
 
 <script lang="ts">
-import NavBar from "@/components/layout/NavBar.vue";
-import SideBar from "@/components/layout/SideBar.vue";
 import Grid from "@/components/ui/Grid.vue";
 import ConfirmationModal from "@/components/ui/ConfirmationModal.vue";
 import Modal from "../components/ui/Modal.vue";
-import { actions, entity, urlConstants } from "@/common/constants";
+import { actions, entity } from "@/common/constants";
 import { IUser } from "../interfaces/user.interface";
 import { columnsRolList } from "../common/constants";
 import { defineComponent } from "@vue/runtime-core";
@@ -58,8 +48,6 @@ import { emptyDataSource } from "../utils/initializer";
 
 export default defineComponent({
   components: {
-    NavBar,
-    SideBar,
     Grid,
     ConfirmationModal,
     Modal,
@@ -77,7 +65,7 @@ export default defineComponent({
       },
       actions: [
         { icon: "fas fa-trash-alt", type: actions.DELETE, method: this.delete },
-        { icon: "fas fa-edit", type: actions.EDIT, method: this.edit },
+        { icon: "fas fa-eye", type: actions.EDIT, method: this.edit },
       ],
       modalTitle: "",
       showModalConfirmation: false,
@@ -111,14 +99,15 @@ export default defineComponent({
       this.showModalConfirmation = false;
     },
     calculateUser(): string {
+      console.log(this.$route)
       switch (this.$route.path) {
-        case "/alta-gerencia":
+        case "/dashboard/alta-gerencia":
           this.userRol = "ALTA GERENCIA";
-          this.profileUrl = "/profile/alta-gerencia/";
+          this.profileUrl = "/dashboard/profile/alta-gerencia/";
           break;
-        case "/analistas":
+        case "/dashboard/analistas":
           this.userRol = "ANALISTAS";
-          this.profileUrl = "/profile/analista/";
+          this.profileUrl = "/dashboard/profile/analista/";
           break;
       }
 

@@ -1,9 +1,4 @@
 <template>
-  <nav-bar
-    :name="userAdmin?.nombres"
-    :lastName="userAdmin?.apellidos"
-  ></nav-bar>
-  <side-bar :user="userAdmin"></side-bar>
   <modal
     :show="!!message"
     :title="message"
@@ -156,7 +151,7 @@
       <div class="info-field">
         <p>Rol</p>
         <i class="fas fa-user-shield"></i> &nbsp;&nbsp;&nbsp;
-        <span v-if="!update">{{ userInfoJson?.rol }}</span>
+        <span v-if="!update">{{ userInfoJson.rol }}</span>
         <select
           v-if="update"
           class="select"
@@ -176,14 +171,13 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import jwt_decode from "jwt-decode";
-import NavBar from "@/components/layout/NavBar.vue";
-import SideBar from "@/components/layout/SideBar.vue";
 import { TokenUser, IUser } from "../interfaces/user.interface";
 import Modal from "../components/ui/Modal.vue";
 import { emptyUser } from "../utils/initializer";
 import { rol, urlConstants } from "../common/constants";
 import { Especialidad } from "../interfaces/especialidad.interface";
 import {
+  handleErrors,
   validateEmail,
   validateNotEmpty,
   validatePassword,
@@ -191,6 +185,7 @@ import {
 } from "../common/utils";
 import { calculateAge } from "../utils/formater";
 import { IDataSource } from "../interfaces/dataSource";
+import { IRol } from "../interfaces/roles.interface";
 
 export default defineComponent({
   name: "Profile",
@@ -201,16 +196,13 @@ export default defineComponent({
     },
   },
   components: {
-    NavBar,
-    SideBar,
     Modal,
   },
   data() {
     return {
-      roles: [],
+      roles: [] as IRol[],
       formIsValid: true,
       error: false,
-      userAdmin: emptyUser() as IUser,
       userInfoJson: emptyUser() as IUser,
       update: false,
       userImage: null,
@@ -369,6 +361,7 @@ export default defineComponent({
           this.formIsValid = false;
           return;
         }
+
         this.formIsValid = true;
         this.error = false;
 
@@ -390,7 +383,7 @@ export default defineComponent({
               }
             );
 
-            const userInfo = await response.json();
+            await handleErrors(response);
 
             this.loading = false;
 
@@ -398,14 +391,13 @@ export default defineComponent({
             this.message = "¡El usuario ha sido registrado exitósamente!";
 
             setTimeout(() => {
-              this.$router.replace({
-                name: "Dashboard",
-                params: { userInfo: JSON.stringify(userInfo) },
-              });
+              this.$router.replace("/dashboard");
             }, 2000);
           } catch (error) {
             this.error = true;
-            this.message = "Favor de llenar los campos con valores permitidos";
+            isValid = false;
+            const errorObj = JSON.parse(error.message);
+            this.validationForm.email = errorObj.errores.mensaje;
           }
         } else {
           try {
@@ -418,18 +410,13 @@ export default defineComponent({
               body: JSON.stringify(this.userInfoJson),
             });
 
-            const userInfo = await response.json();
-
             this.loading = false;
 
             this.error = false;
             this.message = "¡Los datos se modificaron éxito!";
 
             setTimeout(() => {
-              this.$router.replace({
-                name: "Dashboard",
-                params: { userInfo: JSON.stringify(userInfo) },
-              });
+              this.$router.replace("/dashboard");
             }, 2000);
           } catch (error) {
             this.error = true;
@@ -441,6 +428,9 @@ export default defineComponent({
   },
   mounted() {
     (async () => {
+      const token = localStorage.getItem("token");
+      var decoded: TokenUser = jwt_decode(token as string);
+
       try {
         const response = await fetch("http://localhost:5000/api/rol/lista", {
           method: "GET",
@@ -458,13 +448,6 @@ export default defineComponent({
       this.calculateRolDisplay();
 
       if (
-        this.userInfoJson.rol == rol.ANALISTA ||
-        this.userInfoJson.rol == rol.ALTA_GERENCIA
-      ) {
-        this.fetchEspecialidades(this.userInfoJson.rol);
-      }
-
-      if (
         this.$route.name !== "Profile" &&
         this.$route.path !== urlConstants.PROFILE_JEFE_DE_RIESGOS &&
         !this.$route.params.id
@@ -472,7 +455,7 @@ export default defineComponent({
         this.update = true;
       }
 
-      if (this.$route.path === urlConstants.PROFILE_JEFE_DE_RIESGOS) {
+      if (this.$route.name === urlConstants.PROFILE_JEFE_DE_RIESGOS) {
         try {
           const response = await fetch(
             `http://localhost:5000/api/usuario/listar/${rol.JEFE_DE_RIESGOS}?page=1&quantity=1`,
@@ -532,28 +515,33 @@ export default defineComponent({
         }
       }
 
-      const token = localStorage.getItem("token");
-      var decoded: TokenUser = jwt_decode(token as string);
+      try {
+        const response = await fetch("http://localhost:5000/api/usuario/", {
+          method: "GET",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          }),
+        });
 
-      if (decoded.role === "Administrador") {
-        try {
-          const response = await fetch("http://localhost:5000/api/usuario/", {
-            method: "GET",
-            headers: new Headers({
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + localStorage.getItem("token"),
-            }),
-          });
+        const userInfo = (await response.json()) as IUser;
 
-          const userInfo = (await response.json()) as IUser;
+        this.$route.name === "Profile" &&
+          ((this.userInfoJson = { ...userInfo }),
+          (this.skipPasswordValidation = true));
+      } catch (error) {
+        this.error = true;
+        this.message = "Favor de llenar los campos con valores permitidos";
+      }
 
-          this.userAdmin = { ...userInfo };
-          this.$route.name === "Profile" &&
-            ((this.userInfoJson = { ...userInfo }),
-            (this.skipPasswordValidation = true));
-        } catch (error) {
-          this.error = true;
-          this.message = "Favor de llenar los campos con valores permitidos";
+      if (decoded.role !== rol.ADMINISTRADOR) {
+        await this.fetchEspecialidades(decoded.role);
+      } else {
+        if (
+          this.userInfoJson.rol == rol.ANALISTA ||
+          this.userInfoJson.rol == rol.ALTA_GERENCIA
+        ) {
+          await this.fetchEspecialidades(this.userInfoJson.rol);
         }
       }
     })();
@@ -621,11 +609,6 @@ export default defineComponent({
 .info-field span {
   font-weight: bold;
   margin-bottom: 10px;
-}
-
-input {
-  width: 250px;
-  height: 35px;
 }
 
 @media (max-width: 954px) {

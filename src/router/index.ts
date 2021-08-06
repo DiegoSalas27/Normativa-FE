@@ -23,43 +23,76 @@ const routes: Array<RouteRecordRaw> = [
     props: true,
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/Dashboard.vue"),
+    children: [
+      {
+        path: '',
+        name: 'Main',
+        props: true,
+        component: () => import("../views/Main.vue"),
+      },
+      {
+        path: "profile/:id?",
+        name: "Profile",
+        props: true,
+        component: () => import("../views/UserProfile.vue"),
+      },
+      {
+        path: 'alta-gerencia',
+        name: 'AltaGerencia',
+        props: true,
+        component: () => import("../views/ListUser.vue"),
+      },
+      {
+        path: 'analistas',
+        name: 'Analistas',
+        props: true,
+        component: () => import("../views/ListUser.vue"),
+      },
+      {
+        path: 'profile/jefe-de-riesgos/:id?',
+        name: 'ProfileJefeRiesgos',
+        props: true,
+        component: () => import("../views/UserProfile.vue"),
+      },
+      {
+        path: `profile/alta-gerencia/:id?`,
+        name: 'ProfileAltaGerencia',
+        props: true,
+        component: () => import("../views/UserProfile.vue"),
+      },
+      {
+        path: `profile/analista/:id?`,
+        name: 'ProfileAnalista',
+        props: true,
+        component: () => import("../views/UserProfile.vue"),
+      },
+    ]
   },
   {
-    path: "/profile/:id?",
-    name: "Profile",
+    path: '/evaluacion/:id?',
+    name: urlConstants.REALIZAR_PRUEBA,
     props: true,
-    component: () => import("../views/UserProfile.vue"),
+    component: () => import("../views/Evaluacion.vue"),
   },
   {
-    path: '/alta-gerencia',
-    name: urlConstants.ALTA_GERENCIA,
-    props: true,
-    component: () => import("../views/ListUser.vue"),
+    path: '/evaluacion/:ev_codigo/prueba/nuevo',
+    name: 'PruebaNuevo',
+    component: () => import("../views/Prueba.vue"),
   },
   {
-    path: '/analistas',
-    name: urlConstants.ANALISTAS,
-    props: true,
-    component: () => import("../views/ListUser.vue"),
+    path: '/evaluacion/:ev_codigo/prueba/:pr_codigo?',
+    name: 'Prueba',
+    component: () => import("../views/Prueba.vue"),
   },
+  // {
+  //   path: '/prueba',
+  //   name: urlConstants.REALIZAR_PRUEBA_EVALUACION,
+  //   component: () => import("../views/Prueba.vue"),
+  // },
   {
-    path: '/profile/jefe-de-riesgos/:id?',
-    name: urlConstants.PROFILE_JEFE_DE_RIESGOS,
-    props: true,
-    component: () => import("../views/UserProfile.vue"),
-  },
-  {
-    path: `/profile/alta-gerencia/:id?`,
-    name: urlConstants.PROFILE_ALTA_GERENCIA,
-    props: true,
-    component: () => import("../views/UserProfile.vue"),
-  },
-  {
-    path: `/profile/analista/:id?`,
-    name: urlConstants.PROFILE_ANALISTA,
-    props: true,
-    component: () => import("../views/UserProfile.vue"),
-  },
+    path: '/:notFound(.*)',
+    redirect: '/',
+  }
 ];
 
 const router = createRouter({

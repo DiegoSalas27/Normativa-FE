@@ -80,3 +80,66 @@ input:focus {
   color: var(--error);
   font-weight: lighter !important;
 }
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+input {
+  width: 250px;
+  height: 35px;
+}
+
+/* form */
+
+
+.grid {
+  font-family: "Reem Kufi", sans-serif;
+  margin: 0 auto;
+  margin-top: 20px;
+  background: white;
+  border-radius: 2px;
+  border-collapse: collapse; /*delete inner border*/
+  box-shadow: 0 0.1px 5px var(--accent);
+  width: 95%;
+}
+
+/* .header-grid  {
+  box-shadow: 0 4px 8px -2px #d8d8d8;
+} */
+
+.header-grid tr th {
+  height: 71px;
+  padding: 25px 0;
+  background-color: #ecf3ff;
+}
+
+tbody {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+tbody tr:last-child {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+tbody tr td {
+  height: 71px;
+  padding: 25px 10px;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #ecf3ff;
+}
+
+td:nth-child(2) {
+  padding-left: 0px;
+}

@@ -127,7 +127,7 @@ export default defineComponent({
 
           localStorage.setItem("token", userInfo.token as string);
 
-          this.$router.replace({ name: "Dashboard" });
+          this.$router.replace('/dashboard');
         } catch (error) {
           const errorObj = JSON.parse(error.message);
           this.validationForm.password = errorObj.errores.usuario;

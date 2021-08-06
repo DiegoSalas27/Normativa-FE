@@ -1,11 +1,11 @@
 <template>
-  <table className="grid">
-    <thead className="header-grid">
+  <table class="grid">
+    <thead :class="rowHeaderStyle ? `${rowHeaderStyle} header-grid` : 'header-grid'" >
       <tr>
         <th v-if="actions?.length > 0">
           <input type="checkbox" id="checkbox" v-model="massiveCheck" />
         </th>
-        <th v-for="column in columns" :key="column.field">
+        <th v-for="column in columns" :key="column.field" :style="{ textAlign: column.align ? column.align : 'left' }">
           {{ column.title }}
         </th>
         <th v-if="actions?.length > 0">Acciones</th>
@@ -15,10 +15,11 @@
       v-if="dataSource.listaRecords && dataSource.listaRecords?.length === 0"
     >
       <br />
-      <h3>No hay datos registrados</h3>
+      <h3 v-if="!rowBodyStyle">No hay datos registrados</h3>
+      <p class="no-data" v-else>Sin registros</p>
     </div>
 
-    <tbody>
+    <tbody :class="rowBodyStyle ? rowBodyStyle : ''">
       <tr v-for="(row, index) in rows" :key="row">
         <td v-if="actions?.length > 0">
           <input
@@ -30,9 +31,11 @@
           />
         </td>
         <td v-for="column in columns" :key="column.field">
-          {{ getValue(column.field, dataSource.listaRecords, row - 1) }}
+          <p :style="{ textAlign: column.align ? column.align : 'left' }">
+            {{ getValue(column.field, dataSource.listaRecords, row - 1) }}
+          </p>
         </td>
-        <td>
+        <td v-if="actions?.length > 0">
           <span v-for="action in actions" :key="action.type">
             <i
               v-if="dataSource.listaRecords[index]"
@@ -50,8 +53,15 @@
       </tr>
     </tbody>
   </table>
-  <div v-for="page in dataSource.numeroPaginas" :key="page" class="pageButton" @click="goPage(page)">
-    {{ page }}
+  <div v-if="dataSource.numeroPaginas > 1">
+    <div
+      v-for="page in dataSource.numeroPaginas"
+      :key="page"
+      class="pageButton"
+      @click="goPage(page)"
+    >
+      {{ page }}
+    </div>
   </div>
 </template>
 
@@ -92,6 +102,14 @@ export default defineComponent({
     pages: {
       type: Number,
       required: true,
+    },
+    rowHeaderStyle: {
+      type: String,
+      required: false,
+    },
+    rowBodyStyle: {
+      type: String,
+      required: false,
     }
   },
   emits: ["selectedList", "movePage"],
@@ -124,9 +142,9 @@ export default defineComponent({
       data: any[],
       row: number
     ): string | number | undefined {
-      // debugger
       if (data) {
         if (data[row]) {
+          console.log(data[row]);
           if (columnField === "fechaNacimiento") {
             return calculateAge(data[row][columnField]);
           }
@@ -151,54 +169,29 @@ export default defineComponent({
   color: red;
 }
 
-.grid {
-  font-family: "Reem Kufi", sans-serif;
-  margin: 0 auto;
-  margin-top: 20px;
-  background: white;
-  border-radius: 2px;
-  border-collapse: collapse; /*delete inner border*/
-  box-shadow: 0 0.1px 5px var(--accent);
-  width: 95%;
+.thin tr td {
+  padding: 5px 5px;
+  height: 25px;
+  
 }
 
-/* .header-grid  {
-  box-shadow: 0 4px 8px -2px #d8d8d8;
-} */
-
-.header-grid tr th {
-  height: 71px;
-  padding: 25px 0;
-  background-color: #ecf3ff;
-}
-
-tbody {
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
-}
-
-tbody tr:last-child {
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
-}
-
-tbody tr td {
-  height: 71px;
-  padding: 25px 10px;
-}
-
-tbody tr:nth-child(even) {
-  background-color: #ecf3ff;
-}
-
-td:nth-child(2) {
-  padding-left: 0px;
+.thin tr th {
+  padding: 5px 5px !important;
+   height: 45px;
 }
 
 h3 {
   position: absolute;
   left: 50%;
   color: #3378ff;
+}
+
+.no-data {
+  color: #3378ff;
+  font-weight: bold;
+  position: relative;
+  left: 80px;
+  font-size: 14px;
 }
 
 i:hover {
@@ -233,4 +226,8 @@ i:hover {
   opacity: 0.9;
 }
 
+input {
+  width: 12px;
+  height: 12px;
+}
 </style>

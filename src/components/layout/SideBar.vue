@@ -109,7 +109,7 @@ export default defineComponent({
 }
 
 .rightArrow {
-  position: absolute;
+  position: fixed;
   transform: translateY(-50%);
   top: 120px;
   margin-right: -15px;
@@ -141,7 +141,7 @@ export default defineComponent({
 }
 
 .leftArrow {
-  position: absolute;
+  position: fixed;
   transform: translateY(-50%);
   top: 120px;
   margin-right: -15px;
