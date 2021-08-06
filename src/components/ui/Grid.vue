@@ -2,7 +2,7 @@
   <table class="grid">
     <thead :class="rowHeaderStyle ? `${rowHeaderStyle} header-grid` : 'header-grid'" >
       <tr>
-        <th v-if="actions?.length > 0">
+        <th v-if="actions?.length > 0 && actions[0].type == 'delete' && dataSource.listaRecords.length > 0">
           <input type="checkbox" id="checkbox" v-model="massiveCheck" />
         </th>
         <th v-for="column in columns" :key="column.field" :style="{ textAlign: column.align ? column.align : 'left' }">
@@ -21,7 +21,7 @@
 
     <tbody :class="rowBodyStyle ? rowBodyStyle : ''">
       <tr v-for="(row, index) in rows" :key="row">
-        <td v-if="actions?.length > 0">
+        <td v-if="actions?.length > 0 && actions[0].type == 'delete' && dataSource.listaRecords.length > 0">
           <input
             v-if="dataSource.listaRecords && dataSource.listaRecords[index]"
             type="checkbox"
@@ -144,7 +144,6 @@ export default defineComponent({
     ): string | number | undefined {
       if (data) {
         if (data[row]) {
-          console.log(data[row]);
           if (columnField === "fechaNacimiento") {
             return calculateAge(data[row][columnField]);
           }

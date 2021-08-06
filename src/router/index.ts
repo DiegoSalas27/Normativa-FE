@@ -84,11 +84,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Prueba',
     component: () => import("../views/Prueba.vue"),
   },
-  // {
-  //   path: '/prueba',
-  //   name: urlConstants.REALIZAR_PRUEBA_EVALUACION,
-  //   component: () => import("../views/Prueba.vue"),
-  // },
+  {
+    path: '/evaluacion/:ev_codigo/prueba/:pr_codigo/resumen',
+    name: 'PruebaResumen',
+    component: () => import("../views/Prueba.vue"),
+  },
   {
     path: '/:notFound(.*)',
     redirect: '/',

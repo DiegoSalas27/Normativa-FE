@@ -70,6 +70,12 @@ export const columnsPruebaLista: IColumnsGrid[] = [
     type: 'text',
     align: 'center',
   },
+  {
+    field: 'estado',
+    title: 'Estado',
+    type: 'text',
+    align: 'center',
+  }
 ]
 
 export const actions = {

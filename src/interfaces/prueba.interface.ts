@@ -21,7 +21,8 @@ export interface IPruebaResultados {
 }
 
 export interface IPruebaDetalleLista {
-  pruebaid: string;
+  pruebaId: string;
   codigo: string;
   fechaCreacion: any;
+  visibilidad: boolean;
 }

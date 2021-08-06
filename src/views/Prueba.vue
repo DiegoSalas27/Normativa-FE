@@ -33,7 +33,15 @@
 
     <!-- Formulario flujo -->
 
-    <section v-if="start && !showResultado && evidenciaRequerimiento && evidenciaRequerimiento[stepIndex]" class="form">
+    <section
+      v-if="
+        start &&
+        !showResultado &&
+        evidenciaRequerimiento &&
+        evidenciaRequerimiento[stepIndex]
+      "
+      class="form"
+    >
       <h4
         v-if="requerimientos[stepIndex]?.criterio !== undefined"
         class="form-header-criterio"
@@ -230,7 +238,7 @@ import { uuidv4 } from "../utils/guid";
 import { handleErrors } from "../common/utils";
 import { IPrueba, IPruebaResultados } from "../interfaces/prueba.interface";
 import { urlConstants } from "../common/constants";
-import { requerimientos } from '../common/mockdata';
+import { requerimientos } from "../common/mockdata";
 import {
   IEvaluacion,
   IEvaluacionDetalle,
@@ -272,6 +280,7 @@ export default defineComponent({
       loading: false,
       error: false,
       message: "",
+      evaluacionDetalle: {} as Partial<IEvaluacionDetalle>,
     };
   },
   methods: {
@@ -295,7 +304,6 @@ export default defineComponent({
         });
 
         pruebaCodigo = await response.json();
-        console.log("pruebaCodigo", pruebaCodigo);
       } catch (err) {
         console.log(err);
       }
@@ -310,7 +318,7 @@ export default defineComponent({
     async obtenerPruebaResults(): Promise<void> {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/prueba/${this.prueba.pruebaId}`,
+          `http://localhost:5000/api/prueba/${this.prueba.codigo}`,
           {
             method: "GET",
             headers: new Headers({
@@ -336,15 +344,16 @@ export default defineComponent({
     async registrarEvidenciaRequerimiento(): Promise<void> {
       try {
         if (
-          this.evidenciaRequerimiento[this.stepIndex].respuestaItem ===
-          "null"
+          this.evidenciaRequerimiento[this.stepIndex].respuestaItem === "null"
         ) {
           this.evidenciaRequerimiento[this.stepIndex].justificacion = "";
           this.evidencia[this.stepIndex].nombre = "";
         }
 
         const body = {
-          EvidenciaId: this.evidencia[this.stepIndex].evidenciaId ? this.evidencia[this.stepIndex].evidenciaId : null,
+          EvidenciaId: this.evidencia[this.stepIndex].evidenciaId
+            ? this.evidencia[this.stepIndex].evidenciaId
+            : null,
           RequerimientoId: this.requerimientos[this.stepIndex].requerimientoId,
           PruebaCodigo: this.$route.params.pr_codigo,
 
@@ -355,8 +364,6 @@ export default defineComponent({
             this.evidenciaRequerimiento[this.stepIndex].respuestaItem as any
           ),
         };
-
-        console.log(body)
 
         const response = await fetch(
           "http://localhost:5000/api/evidenciarequerimiento",
@@ -372,7 +379,7 @@ export default defineComponent({
 
         await handleErrors(response);
 
-        const evidencia = await response.json() as IEvidencia;
+        const evidencia = (await response.json()) as IEvidencia;
 
         // debugger
         // console.log("Evidencia", evidencia)
@@ -387,6 +394,7 @@ export default defineComponent({
         this.error = false;
       } catch (error) {
         this.error = true;
+        console.log(error);
         const errorObj = JSON.parse(error.message);
         console.log(errorObj.errores);
       }
@@ -397,28 +405,30 @@ export default defineComponent({
         this.stepIndex = 0;
         await this.obtenerPruebaResults();
         this.showResultado = true;
-        return;
-      }
-
-      this.evidencia.push(emptyEvidencia());
-      this.evidenciaRequerimiento.push(emptyEvidenciaRequerimiento());
-
-      if (!this.requerimientos[this.stepIndex + 2]) {
-        this.end = true;
-      }
-
-      if (this.requerimientos[this.stepIndex + 1]) {
-        this.stepIndex += 1;
+        this.$router.push(
+          `/evaluacion/${this.evaluacion.codigo}/prueba/${this.$route.params.pr_codigo}/resumen`
+        );
       } else {
-        return;
+        this.evidencia.push(emptyEvidencia());
+        this.evidenciaRequerimiento.push(emptyEvidenciaRequerimiento());
+
+        if (!this.requerimientos[this.stepIndex + 2]) {
+          this.end = true;
+        }
+
+        if (this.requerimientos[this.stepIndex + 1]) {
+          this.stepIndex += 1;
+        } else {
+          return;
+        }
+
+        this.questionNumber += 1;
+
+        this.$router.push({
+          path: `/evaluacion/${this.evaluacion.codigo}/prueba/${this.$route.params.pr_codigo}`,
+          query: { req: this.questionNumber + 1 },
+        });
       }
-
-      this.questionNumber += 1;
-
-      this.$router.push({
-        path: `/evaluacion/${this.evaluacion.codigo}/prueba/${this.$route.params.pr_codigo}`,
-        query: { req: this.questionNumber + 1 },
-      });
     },
     previous(): void {
       if (this.requerimientos[this.stepIndex - 1]) {
@@ -442,7 +452,7 @@ export default defineComponent({
       (async () => {
         try {
           await fetch(
-            `http://localhost:5000/api/prueba/activar/${this.prueba.pruebaId}`,
+            `http://localhost:5000/api/prueba/activar/${this.prueba.codigo}`,
             {
               method: "PUT",
               headers: new Headers({
@@ -461,7 +471,6 @@ export default defineComponent({
   },
   mounted() {
     (async () => {
-      let evaluacionDetalle: Partial<IEvaluacionDetalle> = {};
       let ListasVerificacion: IListaVerificacion[] = [];
       try {
         const response = await fetch(
@@ -476,28 +485,27 @@ export default defineComponent({
         );
 
         if (response.statusText !== "No Content") {
-          evaluacionDetalle = (await response.json()) as IEvaluacionDetalle;
-
-          console.log("evaluacionDetalle", evaluacionDetalle);
+          this.evaluacionDetalle =
+            (await response.json()) as IEvaluacionDetalle;
 
           this.selectedListaVerificacion.fechaCreacion =
-            evaluacionDetalle.listaVerificacionFechaCreacion;
+            this.evaluacionDetalle.listaVerificacionFechaCreacion;
           this.selectedListaVerificacion.requerimientosCount =
-            evaluacionDetalle.requerimientosCount;
+            this.evaluacionDetalle.requerimientosCount;
           this.selectedListaVerificacion.codigo =
-            evaluacionDetalle.codigoListaVerificacion;
+            this.evaluacionDetalle.codigoListaVerificacion;
 
-          this.obraId = evaluacionDetalle.obraId as string;
+          this.obraId = this.evaluacionDetalle.obraId as string;
 
           this.$store.dispatch("evaluacionModule/guardarEvaluacion", {
             ...this.evaluacion,
-            evaluacionId: evaluacionDetalle.evaluacionId,
-            codigo: evaluacionDetalle.codigo,
-            nombre: evaluacionDetalle.nombre,
-            estado: evaluacionDetalle.estado,
-            visibilidad: evaluacionDetalle.visibilidad,
+            evaluacionId: this.evaluacionDetalle.evaluacionId,
+            codigo: this.evaluacionDetalle.codigo,
+            nombre: this.evaluacionDetalle.nombre,
+            estado: this.evaluacionDetalle.estado,
+            visibilidad: this.evaluacionDetalle.visibilidad,
             fechaCreacion: new Date(
-              evaluacionDetalle.fechaCreacion
+              this.evaluacionDetalle.fechaCreacion
             ).toLocaleDateString(),
           });
         }
@@ -507,7 +515,7 @@ export default defineComponent({
 
       try {
         const response = await fetch(
-          `http://localhost:5000/api/listaverificaciones/lista?filter=${evaluacionDetalle.codigoListaVerificacion}`,
+          `http://localhost:5000/api/listaverificaciones/lista?filter=${this.evaluacionDetalle.codigoListaVerificacion}`,
           {
             method: "GET",
             headers: new Headers({
@@ -570,8 +578,6 @@ export default defineComponent({
             zeros = "00";
           }
 
-          console.log("PR" + zeros + (number + 1).toString());
-
           this.$store.dispatch("pruebaModule/guardarPrueba", {
             ...this.prueba,
             codigo: "PR" + zeros + (number + 1).toString(),
@@ -580,6 +586,10 @@ export default defineComponent({
           console.log(err);
         }
       } else {
+        this.$store.dispatch("pruebaModule/guardarPrueba", {
+          ...this.prueba,
+          codigo: this.$route.params.pr_codigo,
+        });
         try {
           const response = await fetch(
             `http://localhost:5000/api/evidenciarequerimiento/${this.$route.params.pr_codigo}`,
@@ -598,9 +608,13 @@ export default defineComponent({
           if (evidenciasRequerimientos.length > 0) {
             this.evidencia = [];
             this.evidenciaRequerimiento = [];
-            evidenciasRequerimientos = this.requerimientos.map(req => {
-              return evidenciasRequerimientos.find(evR => evR.requerimientoId == req.requerimientoId);
-            }).filter(evR => evR !== undefined) as IEvidenciaRequerimiento[]
+            evidenciasRequerimientos = this.requerimientos
+              .map((req) => {
+                return evidenciasRequerimientos.find(
+                  (evR) => evR.requerimientoId == req.requerimientoId
+                );
+              })
+              .filter((evR) => evR !== undefined) as IEvidenciaRequerimiento[];
 
             evidenciasRequerimientos.forEach((er) => {
               this.evidencia.push({
@@ -625,6 +639,10 @@ export default defineComponent({
           } else {
             this.stepIndex = 0;
             this.questionNumber = 0;
+          }
+
+          if (this.requerimientos.length == evidenciasRequerimientos.length) {
+            this.end = true;
           }
 
           this.$router.replace({

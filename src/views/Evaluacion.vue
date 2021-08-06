@@ -3,6 +3,22 @@
     :name="userInfoJson?.nombres"
     :lastName="userInfoJson?.apellidos"
   ></nav-bar>
+  <confirmation-modal
+    :error="null"
+    :show="showModalConfirmation"
+    :title="modalTitle"
+    :massiveDelete="massiveDelete"
+    @confirm="confirmDelete"
+    @confirmMassive="confirmMassiveDelete"
+    @cancel="closeModal"
+  ></confirmation-modal>
+  <modal
+    :show="!!message"
+    :title="message"
+    @close="handleError"
+    :error="error"
+    :loading="loading"
+  ></modal>
   <section id="main">
     <h1>Registrar evaluación de obra</h1>
     <button
@@ -114,6 +130,13 @@
           >
             Realizar prueba
           </button>
+          <button
+            v-if="pruebas.listaRecords.length > 0"
+            class="action-button massive"
+            @click="deleteMassive()"
+          >
+            Eliminación masiva
+          </button>
           <grid
             :dataSource="pruebas"
             :columns="columns"
@@ -123,7 +146,7 @@
             :rowHeaderStyle="'thin'"
             :rowBodyStyle="'thin'"
             @movePage="() => {}"
-            @selectedList="() => {}"
+            @selectedList="selectedList"
           ></grid>
         </div>
       </div>
@@ -139,7 +162,7 @@ import NavBar from "@/components/layout/NavBar.vue";
 import Grid from "@/components/ui/Grid.vue";
 import { emptyUser } from "@/utils/initializer";
 import { defineComponent } from "@vue/runtime-core";
-import { columnsPruebaLista, entity, urlConstants } from "../common/constants";
+import { actions, columnsPruebaLista, entity } from "../common/constants";
 import { fechaCreacionPruebaVacia } from "../common/mockdata";
 import { IDataSource } from "../interfaces/dataSource";
 import {
@@ -150,12 +173,15 @@ import { IListaVerificacion } from "../interfaces/listaVerificacion.interface";
 import { IObra } from "../interfaces/obra.interface";
 import { IUser } from "../interfaces/user.interface";
 import { getUsuario } from "../services/authService";
-import { uuidv4 } from "../utils/guid";
+import ConfirmationModal from "@/components/ui/ConfirmationModal.vue";
+import Modal from "../components/ui/Modal.vue";
 
 export default defineComponent({
   components: {
     NavBar,
     Grid,
+    ConfirmationModal,
+    Modal,
   },
   computed: {
     selectedListaVerificacion(): IListaVerificacion {
@@ -176,22 +202,133 @@ export default defineComponent({
       pruebas: fechaCreacionPruebaVacia as IDataSource<{
         id: number;
         fechaCreacion: string;
+        estado: 'Pendiente' | 'Completa';
+        pruebaId: string;
+        codigo: string;
       }>,
       columns: columnsPruebaLista,
       config: {
         deleteEntity: "",
         entity: entity.PRUEBA,
       },
-      actions: [],
+      actions: [
+        { icon: "fas fa-trash-alt", type: actions.DELETE, method: this.delete },
+        { icon: "fas fa-eye", type: actions.EDIT, method: this.edit },
+      ],
       rows: 1,
       codigoListaVerificacion: "",
       codigoObra: "",
       obras: [] as IObra[],
       listasVerificacion: [] as IListaVerificacion[],
       timeout: undefined as number | undefined,
+      id: "",
+      modalTitle: "",
+      showModalConfirmation: false,
+      entityList: [] as string[],
+      massiveDelete: false,
+      message: null as unknown as string | null,
+      loading: false,
+      error: false,
     };
   },
   methods: {
+    delete(id: string): void {
+      this.id = id;
+      this.modalTitle = "Está seguro que desea eliminar la prueba " + id + "?";
+      this.showModalConfirmation = true;
+    },
+    async confirmMassiveDelete(): Promise<void> {
+      Promise.all(
+        this.pruebas.listaRecords.map(async (pr) => {
+          try {
+            const response = await fetch(
+              `http://localhost:5000/api/prueba/${pr.pruebaId}`,
+              {
+                method: "DELETE",
+                headers: new Headers({
+                  "Content-Type": "application/json",
+                  Authorization: "Bearer " + localStorage.getItem("token"),
+                }),
+              }
+            );
+          } catch (error) {
+            console.log(error);
+          }
+        })
+      );
+
+      this.massiveDelete = false;
+      this.showModalConfirmation = false;
+      this.modalTitle = "";
+
+      this.message = `Los pruebas fueron eliminadas`;
+
+      setTimeout(async () => {
+        await this.fetchEvaluacion();
+        this.message = null;
+      }, 2000);
+    },
+    edit(id: string): void {
+      const selectedPrueba = this.pruebas.listaRecords.find(
+        (pr) => pr.id == Number(id)
+      );
+
+      if (selectedPrueba?.estado == 'Pendiente') {
+        this.$router.push(`/evaluacion/${this.evaluacion.codigo}/prueba/${selectedPrueba.codigo}`);
+      } else {
+        console.log("ENVIAR A RESUMEN");
+      }
+    },
+    selectedList(entityList: string[]): void {
+      this.entityList = entityList;
+    },
+    handleError(): void {
+      this.message = null;
+    },
+    closeModal(): void {
+      this.showModalConfirmation = false;
+    },
+    deleteMassive(): void {
+      if (this.entityList.length > 0) {
+        this.massiveDelete = true;
+        this.showModalConfirmation = true;
+        this.modalTitle =
+          "Está seguro que desea eliminar las " +
+          "pruebas" +
+          "s seleccionadas ?";
+      } else {
+        this.message = "Debe seleccionar al menos una prueba";
+        this.error = true;
+      }
+    },
+    async confirmDelete(): Promise<void> {
+      this.closeModal();
+      const selectedPrueba = this.pruebas.listaRecords.find(
+        (pr) => pr.id == Number(this.id)
+      );
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/prueba/${selectedPrueba?.pruebaId}`,
+          {
+            method: "DELETE",
+            headers: new Headers({
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+          }
+        );
+
+        this.message = `La prueba fue eliminada`;
+        this.id = "";
+
+        setTimeout(async () => {
+          await this.fetchEvaluacion();
+          this.message = null;
+        }, 2000);
+      } catch (error) {
+        console.log(error);
+      }
+    },
     searchObra() {
       clearTimeout(this.timeout);
       this.timeout = setTimeout(async () => {
@@ -254,32 +391,28 @@ export default defineComponent({
         listaVerificacion.codigo + "-" + listaVerificacion.nombre;
     },
     async startQuiz(): Promise<void> {
-      const body = {  
+      const body = {
         EvaluacionCodigo: this.evaluacion.codigo,
         EstadoEvaluacion: this.evaluacion.estado,
         EvaluacionNombre: this.evaluacion.nombre,
         ObraId: this.selectedObra.obraId,
-        ListaVerificacionId:
-          this.selectedListaVerificacion.listaVerificacionId,
-      }
+        ListaVerificacionId: this.selectedListaVerificacion.listaVerificacionId,
+      };
 
       // Guardar evaluacion
-      
+
       try {
-            await fetch(
-              `http://localhost:5000/api/evaluacion`,
-              {
-                method: "POST",
-                headers: new Headers({
-                  "Content-Type": "application/json",
-                  Authorization: "Bearer " + localStorage.getItem("token"),
-                }),
-                body: JSON.stringify(body)
-              }
-            );
-          } catch (err) {
-            console.log(err);
-          }
+        await fetch(`http://localhost:5000/api/evaluacion`, {
+          method: "POST",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          }),
+          body: JSON.stringify(body),
+        });
+      } catch (err) {
+        console.log(err);
+      }
 
       this.$router.push(`/evaluacion/${this.evaluacion.codigo}/prueba/nuevo`);
     },
@@ -312,7 +445,7 @@ export default defineComponent({
                   "Content-Type": "application/json",
                   Authorization: "Bearer " + localStorage.getItem("token"),
                 }),
-                body: JSON.stringify(body)
+                body: JSON.stringify(body),
               }
             );
           } catch (err) {
@@ -340,6 +473,65 @@ export default defineComponent({
 
           this.$router.push("/dashboard");
         })();
+      }
+    },
+    async fetchEvaluacion(): Promise<void> {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/evaluacion/${this.$route.params.id}`,
+          {
+            method: "GET",
+            headers: new Headers({
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+          }
+        );
+
+        const evaluacionDetalle = (await response.json()) as IEvaluacionDetalle;
+
+        this.codigoListaVerificacion =
+          evaluacionDetalle.codigoConcatenadoListaVerificacion;
+        this.codigoObra = evaluacionDetalle.codigoConcatenadoObra;
+        this.pruebas.numeroPaginas = 1;
+        this.pruebas.totalRecords = 1;
+        this.selectedListaVerificacion.fechaCreacion =
+          evaluacionDetalle.listaVerificacionFechaCreacion;
+        this.selectedListaVerificacion.requerimientosCount =
+          evaluacionDetalle.requerimientosCount;
+        this.selectedListaVerificacion.codigo =
+          evaluacionDetalle.codigoListaVerificacion;
+        this.selectedListaVerificacion.listaVerificacionId =
+          evaluacionDetalle.listaVerificacionId;
+        this.selectedObra.obraId = evaluacionDetalle.obraId;
+
+        this.pruebas.listaRecords = [];
+
+        evaluacionDetalle.pruebaList.forEach((prueba, index) => {
+          this.pruebas.listaRecords.push({
+            id: index + 1,
+            fechaCreacion: new Date(prueba.fechaCreacion).toLocaleDateString(),
+            estado: prueba.visibilidad ? "Completa" : "Pendiente",
+            pruebaId: prueba.pruebaId,
+            codigo: prueba.codigo
+          });
+        });
+
+        this.rows =  this.pruebas.listaRecords.length;
+
+        this.$store.dispatch("evaluacionModule/guardarEvaluacion", {
+          ...this.evaluacion,
+          evaluacionId: evaluacionDetalle.evaluacionId,
+          codigo: evaluacionDetalle.codigo,
+          nombre: evaluacionDetalle.nombre,
+          estado: evaluacionDetalle.estado,
+          visibilidad: evaluacionDetalle.visibilidad,
+          fechaCreacion: new Date(
+            evaluacionDetalle.fechaCreacion
+          ).toLocaleDateString(),
+        });
+      } catch (err) {
+        console.log(err);
       }
     },
   },
@@ -378,58 +570,7 @@ export default defineComponent({
           console.log(err);
         }
       } else {
-        try {
-          const response = await fetch(
-            `http://localhost:5000/api/evaluacion/${this.$route.params.id}`,
-            {
-              method: "GET",
-              headers: new Headers({
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + localStorage.getItem("token"),
-              }),
-            }
-          );
-
-          const evaluacionDetalle =
-            (await response.json()) as IEvaluacionDetalle;
-
-          this.codigoListaVerificacion =
-            evaluacionDetalle.codigoConcatenadoListaVerificacion;
-          this.codigoObra = evaluacionDetalle.codigoConcatenadoObra;
-          this.pruebas.numeroPaginas = 1;
-          this.pruebas.totalRecords = 1;
-          this.selectedListaVerificacion.fechaCreacion =
-            evaluacionDetalle.listaVerificacionFechaCreacion;
-          this.selectedListaVerificacion.requerimientosCount =
-            evaluacionDetalle.requerimientosCount;
-          this.selectedListaVerificacion.codigo = 
-            evaluacionDetalle.codigoListaVerificacion;
-          this.selectedListaVerificacion.listaVerificacionId = evaluacionDetalle.listaVerificacionId;
-          this.selectedObra.obraId = evaluacionDetalle.obraId;
-
-          evaluacionDetalle.pruebaList.forEach((prueba, index) => {
-            this.pruebas.listaRecords.push({
-              id: index + 1,
-              fechaCreacion: new Date(
-                prueba.fechaCreacion
-              ).toLocaleDateString(),
-            });
-          });
-
-          this.$store.dispatch("evaluacionModule/guardarEvaluacion", {
-            ...this.evaluacion,
-            evaluacionId: evaluacionDetalle.evaluacionId,
-            codigo: evaluacionDetalle.codigo,
-            nombre: evaluacionDetalle.nombre,
-            estado: evaluacionDetalle.estado,
-            visibilidad: evaluacionDetalle.visibilidad,
-            fechaCreacion: new Date(
-              evaluacionDetalle.fechaCreacion
-            ).toLocaleDateString(),
-          });
-        } catch (err) {
-          console.log(err);
-        }
+        await this.fetchEvaluacion();
       }
     })();
   },
@@ -484,6 +625,12 @@ input {
 .action-button.blocked {
   background: var(--accent);
   cursor: auto;
+}
+.action-button.massive {
+  position: relative;
+  top: 10px;
+  right: 0px;
+  width: 240px;
 }
 #main {
   text-align: left;
