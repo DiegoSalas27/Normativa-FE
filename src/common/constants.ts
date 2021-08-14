@@ -126,4 +126,4 @@ export const AnalistaUserActions = [
   },
 ];
 
-export const BASE_URL = "https://sistemaexperto.azurewebsites.net/api/";
+export const BASE_URL = "http://localhost:5000/api/";
