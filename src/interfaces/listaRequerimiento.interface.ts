@@ -5,6 +5,7 @@ export interface IRequerimiento {
   requerimientoId: string;
   descripcion: string;
   criterio: ICriterio;
+  posicion?: number;
 }
 
 export interface IRequerimientoResultado {

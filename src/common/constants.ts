@@ -126,6 +126,4 @@ export const AnalistaUserActions = [
   },
 ];
 
-export const JefeRiesgosUserActions = [
-
-]
+export const BASE_URL = "https://sistemaexperto.azurewebsites.net/api/";

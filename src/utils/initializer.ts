@@ -6,6 +6,7 @@ import { IListaVerificacion } from '../interfaces/listaVerificacion.interface';
 import { IObra } from '../interfaces/obra.interface';
 import { IPrueba } from '../interfaces/prueba.interface';
 import { IUser } from '../interfaces/user.interface';
+import { ITratamiento } from '../interfaces/tratamiento.interface';
 export const emptyUser = (): IUser => ({
   nombres: '',
 	apellidos: '',
@@ -20,6 +21,17 @@ export const emptyUser = (): IUser => ({
 	especialidad: '',
 	rol: null
 });
+
+export const emptyTratamiento = (): ITratamiento => ({
+	tratamientoId: '',
+	evaluacionId: '',
+	usuarioId: '',
+	nombre: '',
+	codigo: '',
+	fechaInicio: null,
+	fechaFin: null,
+	porcentajeAvance: 0,
+})
 
 export const emptyVerificationList = (): IListaVerificacion => ({
 	listaVerificacionId: '',

@@ -39,7 +39,7 @@
 import Grid from "@/components/ui/Grid.vue";
 import ConfirmationModal from "@/components/ui/ConfirmationModal.vue";
 import Modal from "../components/ui/Modal.vue";
-import { actions, entity } from "@/common/constants";
+import { actions, BASE_URL, entity } from "@/common/constants";
 import { IUser } from "../interfaces/user.interface";
 import { columnsRolList } from "../common/constants";
 import { defineComponent } from "@vue/runtime-core";
@@ -116,7 +116,7 @@ export default defineComponent({
     async listUsersByRol(): Promise<void> {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/usuario/listar/${this.userRol}?page=${this.page}&quantity=${this.quantity}`,
+          `${BASE_URL}usuario/listar/${this.userRol}?page=${this.page}&quantity=${this.quantity}`,
           {
             method: "GET",
             headers: new Headers({
@@ -166,7 +166,7 @@ export default defineComponent({
         this.entityList.map(async (id: string) => {
           try {
             const response = await fetch(
-              `http://localhost:5000/api/usuario/${id}`,
+              `${BASE_URL}usuario/${id}`,
               {
                 method: "DELETE",
                 headers: new Headers({
@@ -196,7 +196,7 @@ export default defineComponent({
       this.closeModal();
       try {
         const response = await fetch(
-          `http://localhost:5000/api/${this.entity}/${this.id}`,
+          `${BASE_URL}${this.entity}/${this.id}`,
           {
             method: "DELETE",
             headers: new Headers({
@@ -224,7 +224,7 @@ export default defineComponent({
   mounted() {
     (async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/usuario", {
+        const response = await fetch(`${BASE_URL}usuario`, {
           method: "GET",
           headers: new Headers({
             "Content-Type": "application/json",

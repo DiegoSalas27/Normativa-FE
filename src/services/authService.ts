@@ -1,7 +1,8 @@
 import { IUser } from "../interfaces/user.interface";
+import { BASE_URL } from './../common/constants';
 
 export async function getUsuario() {
-  const response = await fetch("http://localhost:5000/api/usuario", {
+  const response = await fetch(`${BASE_URL}usuario`, {
     method: "GET",
     headers: new Headers({
       "Content-Type": "application/json",

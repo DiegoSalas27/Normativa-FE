@@ -39,6 +39,7 @@
 
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
+import { BASE_URL } from "../common/constants";
 import { handleErrors, validateEmail, validatePassword } from "../common/utils";
 import BaseButton from "../components/ui/BaseButton.vue";
 import BaseCard from "../components/ui/BaseCard.vue";
@@ -108,7 +109,7 @@ export default defineComponent({
       if (this.formIsValid) {
         try {
           const response = await fetch(
-            "http://localhost:5000/api/usuario/login",
+            `${BASE_URL}usuario/login`,
             {
               method: "POST",
               headers: {

@@ -4,6 +4,7 @@
     :lastName="userInfoJson?.apellidos"
   ></nav-bar>
   <section class="quiz">
+    <h3 class="back" @click="backToEvluacion"><i class="fas fa-chevron-left"></i> Salir del quiz</h3>
     <h1>Quiz</h1>
     <div v-if="!start" class="form">
       <h3 class="form-header">
@@ -237,7 +238,7 @@ import { IEvidencia } from "../interfaces/evidencia.interface";
 import { uuidv4 } from "../utils/guid";
 import { handleErrors } from "../common/utils";
 import { IPrueba, IPruebaResultados } from "../interfaces/prueba.interface";
-import { urlConstants } from "../common/constants";
+import { BASE_URL, urlConstants } from "../common/constants";
 import { requerimientos } from "../common/mockdata";
 import {
   IEvaluacion,
@@ -284,6 +285,9 @@ export default defineComponent({
     };
   },
   methods: {
+    backToEvluacion(): void {
+      this.$router.push(`/evaluacion/${this.evaluacion.codigo}`);
+    },
     async startQuiz(): Promise<void> {
       // guardar Prueba
       const body = {
@@ -294,7 +298,7 @@ export default defineComponent({
       let pruebaCodigo;
 
       try {
-        const response = await fetch(`http://localhost:5000/api/prueba`, {
+        const response = await fetch(`${BASE_URL}prueba`, {
           method: "POST",
           headers: new Headers({
             "Content-Type": "application/json",
@@ -318,7 +322,7 @@ export default defineComponent({
     async obtenerPruebaResults(): Promise<void> {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/prueba/${this.prueba.codigo}`,
+          `${BASE_URL}prueba/${this.prueba.codigo}`,
           {
             method: "GET",
             headers: new Headers({
@@ -366,7 +370,7 @@ export default defineComponent({
         };
 
         const response = await fetch(
-          "http://localhost:5000/api/evidenciarequerimiento",
+          `${BASE_URL}evidenciarequerimiento`,
           {
             method: "POST",
             headers: new Headers({
@@ -405,9 +409,7 @@ export default defineComponent({
         this.stepIndex = 0;
         await this.obtenerPruebaResults();
         this.showResultado = true;
-        this.$router.push(
-          `/evaluacion/${this.evaluacion.codigo}/prueba/${this.$route.params.pr_codigo}/resumen`
-        );
+        this.$router.push(`/evaluacion/${this.evaluacion.codigo}/prueba/${this.$route.params.pr_codigo}/resumen`);
       } else {
         this.evidencia.push(emptyEvidencia());
         this.evidenciaRequerimiento.push(emptyEvidenciaRequerimiento());
@@ -452,7 +454,7 @@ export default defineComponent({
       (async () => {
         try {
           await fetch(
-            `http://localhost:5000/api/prueba/activar/${this.prueba.codigo}`,
+            `${BASE_URL}prueba/activar/${this.prueba.codigo}`,
             {
               method: "PUT",
               headers: new Headers({
@@ -474,7 +476,7 @@ export default defineComponent({
       let ListasVerificacion: IListaVerificacion[] = [];
       try {
         const response = await fetch(
-          `http://localhost:5000/api/evaluacion/${this.$route.params.ev_codigo}`,
+          `${BASE_URL}evaluacion/${this.$route.params.ev_codigo}`,
           {
             method: "GET",
             headers: new Headers({
@@ -515,7 +517,7 @@ export default defineComponent({
 
       try {
         const response = await fetch(
-          `http://localhost:5000/api/listaverificaciones/lista?filter=${this.evaluacionDetalle.codigoListaVerificacion}`,
+          `${BASE_URL}listaverificaciones/lista?filter=${this.evaluacionDetalle.codigoListaVerificacion}`,
           {
             method: "GET",
             headers: new Headers({
@@ -559,7 +561,7 @@ export default defineComponent({
       if (this.$route.params.pr_codigo == undefined) {
         try {
           const response = await fetch(
-            "http://localhost:5000/api/prueba/count",
+            `${BASE_URL}prueba/count`,
             {
               method: "GET",
               headers: new Headers({
@@ -592,7 +594,7 @@ export default defineComponent({
         });
         try {
           const response = await fetch(
-            `http://localhost:5000/api/evidenciarequerimiento/${this.$route.params.pr_codigo}`,
+            `${BASE_URL}evidenciarequerimiento/${this.$route.params.pr_codigo}`,
             {
               method: "GET",
               headers: new Headers({
@@ -883,5 +885,11 @@ input:checked + .slider:before {
 tbody tr td {
   height: 50px;
   padding: 0px !important;
+}
+.back {
+  position: absolute;
+  top: 110px;
+  left: 125px;
+  cursor: pointer;
 }
 </style>

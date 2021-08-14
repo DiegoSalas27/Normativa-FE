@@ -26,3 +26,9 @@ export interface IPruebaDetalleLista {
   fechaCreacion: any;
   visibilidad: boolean;
 }
+
+export interface PruebaList {
+  codigo: string;
+  pruebaId: string;
+  visibilidad?: boolean;
+}

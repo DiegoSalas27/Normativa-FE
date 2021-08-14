@@ -33,3 +33,11 @@ export interface IEvaluacionDetalle {
   requerimientosCount: number;
   pruebaList: IPruebaDetalleLista[];
 }
+
+export interface IEvaluacionListado {
+  evaluacionId: string;
+  codigo: string;
+  nombre: string;
+  visbilidad: boolean;
+  pruebaList: IPruebaDetalleLista[];
+}

@@ -29,12 +29,46 @@
 
       <div class="gridCards stats">
         <div class="card stat">
-          <p>RESULTEADOS DE EVALUACIONES</p>
+          <p>RESULTADOS DE EVALUACIONES</p>
           <div ref="barChart" id="chart"></div>
         </div>
         <div class="card stat">
           <p>PLANES DE TRATAMIENTO</p>
           <div ref="pieChart" id="chart"></div>
+        </div>
+      </div>
+    </div>
+    <div v-show="userInfoJson?.rol === 'Jefe de riesgos'">
+      <div class="flex-col">
+        <div class="flex-row">
+          <div>
+            <button class="action-button" @click="generarPlan">Generar Plan</button>
+            <div class="card stat donut">
+              <div><strong>PORCENTAJE DE CUMPLIMIENTO</strong></div>
+              <div ref="semiDonut" id="chart"></div>
+            </div>
+          </div>
+          <div>
+            <button class="action-button">Visualizar informes</button>
+            <div
+              class="card stat donut"
+              style="height: 218.5px;"
+            >
+              <div><strong>EVALUACIONES REALIZADAS</strong></div>
+              <br />
+              <h1 style="fontSize: 45px">{{ numberEvaluaciones }}</h1>
+            </div>
+          </div>
+        </div>
+        <br />
+        <div class="card stat restulado-eva">
+          <p><strong> PLANES DE TRATAMIENTO</strong></p>
+          <div ref="stackedBar" id="chart"></div>
+        </div>
+        <br />
+        <div class="card stat restulado-eva">
+          <p><strong>RESULTADOS DE EVALUACIONES</strong></p>
+          <div ref="barChartJefe" id="chart"></div>
         </div>
       </div>
     </div>
@@ -47,18 +81,24 @@ import ApexCharts from "apexcharts";
 import {
   AdminUserActions,
   AnalistaUserActions,
+  BASE_URL,
   rol,
   urlConstants,
 } from "../common/constants";
 import {
   configureBarChartOptions,
   configurePieChartOptions,
+  configureSemiDonutOptions,
+  configureStackBarChartOptions,
 } from "../common/graphics";
 import {
   pieChartLabels,
   pieChartSeries,
+  semiDonutSeries,
   series,
+  stackedBarSeries,
   xAxisCategories,
+  xAxisCategoriesStacked,
 } from "../common/mockdata";
 import { IUser } from "../interfaces/user.interface";
 import { getUsuario } from "../services/authService";
@@ -69,6 +109,7 @@ export default defineComponent({
     return {
       rolUserActions: [] as any,
       userInfoJson: emptyUser() as IUser,
+      numberEvaluaciones: 0
     };
   },
   methods: {
@@ -83,17 +124,18 @@ export default defineComponent({
         case rol.ANALISTA:
           this.rolUserActions = AnalistaUserActions;
           break;
-        // case  rol.JEFE_DE_RIESGOS: 
-        //   this.rolUserActions = JefeRiesgosUserActions; break;
         // case  rol.ALTA_GERENCIA: this.rolUserActions = AdminUserActions; break;
       }
     },
+    generarPlan() {
+      this.$router.push('/plan-tratamiento');
+    }
   },
   mounted() {
     (async () => {
       try {
         this.userInfoJson = await getUsuario();
-        console.log(this.userInfoJson)
+        console.log(this.userInfoJson);
         this.calculateDashBoard();
       } catch (err) {
         console.log(err);
@@ -116,13 +158,62 @@ export default defineComponent({
         pieChartLabels
       );
 
+      const optionsStackedBar = configureStackBarChartOptions(
+        stackedBarSeries,
+        350,
+        xAxisCategoriesStacked
+      );
+
+      const optionsSemiDonut = configureSemiDonutOptions(semiDonutSeries, 50);
+
       if (this.$refs.barChart) {
         const barChart = new ApexCharts(this.$refs.barChart, optionsbarChart);
         barChart.render();
       }
+
+      if (this.$refs.barChartJefe) {
+        const barChart = new ApexCharts(this.$refs.barChartJefe, optionsbarChart);
+        barChart.render();
+      }
+
       if (this.$refs.pieChart) {
         const pieChart = new ApexCharts(this.$refs.pieChart, optionsPieChart);
         pieChart.render();
+      }
+
+      if (this.$refs.semiDonut) {
+        const semiDonut = new ApexCharts(
+          this.$refs.semiDonut,
+          optionsSemiDonut
+        );
+        semiDonut.render();
+      }
+
+      if (this.$refs.stackedBar) {
+        const stackedBar = new ApexCharts(
+          this.$refs.stackedBar,
+          optionsStackedBar
+        );
+        stackedBar.render();
+      }
+
+      if(this.userInfoJson.rol === 'Jefe de riesgos') {
+        try {
+          const response = await fetch(
+            `${BASE_URL}evaluacion/count`,
+            {
+              method: "GET",
+              headers: new Headers({
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              }),
+            }
+          );
+
+          this.numberEvaluaciones = await response.json();
+        } catch (err) {
+          console.log(err);
+        }
       }
     })();
   },
@@ -136,7 +227,7 @@ h1 {
 
 .gridCards {
   margin: 60px auto;
-  max-width: 1200px;
+  max-width: 1000px;
   display: grid;
   gap: 100px;
   justify-content: left;
@@ -157,6 +248,17 @@ h1 {
   font-weight: bold;
 }
 
+.flex-row {
+  margin-top: 65px;
+  justify-content: space-around;
+}
+
+.action-button {
+  width: 200px;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
 .image {
   width: 100px;
   height: 100px;
@@ -175,6 +277,16 @@ h1 {
 
 .card.stat {
   min-width: 750px;
+}
+
+.card.stat.donut {
+  margin-top: 20px;
+  min-width: 330px;
+}
+
+.restulado-eva {
+  min-width: 450px !important;
+  width: 81% !important;
 }
 
 .card:hover {

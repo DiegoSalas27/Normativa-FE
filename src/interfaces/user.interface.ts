@@ -30,3 +30,11 @@ export interface AuthUser {
 	user: string;
 	password: string;
 }
+
+export interface IUsuarioLista {
+	usuarioId: string
+	nombres: string
+	apellidos: string
+	codigo: string
+	rol: string
+}

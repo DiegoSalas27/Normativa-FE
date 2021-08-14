@@ -1,12 +1,21 @@
-export function validateNotEmpty(userInfoJson: any, validationForm: any): boolean {
+export function validateNotEmpty(jsonToValidate: any, validationForm: any): boolean {
   let isValid = true;
-  Object.entries(userInfoJson).forEach(([key, value]) => {
+  Object.entries(jsonToValidate).forEach(([key, value]) => {
     if (value == null || value == "") {
       validationForm[key] = "Este campo es obligatorio";
       isValid = false;
     }
   });
   return isValid;
+}
+
+export function propertiesSubSet <T>(properties: string[], object: T): T {
+  const subset = Object.fromEntries(
+    Object.entries(object)
+    .filter(([key]) => properties.includes(key))
+  ) as T;
+
+  return subset;
 }
 
 export function validateEmail(email: string) {

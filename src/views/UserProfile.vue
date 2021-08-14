@@ -174,7 +174,7 @@ import jwt_decode from "jwt-decode";
 import { TokenUser, IUser } from "../interfaces/user.interface";
 import Modal from "../components/ui/Modal.vue";
 import { emptyUser } from "../utils/initializer";
-import { rol, urlConstants } from "../common/constants";
+import { BASE_URL, rol, urlConstants } from "../common/constants";
 import { Especialidad } from "../interfaces/especialidad.interface";
 import {
   handleErrors,
@@ -267,7 +267,7 @@ export default defineComponent({
     async fetchEspecialidades(rolName: string): Promise<void> {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/especialidad/lista/${rolName}`,
+          `${BASE_URL}especialidad/lista/${rolName}`,
           {
             method: "GET",
             headers: new Headers({
@@ -372,7 +372,7 @@ export default defineComponent({
         ) {
           try {
             const response = await fetch(
-              "http://localhost:5000/api/usuario/registrar",
+              `${BASE_URL}usuario/registrar`,
               {
                 method: "POST",
                 headers: new Headers({
@@ -401,7 +401,7 @@ export default defineComponent({
           }
         } else {
           try {
-            const response = await fetch("http://localhost:5000/api/usuario", {
+            const response = await fetch(`${BASE_URL}usuario`, {
               method: "PUT",
               headers: new Headers({
                 "Content-Type": "application/json",
@@ -432,7 +432,7 @@ export default defineComponent({
       var decoded: TokenUser = jwt_decode(token as string);
 
       try {
-        const response = await fetch("http://localhost:5000/api/rol/lista", {
+        const response = await fetch(`${BASE_URL}rol/lista`, {
           method: "GET",
           headers: new Headers({
             "Content-Type": "application/json",
@@ -458,7 +458,7 @@ export default defineComponent({
       if (this.$route.name === urlConstants.PROFILE_JEFE_DE_RIESGOS) {
         try {
           const response = await fetch(
-            `http://localhost:5000/api/usuario/listar/${rol.JEFE_DE_RIESGOS}?page=1&quantity=1`,
+            `${BASE_URL}usuario/listar/${rol.JEFE_DE_RIESGOS}?page=1&quantity=1`,
             {
               method: "GET",
               headers: new Headers({
@@ -487,7 +487,7 @@ export default defineComponent({
       if (this.$route.params.id) {
         try {
           const response = await fetch(
-            `http://localhost:5000/api/usuario/${this.$route.params.id}`,
+            `${BASE_URL}usuario/${this.$route.params.id}`,
             {
               method: "GET",
               headers: new Headers({
@@ -516,7 +516,7 @@ export default defineComponent({
       }
 
       try {
-        const response = await fetch("http://localhost:5000/api/usuario/", {
+        const response = await fetch(`${BASE_URL}usuario/`, {
           method: "GET",
           headers: new Headers({
             "Content-Type": "application/json",

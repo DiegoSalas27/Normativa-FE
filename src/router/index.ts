@@ -86,8 +86,18 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/evaluacion/:ev_codigo/prueba/:pr_codigo/resumen',
-    name: 'PruebaResumen',
+    name: 'PruebaResultado',
     component: () => import("../views/Prueba.vue"),
+  },
+  {
+    path: '/plan-tratamiento/:tr_codigo?',
+    name: 'PlanTratamiento',
+    component: () => import("../views/PlanTratamiento.vue"),
+  },
+  {
+    path: '/lista-verificacion/:lv_codigo/prueba/:pr_codigo/resumen',
+    name: 'PruebaResumen',
+    component: () => import("../views/PruebaResumen.vue"),
   },
   {
     path: '/:notFound(.*)',

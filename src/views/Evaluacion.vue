@@ -162,7 +162,7 @@ import NavBar from "@/components/layout/NavBar.vue";
 import Grid from "@/components/ui/Grid.vue";
 import { emptyUser } from "@/utils/initializer";
 import { defineComponent } from "@vue/runtime-core";
-import { actions, columnsPruebaLista, entity } from "../common/constants";
+import { actions, BASE_URL, columnsPruebaLista, entity } from "../common/constants";
 import { fechaCreacionPruebaVacia } from "../common/mockdata";
 import { IDataSource } from "../interfaces/dataSource";
 import {
@@ -202,7 +202,7 @@ export default defineComponent({
       pruebas: fechaCreacionPruebaVacia as IDataSource<{
         id: number;
         fechaCreacion: string;
-        estado: 'Pendiente' | 'Completa';
+        estado: "Pendiente" | "Completa";
         pruebaId: string;
         codigo: string;
       }>,
@@ -239,20 +239,23 @@ export default defineComponent({
     },
     async confirmMassiveDelete(): Promise<void> {
       Promise.all(
-        this.pruebas.listaRecords.map(async (pr) => {
-          try {
-            const response = await fetch(
-              `http://localhost:5000/api/prueba/${pr.pruebaId}`,
-              {
-                method: "DELETE",
-                headers: new Headers({
-                  "Content-Type": "application/json",
-                  Authorization: "Bearer " + localStorage.getItem("token"),
-                }),
-              }
-            );
-          } catch (error) {
-            console.log(error);
+        this.entityList.map(async (el) => {
+          const foundTest = this.pruebas.listaRecords.find((pr) => pr.id == +el);
+          if (foundTest) {
+            try {
+              const response = await fetch(
+                `${BASE_URL}prueba/${foundTest.pruebaId}`,
+                {
+                  method: "DELETE",
+                  headers: new Headers({
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + localStorage.getItem("token"),
+                  }),
+                }
+              );
+            } catch (error) {
+              console.log(error);
+            }
           }
         })
       );
@@ -273,8 +276,10 @@ export default defineComponent({
         (pr) => pr.id == Number(id)
       );
 
-      if (selectedPrueba?.estado == 'Pendiente') {
-        this.$router.push(`/evaluacion/${this.evaluacion.codigo}/prueba/${selectedPrueba.codigo}`);
+      if (selectedPrueba?.estado == "Pendiente") {
+        this.$router.push(
+          `/evaluacion/${this.evaluacion.codigo}/prueba/${selectedPrueba.codigo}`
+        );
       } else {
         console.log("ENVIAR A RESUMEN");
       }
@@ -308,7 +313,7 @@ export default defineComponent({
       );
       try {
         const response = await fetch(
-          `http://localhost:5000/api/prueba/${selectedPrueba?.pruebaId}`,
+          `${BASE_URL}prueba/${selectedPrueba?.pruebaId}`,
           {
             method: "DELETE",
             headers: new Headers({
@@ -334,7 +339,7 @@ export default defineComponent({
       this.timeout = setTimeout(async () => {
         try {
           const response = await fetch(
-            `http://localhost:5000/api/obras/lista?filter=${this.codigoObra}`,
+            `${BASE_URL}obras/lista?filter=${this.codigoObra}`,
             {
               method: "GET",
               headers: new Headers({
@@ -353,7 +358,7 @@ export default defineComponent({
     async fetchListListaVerificacion() {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/listaverificaciones/lista?filter=${this.codigoListaVerificacion}`,
+          `${BASE_URL}listaverificaciones/lista?filter=${this.codigoListaVerificacion}`,
           {
             method: "GET",
             headers: new Headers({
@@ -402,7 +407,7 @@ export default defineComponent({
       // Guardar evaluacion
 
       try {
-        await fetch(`http://localhost:5000/api/evaluacion`, {
+        await fetch(`${BASE_URL}evaluacion`, {
           method: "POST",
           headers: new Headers({
             "Content-Type": "application/json",
@@ -438,7 +443,7 @@ export default defineComponent({
 
           try {
             await fetch(
-              `http://localhost:5000/api/evaluacion/${this.evaluacion.evaluacionId}`,
+              `${BASE_URL}evaluacion/${this.evaluacion.evaluacionId}`,
               {
                 method: "PUT",
                 headers: new Headers({
@@ -458,7 +463,7 @@ export default defineComponent({
         (async () => {
           try {
             await fetch(
-              `http://localhost:5000/api/evaluacion/activar/${this.evaluacion.evaluacionId}`,
+              `${BASE_URL}evaluacion/activar/${this.evaluacion.evaluacionId}`,
               {
                 method: "PUT",
                 headers: new Headers({
@@ -478,7 +483,7 @@ export default defineComponent({
     async fetchEvaluacion(): Promise<void> {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/evaluacion/${this.$route.params.id}`,
+          `${BASE_URL}evaluacion/${this.$route.params.id}`,
           {
             method: "GET",
             headers: new Headers({
@@ -513,11 +518,11 @@ export default defineComponent({
             fechaCreacion: new Date(prueba.fechaCreacion).toLocaleDateString(),
             estado: prueba.visibilidad ? "Completa" : "Pendiente",
             pruebaId: prueba.pruebaId,
-            codigo: prueba.codigo
+            codigo: prueba.codigo,
           });
         });
 
-        this.rows =  this.pruebas.listaRecords.length;
+        this.rows = this.pruebas.listaRecords.length;
 
         this.$store.dispatch("evaluacionModule/guardarEvaluacion", {
           ...this.evaluacion,
@@ -542,7 +547,7 @@ export default defineComponent({
       if (!this.$route.params.id) {
         try {
           const response = await fetch(
-            "http://localhost:5000/api/evaluacion/count",
+            `${BASE_URL}evaluacion/count`,
             {
               method: "GET",
               headers: new Headers({
@@ -578,23 +583,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.imgIcon {
-  margin-top: 15px;
-  width: 30px;
-  height: 30px;
-}
-.non-editable {
-  margin-top: -34px;
-  margin-left: 41px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  width: 165px;
-  background: var(--accent);
-  color: white;
-  font-weight: bold;
-  border-radius: 3px;
-  text-align: center;
-}
 .link {
   margin-top: -30px;
   margin-left: 41px;
@@ -635,19 +623,5 @@ input {
 #main {
   text-align: left;
   margin-left: 100px;
-}
-.dropdownSelect {
-  position: absolute;
-  left: 141px;
-  background-color: #f6f6f6;
-  padding: 12px 16px;
-  width: 252px;
-  overflow: auto;
-  border: 1px solid #ddd;
-  z-index: 1;
-  cursor: pointer;
-}
-.dropdownSelect:hover {
-  background-color: #ddd;
 }
 </style>
