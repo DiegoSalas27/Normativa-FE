@@ -175,3 +175,14 @@ td:nth-child(2) {
 .dropdownSelect:hover {
   background-color: #ddd;
 }
+.label {
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: white;
+}
+.label.success {
+  background: var(--success);
+}
+.label.error {
+  background: var(--error);
+} 

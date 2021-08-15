@@ -100,6 +100,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/PruebaResumen.vue"),
   },
   {
+    path: '/accion-mitigacion/edicion/:acm_id',
+    name: 'AccionMitigacion',
+    component: () => import("../views/AccionMitigacion.vue"),
+  },
+  {
     path: '/:notFound(.*)',
     redirect: '/',
   }

@@ -15,7 +15,7 @@
       <i class="fas fa-chevron-circle-left"></i> Volver
     </h1>
     <br />
-    <div class="flex-row">
+    <div v-if="canEdit" class="flex-row">
       <div>
         <h4 style="display: inline">
           Ingrese el porcentaje de cumplimiento deseado:
@@ -109,7 +109,8 @@
                 :disabled="evidenciaRequerimiento[index]?.accionMigitagcion"
                 v-if="
                   evidenciaRequerimiento[index]?.respuestaItem != null &&
-                  evidenciaRequerimiento[index]?.respuestaItem != 1
+                  evidenciaRequerimiento[index]?.respuestaItem != 1 &&
+                  canEdit
                 "
               >
                 Añadir ({{ accionesMitigacionCreadas }})
@@ -137,7 +138,7 @@ import { ICriterio } from "../interfaces/criterio.interface";
 import { handleErrors } from "../common/utils";
 import { uuidv4 } from "../utils/guid";
 import Modal from "../components/ui/Modal.vue";
-import { BASE_URL } from "../common/constants";
+import { BASE_URL, rol } from "../common/constants";
 
 export default defineComponent({
   components: {
@@ -158,6 +159,7 @@ export default defineComponent({
       message: null as string | null,
       loading: false,
       error: false,
+      canEdit: false,
     };
   },
   methods: {
@@ -376,6 +378,7 @@ export default defineComponent({
         TratamientoId: evidenciaReq.tratamientoId,
         AccionMitigacionId: uuidv4(),
         Descripcion: this.requerimientos[index].descripcion,
+        Estado: false,
       };
 
       try {
@@ -406,6 +409,10 @@ export default defineComponent({
   mounted() {
     (async () => {
       this.userInfoJson = await getUsuario();
+      if (this.userInfoJson.rol == rol.JEFE_DE_RIESGOS) {
+        this.canEdit = true;
+      } else 
+        this.canEdit = false;
       await this.realScenario();
     })();
   },

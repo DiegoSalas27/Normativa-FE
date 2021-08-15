@@ -281,7 +281,9 @@ export default defineComponent({
           `/evaluacion/${this.evaluacion.codigo}/prueba/${selectedPrueba.codigo}`
         );
       } else {
-        console.log("ENVIAR A RESUMEN");
+        this.$router.push(
+          `/lista-verificacion/${this.selectedListaVerificacion.codigo}/prueba/${selectedPrueba?.codigo}/resumen`
+        )
       }
     },
     selectedList(entityList: string[]): void {

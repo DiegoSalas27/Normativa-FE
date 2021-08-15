@@ -126,4 +126,9 @@ export const AnalistaUserActions = [
   },
 ];
 
+export const estadoAccionMitigacion = [
+  'En Proceso',
+  'Terminado'
+]
+
 export const BASE_URL = "http://localhost:5000/api/";

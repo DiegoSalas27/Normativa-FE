@@ -38,6 +38,7 @@ export interface IEvaluacionListado {
   evaluacionId: string;
   codigo: string;
   nombre: string;
+  tieneTratamiento?: string;
   visbilidad: boolean;
   pruebaList: IPruebaDetalleLista[];
 }

@@ -3,6 +3,15 @@
     :name="userInfoJson?.nombres"
     :lastName="userInfoJson?.apellidos"
   ></nav-bar>
+  <confirmation-modal
+    :error="null"
+    :show="showModalConfirmation"
+    :title="modalTitle"
+    :massiveDelete="massiveDelete"
+    @confirm="deleteAccion"
+    @confirmMassive="confirmMassiveDelete"
+    @cancel="closeModal"
+  ></confirmation-modal>
   <modal
     :show="!!message"
     :title="message"
@@ -18,13 +27,23 @@
       "
       @click="register()"
     >
-      Registrar
+      {{ displayButtonText }}
+    </button>
+    <button
+      v-if="tratamientoInfoJson.porcentajeAvance == 100"
+      class="action-button"
+      style="top: 140px"
+      @click="register()"
+    >
+      Generar informe
     </button>
     <div class="grid-container">
       <div class="grid-item">
         <h4>Código de tratamiento:</h4>
         <img src="../assets/images/llave.png" alt="codeva" class="imgIcon" />
+        <span v-if="($route.params.tr_codigo || !canEdit) && !update">{{ tratamientoInfoJson.codigo }}</span>
         <input
+          v-if="(update || !$route.params.tr_codigo) && canEdit"
           type="text"
           disabled="true"
           :placeholder="tratamientoInfoJson.codigo"
@@ -33,7 +52,9 @@
       <div class="grid-item">
         <h4>Código de evaluación:</h4>
         <img src="../assets/images/llave.png" alt="codeva" class="imgIcon" />
+        <span v-if="($route.params.tr_codigo || !canEdit) && !update">{{ codigoEvaluacion }}</span>
         <input
+          v-if="(update || !$route.params.tr_codigo) && canEdit"
           type="text"
           placeholder="Buscar por código"
           @keyup="searchCodigoEvaluacion"
@@ -69,7 +90,9 @@
       <div class="grid-item">
         <h4>Nombre del plan de tratamiento:</h4>
         <img src="../assets/images/listav.png" alt="codeva" class="imgIcon" />
+        <span v-if="($route.params.tr_codigo || !canEdit) && !update">{{ tratamientoInfoJson.nombre }}</span>
         <input
+          v-if="(update || !$route.params.tr_codigo) && canEdit"
           type="text"
           placeholder="Plan de tratamiento-nombre"
           v-model.trim="tratamientoInfoJson.nombre"
@@ -81,7 +104,9 @@
       <div class="grid-item">
         <h4>Responsable:</h4>
         <img src="../assets/images/user.png" alt="codeva" class="imgIcon" />
+        <span v-if="($route.params.tr_codigo || !canEdit) && !update">{{ analistaCalc() }}</span>
         <select
+          v-if="(update || !$route.params.tr_codigo) && canEdit"
           class="select"
           v-model="tratamientoInfoJson.usuarioId"
           name="analista"
@@ -105,7 +130,12 @@
         </p>
       </div>
       <div class="grid-item" style="margin-top: 50px">
-        <h4><strong>Porcentaje de avance: {{ tratamientoInfoJson.porcentajeAvance }} %</strong></h4>
+        <h4>
+          <strong
+            >Porcentaje de avance:
+            {{ tratamientoInfoJson?.porcentajeAvance?.toFixed(2) }} %</strong
+          >
+        </h4>
       </div>
     </div>
     <section id="acciones-mitigacion" v-if="showAccionesMitigacion">
@@ -120,26 +150,32 @@
             >Añadir nueva acción</span
           >
         </div>
-        <div>
-          <button class="action-button table">Eliminación massiva</button>
+        <div v-if="update && canEdit">
+          <button class="action-button table" @click="deleteMassive()">
+            Eliminación massiva
+          </button>
         </div>
       </div>
       <table class="grid">
         <thead class="header-grid">
           <tr>
-            <th>
+            <th v-if="update && accionesMitigacion.length > 0 && canEdit">
               <input type="checkbox" id="checkbox" v-model="massiveCheck" />
             </th>
             <th style="width: 60%">Acciones de mitigación</th>
-            <th>Fecha de inicio</th>
-            <th>Fecha de fin</th>
-            <th></th>
-            <th></th>
+            <th style="width: 12.5%">Fecha de inicio</th>
+            <th style="width: 12.5%">Fecha de fin</th>
+            <th v-if="update"></th>
+            <th v-if="update && canEdit"></th>
+            <th style="width: 15%">Estado</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="accion in accionesMitigacion" :key="accion.accionMitigacionId">
-            <td>
+          <tr
+            v-for="accion in accionesMitigacion"
+            :key="accion.accionMitigacionId"
+          >
+            <td v-if="update && canEdit">
               <input
                 type="checkbox"
                 :id="accion.accionMitigacionId"
@@ -147,42 +183,64 @@
                 v-model="checkedEntities"
               />
             </td>
-            <td style="width: 60%">
-              <input 
-                type="text"
-                style="width: 100%; margin-left: 5px;"
-                v-model="accion.descripcion"
-              />
+            <td style="width: 60%; text-align: left">
+              <div>
+                <span v-if="($route.params.tr_codigo || !canEdit) && !update" style="width: 90%">{{
+                  accion.descripcion
+                }}</span>
+                <input
+                  v-if="update && canEdit"
+                  type="text"
+                  style="width: 90%; margin-left: 5px"
+                  v-model="accion.descripcion"
+                />
+                <i v-if="accion.tieneMensaje" class="far fa-envelope"></i>
+              </div>
             </td>
-            <td>
-              <input 
+            <td style="width: 12.5%">
+              <span v-if="$route.params.tr_codigo && !update">{{
+                accion.fechaInicio
+                  ? new Date(accion.fechaInicio).toISOString().substr(0, 10)
+                  : new Date().toISOString().substr(0, 10)
+              }}</span>
+              <input
+                v-if="update"
                 type="date"
-                @change="(e) => accion.fechaInicio = e.target.value"
+                @change="(e) => (accion.fechaInicio = e.target.value)"
                 :value="
-                userInfoJson && accion.fechaInicio
-                  ? new Date(accion.fechaInicio)
-                      .toISOString()
-                      .substr(0, 10)
-                      : null"
+                  userInfoJson && accion.fechaInicio
+                    ? new Date(accion.fechaInicio).toISOString().substr(0, 10)
+                    : null
+                "
               />
             </td>
-            <td>
-              <input 
+            <td style="width: 12.5%">
+              <span v-if="$route.params.tr_codigo && !update">{{
+                accion.fechaFin
+                  ? new Date(accion.fechaFin).toISOString().substr(0, 10)
+                  : new Date().toISOString().substr(0, 10)
+              }}</span>
+              <input
+                v-if="update"
                 type="date"
-                @change="(e) => accion.fechaFin = e.target.value"
+                @change="(e) => (accion.fechaFin = e.target.value)"
                 :value="
-                userInfoJson && accion.fechaFin
-                  ? new Date(accion.fechaFin)
-                      .toISOString()
-                      .substr(0, 10)
-                      : null"
+                  userInfoJson && accion.fechaFin
+                    ? new Date(accion.fechaFin).toISOString().substr(0, 10)
+                    : null
+                "
               />
             </td>
-            <td @click="editAccion(accion)">
+            <td v-if="update" @click="editAccion(accion)">
               <i class="fas fa-edit"></i>
             </td>
-            <td>
-              <i class="fas fa-times-circle" style="color: red"></i>
+            <td v-if="update && canEdit" @click="deleteConfirm(accion)">
+              <i class="fas fa-trash-alt" style="color: red"></i>
+            </td>
+            <td style="width: 15%">
+              <p :class="accion.estado ? 'label success' : 'label error'">
+                {{ accion.estado ? "Terminado" : "En Proceso" }}
+              </p>
             </td>
           </tr>
         </tbody>
@@ -202,30 +260,42 @@ import {
   IEvaluacion,
   IEvaluacionListado,
 } from "../interfaces/evaluacion.interface";
-import { IPruebaDetalleLista, PruebaList } from "../interfaces/prueba.interface";
+import {
+  IPruebaDetalleLista,
+  PruebaList,
+} from "../interfaces/prueba.interface";
 import {
   handleErrors,
   propertiesSubSet,
   validateNotEmpty,
 } from "../common/utils";
-import { IObtenerTratamiento, ITratamiento } from "../interfaces/tratamiento.interface";
-import { IAccionMitigacion } from '../interfaces/accionMitigacion';
-import { BASE_URL } from "../common/constants";
+import {
+  IObtenerTratamiento,
+  ITratamiento,
+} from "../interfaces/tratamiento.interface";
+import { IAccionMitigacion } from "../interfaces/accionMitigacion";
+import { BASE_URL, rol } from "../common/constants";
+import ConfirmationModal from "@/components/ui/ConfirmationModal.vue";
 
 export default defineComponent({
   components: {
     NavBar,
-    Modal
+    ConfirmationModal,
+    Modal,
   },
   computed: {
     evaluacion(): IEvaluacion {
       return this.$store.getters["evaluacionModule/obtenerEvaluacion"];
     },
-  },
-  watch: {
-    async codigoPrueba(){
-      await this.fetchAccionesMitigacion();
-    }
+    displayButtonText(): string {
+      if (this.$route.params.tr_codigo) {
+        if (this.update) {
+          return "Guardar";
+        }
+        return "Editar";
+      }
+      return "Registrar";
+    },
   },
   data() {
     return {
@@ -243,14 +313,48 @@ export default defineComponent({
       massiveCheck: false,
       checkedEntities: [] as string[],
       accionesMitigacion: [] as IAccionMitigacion[],
+      accionSelected: "",
       message: null as string | null,
       loading: false,
       error: false,
+      update: false,
+      modalTitle: "",
+      showModalConfirmation: false,
+      massiveDelete: false,
+      canEdit: false,
     };
   },
+  watch: {
+    async codigoPrueba() {
+      if (this.$route.params.tr_codigo)
+        await this.fetchAccionesMitigacion();
+    },
+    massiveCheck(): void {
+      if (this.massiveCheck) {
+        this.checkedEntities = this.accionesMitigacion.map(
+          (acm) => acm.accionMitigacionId
+        );
+      } else {
+        this.checkedEntities = [];
+      }
+    },
+  },
   methods: {
+    analistaCalc(): string {
+      const analista = this.analistaList.find(
+        (an) => an.usuarioId == this.tratamientoInfoJson.usuarioId
+      );
+      if (analista) {
+        return (
+          analista.codigo + "-" + analista.nombres + " " + analista.apellidos
+        );
+      } else return "";
+    },
     handleError() {
       this.message = null;
+    },
+    closeModal(): void {
+      this.showModalConfirmation = false;
     },
     searchCodigoEvaluacion() {
       clearTimeout(this.timeout);
@@ -278,16 +382,13 @@ export default defineComponent({
     },
     async fetchAnalista() {
       try {
-        const response = await fetch(
-          `${BASE_URL}usuario/lista/Analistas`,
-          {
-            method: "GET",
-            headers: new Headers({
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + localStorage.getItem("token"),
-            }),
-          }
-        );
+        const response = await fetch(`${BASE_URL}usuario/lista/Analistas`, {
+          method: "GET",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          }),
+        });
 
         this.analistaList = (await response.json()) as IUsuarioLista[];
       } catch (err) {
@@ -300,7 +401,31 @@ export default defineComponent({
       this.codigoEvaluacion = evaluacion.codigo + "-" + evaluacion.nombre;
       this.pruebas = evaluacion.pruebaList;
     },
+    deleteConfirm(accion: IAccionMitigacion): void {
+      this.accionSelected = accion.accionMitigacionId;
+      this.modalTitle =
+        "Está seguro que desea eliminar la acción de mitigación?";
+      this.showModalConfirmation = true;
+    },
+    deleteMassive(): void {
+      if (this.checkedEntities.length > 0) {
+        this.massiveDelete = true;
+        this.showModalConfirmation = true;
+        this.modalTitle =
+          "Está seguro que desea eliminar las " +
+          "acciones de mitigación" +
+          " seleccionadas ?";
+      } else {
+        this.message = "Debe seleccionar al menos una acción de mitigación";
+        this.error = true;
+      }
+    },
     async register(): Promise<void> {
+      if (this.$route.params.tr_codigo && !this.update) {
+        this.update = true;
+        return;
+      }
+
       this.validationForm = {} as ITratamiento;
       const validateArray = ["evaluacionId", "usuarioId", "nombre"];
       const jsonToValidate = propertiesSubSet(
@@ -311,42 +436,79 @@ export default defineComponent({
       let isValid = validateNotEmpty(jsonToValidate, this.validationForm);
 
       if (isValid) {
-        try {
-          const response = await fetch(
-            `${BASE_URL}plantratamiento`,
-            {
+        if (!this.$route.params.tr_codigo) {
+          try {
+            const response = await fetch(`${BASE_URL}plantratamiento`, {
               method: "POST",
               headers: new Headers({
                 "Content-Type": "application/json",
                 Authorization: "Bearer " + localStorage.getItem("token"),
               }),
               body: JSON.stringify(this.tratamientoInfoJson),
-            }
-          );
+            });
 
-          await handleErrors(response);
+            await handleErrors(response);
 
-          const tratamientoCodigo = await response.json();
+            const tratamientoCodigo = await response.json();
 
-          this.$router.replace(`/plan-tratamiento/${tratamientoCodigo.codigo}`);
+            this.$router.replace(
+              `/plan-tratamiento/${tratamientoCodigo.codigo}`
+            );
 
-          this.showAccionesMitigacion = true;
+            this.showAccionesMitigacion = true;
 
-          // this.loading = false;
+            this.loading = false;
 
-          // this.error = false;
-          // this.message = "¡El usuario ha sido registrado exitósamente!";
-        } catch (error) {
-          console.log(error);
-          // this.error = true;
-          // isValid = false;
-          // const errorObj = JSON.parse(error.message);
-          // this.validationForm.email = errorObj.errores.mensaje;
+            this.error = false;
+            this.message =
+              "¡El plan de tratamiento ha sido registrado exitósamente!";
+
+            setTimeout(async () => {
+              this.message = "";
+              await this.fetchTratamiento();
+            }, 1500);
+          } catch (error) {
+            console.log(error);
+          }
+        } else {
+          const body = {
+            ...this.tratamientoInfoJson,
+            AccionMitigacionList: this.accionesMitigacion,
+          };
+          try {
+            const response = await fetch(
+              `${BASE_URL}plantratamiento/${this.$route.params.tr_codigo}`,
+              {
+                method: "PUT",
+                headers: new Headers({
+                  "Content-Type": "application/json",
+                  Authorization: "Bearer " + localStorage.getItem("token"),
+                }),
+                body: JSON.stringify(body),
+              }
+            );
+
+            await handleErrors(response);
+
+            this.loading = false;
+
+            this.error = false;
+            this.message =
+              "¡El plan de tratamiento ha sido actualizado exitósamente!";
+
+            setTimeout(async () => {
+              this.message = "";
+            }, 1500);
+          } catch (error) {
+            console.log(error);
+          }
         }
       }
     },
     goToTestSummary() {
-      this.$router.push(`/lista-verificacion/${this.codigoListaVerificacion}/prueba/${this.codigoPrueba}/resumen`);
+      this.$router.push(
+        `/lista-verificacion/${this.codigoListaVerificacion}/prueba/${this.codigoPrueba}/resumen`
+      );
     },
     async fetchTratamiento(): Promise<void> {
       try {
@@ -361,7 +523,8 @@ export default defineComponent({
           }
         );
 
-        const tratamientoObtenido = (await response.json()) as IObtenerTratamiento;
+        const tratamientoObtenido =
+          (await response.json()) as IObtenerTratamiento;
 
         const validateArray = Object.keys(this.tratamientoInfoJson);
         this.tratamientoInfoJson = propertiesSubSet<ITratamiento>(
@@ -370,16 +533,18 @@ export default defineComponent({
         );
 
         this.codigoEvaluacion = tratamientoObtenido.codigoEvaluacion;
-        this.pruebas = tratamientoObtenido.pruebas.filter(pr => pr.visibilidad);
+        this.pruebas = tratamientoObtenido.pruebas.filter(
+          (pr) => pr.visibilidad
+        );
         this.codigoPrueba = this.pruebas[0].codigo;
-        this.codigoListaVerificacion = tratamientoObtenido.listaVerificacionCodigo;
-
+        this.codigoListaVerificacion =
+          tratamientoObtenido.listaVerificacionCodigo;
       } catch (err) {
         console.log(err);
       }
     },
     async fetchAccionesMitigacion(): Promise<void> {
-       try {
+      try {
         const response = await fetch(
           `${BASE_URL}accionmitigacion/${this.tratamientoInfoJson.tratamientoId}/${this.codigoPrueba}`,
           {
@@ -391,61 +556,97 @@ export default defineComponent({
           }
         );
 
-        this.accionesMitigacion = (await response.json()) as IAccionMitigacion[];
+        this.accionesMitigacion =
+          (await response.json()) as IAccionMitigacion[];
 
+        if (this.accionesMitigacion.length > 0) {
+          const total = this.accionesMitigacion.length;
+          const done = this.accionesMitigacion.filter(
+            (acm) => acm.estado == true
+          ).length;
+          this.tratamientoInfoJson.porcentajeAvance = (done / total) * 100;
+        } else {
+          this.tratamientoInfoJson.porcentajeAvance = 0;
+        }
       } catch (err) {
         console.log(err);
       }
     },
     async editAccion(accion: IAccionMitigacion): Promise<void> {
-      const body = {
-        Descripcion: accion.descripcion,
-        FechaInicio: accion.fechaInicio,
-        FechaFin: accion.fechaFin
-      }
-
+      this.$router.push(
+        `/accion-mitigacion/edicion/${accion.accionMitigacionId}`
+      );
+    },
+    async deleteAccion(actionId?: string): Promise<void> {
+      this.closeModal();
+      const selectedActionId = actionId ? actionId : this.accionSelected;
       try {
         const response = await fetch(
-          `${BASE_URL}accionmitigacion/${accion.accionMitigacionId}`,
+          `${BASE_URL}accionmitigacion/${selectedActionId}`,
           {
-            method: "PUT",
+            method: "DELETE",
             headers: new Headers({
               "Content-Type": "application/json",
               Authorization: "Bearer " + localStorage.getItem("token"),
             }),
-            body: JSON.stringify(body),
           }
         );
 
         await handleErrors(response);
 
-        this.message = "¡Se ha editado accion exitósamente!";
-        
-        setTimeout(() => {
-          this.message = '';
-        }, 1500);
+        if (!actionId) {
+          this.message = "¡Se ha eliminado accion exitósamente!";
+
+          setTimeout(async () => {
+            this.message = "";
+            await this.fetchAccionesMitigacion();
+          }, 1500);
+        }
       } catch (error) {
         console.log(error);
       }
-    }
+    },
+    async confirmMassiveDelete(): Promise<void> {
+      this.checkedEntities.map(async (accion) => {
+        try {
+          const response = await this.deleteAccion(accion);
+          console.log(response);
+        } catch (error) {
+          console.log(error);
+        }
+      })
+
+      this.massiveDelete = false;
+      this.showModalConfirmation = false;
+      this.modalTitle = "";
+
+      this.message =
+        "¡Se ha eliminado las acciones de mitigacion exitósamente!";
+
+      setTimeout(async () => {
+        await this.fetchAccionesMitigacion();
+        this.message = null;
+      }, 2000);
+    },
   },
   mounted() {
     (async () => {
       this.userInfoJson = await getUsuario();
+      if (this.userInfoJson.rol == rol.JEFE_DE_RIESGOS) {
+        this.canEdit = true;
+      } else 
+        this.canEdit = false;
       await this.fetchAnalista();
 
       if (!this.$route.params.tr_codigo) {
         try {
-          const response = await fetch(
-            `${BASE_URL}plantratamiento/count`,
-            {
-              method: "GET",
-              headers: new Headers({
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + localStorage.getItem("token"),
-              }),
-            }
-          );
+          const response = await fetch(`${BASE_URL}plantratamiento/count`, {
+            method: "GET",
+            headers: new Headers({
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+          });
 
           const number: number = await response.json();
           let zeros = "";
@@ -546,6 +747,22 @@ input[type="checkbox"] {
   top: 0;
   right: 0;
 }
+.far.fa-envelope {
+  position: relative;
+  margin-left: 10px;
+}
+.fa-envelope::after {
+  content: "";
+  z-index: 1000;
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: red;
+  border-radius: 50%;
+  right: -3px;
+  bottom: 9px;
+}
+
 @media only screen and (max-width: 1179px) {
   .dropdownSelect {
     left: 0px;
