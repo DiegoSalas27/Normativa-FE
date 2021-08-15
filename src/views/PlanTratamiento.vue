@@ -41,7 +41,7 @@
       <div class="grid-item">
         <h4>Código de tratamiento:</h4>
         <img src="../assets/images/llave.png" alt="codeva" class="imgIcon" />
-        <span v-if="($route.params.tr_codigo || !canEdit) && !update">{{ tratamientoInfoJson.codigo }}</span>
+        <span v-if="($route.params.tr_codigo && !canEdit) ||  (canEdit && !update)">{{ tratamientoInfoJson.codigo }}</span>
         <input
           v-if="(update || !$route.params.tr_codigo) && canEdit"
           type="text"
@@ -52,7 +52,7 @@
       <div class="grid-item">
         <h4>Código de evaluación:</h4>
         <img src="../assets/images/llave.png" alt="codeva" class="imgIcon" />
-        <span v-if="($route.params.tr_codigo || !canEdit) && !update">{{ codigoEvaluacion }}</span>
+        <span v-if="($route.params.tr_codigo && !canEdit) ||  (canEdit && !update)">{{ codigoEvaluacion }}</span>
         <input
           v-if="(update || !$route.params.tr_codigo) && canEdit"
           type="text"
@@ -90,7 +90,7 @@
       <div class="grid-item">
         <h4>Nombre del plan de tratamiento:</h4>
         <img src="../assets/images/listav.png" alt="codeva" class="imgIcon" />
-        <span v-if="($route.params.tr_codigo || !canEdit) && !update">{{ tratamientoInfoJson.nombre }}</span>
+        <span v-if="($route.params.tr_codigo && !canEdit) ||  (canEdit && !update)">{{ tratamientoInfoJson.nombre }}</span>
         <input
           v-if="(update || !$route.params.tr_codigo) && canEdit"
           type="text"
@@ -104,7 +104,7 @@
       <div class="grid-item">
         <h4>Responsable:</h4>
         <img src="../assets/images/user.png" alt="codeva" class="imgIcon" />
-        <span v-if="($route.params.tr_codigo || !canEdit) && !update">{{ analistaCalc() }}</span>
+        <span v-if="($route.params.tr_codigo && !canEdit) ||  (canEdit && !update)">{{ analistaCalc() }}</span>
         <select
           v-if="(update || !$route.params.tr_codigo) && canEdit"
           class="select"
@@ -141,7 +141,7 @@
     <section id="acciones-mitigacion" v-if="showAccionesMitigacion">
       <h4>Acciones de mitigación</h4>
       <br />
-      <div class="flex-row table-options">
+      <div v-if="update && canEdit" class="flex-row table-options">
         <div>
           <i class="fas fa-plus-circle" @click="goToTestSummary"></i
           >&nbsp;&nbsp;&nbsp;<span
@@ -150,7 +150,7 @@
             >Añadir nueva acción</span
           >
         </div>
-        <div v-if="update && canEdit">
+        <div>
           <button class="action-button table" @click="deleteMassive()">
             Eliminación massiva
           </button>
@@ -185,7 +185,7 @@
             </td>
             <td style="width: 60%; text-align: left">
               <div>
-                <span v-if="($route.params.tr_codigo || !canEdit) && !update" style="width: 90%">{{
+                <span v-if="($route.params.tr_codigo && !canEdit) ||  (canEdit && !update)" style="width: 90%">{{
                   accion.descripcion
                 }}</span>
                 <input
