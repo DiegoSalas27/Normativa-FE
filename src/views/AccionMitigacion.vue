@@ -179,6 +179,7 @@ export default defineComponent({
       }
     },
     calculateTimeFromNow(date: Date) {
+      moment.tz.setDefault("America/Lima");
       return moment(date).locale("es").fromNow();
     },
     handleError() {
@@ -244,7 +245,6 @@ export default defineComponent({
   },
   mounted() {
     (async () => {
-      moment.tz.setDefault("America/Lima");
       try {
         this.userInfoJson = await getUsuario();
         const response = await fetch(
