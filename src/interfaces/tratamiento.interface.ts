@@ -2,7 +2,7 @@ import { PruebaList } from './prueba.interface';
 export interface ITratamiento {
   tratamientoId?: string;
   evaluacionId: string;
-  usuarioId: string;
+  usuarioId?: string | null;
   nombre: string;
   codigo: string;
   fechaInicio?: any;

@@ -20,7 +20,7 @@
     :loading="loading"
   ></modal>
   <section id="main">
-    <h1>Registrar plan de tratamiento</h1>
+    <h1>{{ displayTitlePage }}</h1>
     <button
       :class="
         $route.params.tr_codigo ? 'action-button' : 'action-button blocked'
@@ -41,10 +41,10 @@
       <div class="grid-item">
         <h4>Código de tratamiento:</h4>
         <img src="../assets/images/llave.png" alt="codeva" class="imgIcon" />
-        <span v-if="($route.params.tr_codigo && !canEdit) ||  (canEdit && !update)">{{ tratamientoInfoJson.codigo }}</span>
+        <span v-if="($route.params.tr_codigo && !canEdit) ||  ($route.params.tr_codigo && canEdit && !update)">{{ tratamientoInfoJson.codigo }}</span>
         <input
           v-if="(update || !$route.params.tr_codigo) && canEdit"
-          type="text"
+          type="text" 
           disabled="true"
           :placeholder="tratamientoInfoJson.codigo"
         />
@@ -52,7 +52,7 @@
       <div class="grid-item">
         <h4>Código de evaluación:</h4>
         <img src="../assets/images/llave.png" alt="codeva" class="imgIcon" />
-        <span v-if="($route.params.tr_codigo && !canEdit) ||  (canEdit && !update)">{{ codigoEvaluacion }}</span>
+        <span v-if="($route.params.tr_codigo && !canEdit) ||  ($route.params.tr_codigo && canEdit && !update)">{{ codigoEvaluacion }}</span>
         <input
           v-if="(update || !$route.params.tr_codigo) && canEdit"
           type="text"
@@ -90,7 +90,7 @@
       <div class="grid-item">
         <h4>Nombre del plan de tratamiento:</h4>
         <img src="../assets/images/listav.png" alt="codeva" class="imgIcon" />
-        <span v-if="($route.params.tr_codigo && !canEdit) ||  (canEdit && !update)">{{ tratamientoInfoJson.nombre }}</span>
+        <span v-if="($route.params.tr_codigo && !canEdit) ||  ($route.params.tr_codigo && canEdit && !update)">{{ tratamientoInfoJson.nombre }}</span>
         <input
           v-if="(update || !$route.params.tr_codigo) && canEdit"
           type="text"
@@ -104,7 +104,7 @@
       <div class="grid-item">
         <h4>Responsable:</h4>
         <img src="../assets/images/user.png" alt="codeva" class="imgIcon" />
-        <span v-if="($route.params.tr_codigo && !canEdit) ||  (canEdit && !update)">{{ analistaCalc() }}</span>
+        <span v-if="($route.params.tr_codigo && !canEdit) ||  ($route.params.tr_codigo && canEdit && !update)">{{ analistaCalc() }}</span>
         <select
           v-if="(update || !$route.params.tr_codigo) && canEdit"
           class="select"
@@ -125,9 +125,6 @@
             }}
           </option>
         </select>
-        <p class="error" v-if="validationForm.usuarioId">
-          {{ validationForm.usuarioId }}
-        </p>
       </div>
       <div class="grid-item" style="margin-top: 50px">
         <h4>
@@ -296,6 +293,16 @@ export default defineComponent({
       }
       return "Registrar";
     },
+    displayTitlePage(): string {
+      if (!this.$route.params.tr_codigo) {
+        return "Registrar plan de tratamiento"
+      } else{
+        if (this.update) {
+          return "Editar plan de tratamiento";
+        }
+        return "Visualizar plan de tratamiento";
+      }
+    }
   },
   data() {
     return {
@@ -427,13 +434,17 @@ export default defineComponent({
       }
 
       this.validationForm = {} as ITratamiento;
-      const validateArray = ["evaluacionId", "usuarioId", "nombre"];
+      const validateArray = ["evaluacionId", "nombre"];
       const jsonToValidate = propertiesSubSet(
         validateArray,
         this.tratamientoInfoJson
       );
 
       let isValid = validateNotEmpty(jsonToValidate, this.validationForm);
+
+      console.log(isValid);
+      console.log(this.tratamientoInfoJson);
+      debugger
 
       if (isValid) {
         if (!this.$route.params.tr_codigo) {

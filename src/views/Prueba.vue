@@ -447,7 +447,9 @@ export default defineComponent({
       });
     },
     showSummary(): void {
-      console.log(1);
+      this.$router.push(
+        `/lista-verificacion/${this.selectedListaVerificacion.codigo}/prueba/${this.$route.params.pr_codigo}/resumen`
+      )
     },
     submit(): void {
       // cambiar visivilidad a la prueba

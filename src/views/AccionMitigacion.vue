@@ -73,7 +73,7 @@
       />
       &nbsp;&nbsp;
       <button class="action-button blocked" @click="sendMessage">Enviar</button>
-       <div class="info-field" style="display: inline-block; float: right;">
+       <div class="info-field">
         <span>Estado</span>&nbsp;&nbsp;
         <select
           class="select"
@@ -107,7 +107,7 @@
             <p>{{ comentario.descripcion }}</p>
           </div>
           <p>{{ calculateTimeFromNow(comentario.fechaCreacion) }}</p>
-          <p v-if="index == 0" style="color: #FFEA00">Último mensaje</p>
+          <p v-if="index == 0" style="color: #7aadff">Último mensaje</p>
         </div>
       </div>
     </div>
@@ -115,7 +115,7 @@
 </template>
 
 <script lang="ts">
-import moment from "moment";
+import moment from 'moment-timezone';
 import NavBar from "@/components/layout/NavBar.vue";
 import { defineComponent } from "@vue/runtime-core";
 import { BASE_URL, estadoAccionMitigacion } from "../common/constants";
@@ -244,6 +244,7 @@ export default defineComponent({
   },
   mounted() {
     (async () => {
+      moment.tz.setDefault("America/Lima");
       try {
         this.userInfoJson = await getUsuario();
         const response = await fetch(
@@ -354,5 +355,10 @@ textarea {
   margin-top: 10px;
   border-radius: 5px;
   margin-left: 10px;
+}
+.info-field {
+  display: inline-block; 
+  position: relative;
+  left: 100px;
 }
 </style>

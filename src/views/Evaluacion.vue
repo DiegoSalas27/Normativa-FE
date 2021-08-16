@@ -123,9 +123,9 @@
             class="link"
             @click="startQuiz()"
             :disabled="
-              (!selectedObra.obraId ||
+              ((!selectedObra.obraId ||
                 !selectedListaVerificacion.listaVerificacionId) &&
-              !$route.params.id
+              !$route.params.id) || blockRealizarPrueba
             "
           >
             Realizar prueba
@@ -229,6 +229,7 @@ export default defineComponent({
       message: null as unknown as string | null,
       loading: false,
       error: false,
+      blockRealizarPrueba: false,
     };
   },
   methods: {
@@ -523,6 +524,8 @@ export default defineComponent({
             codigo: prueba.codigo,
           });
         });
+
+        this.blockRealizarPrueba = this.pruebas.listaRecords.some(pr => pr.estado == "Pendiente");
 
         this.rows = this.pruebas.listaRecords.length;
 
