@@ -66,6 +66,11 @@ const routes: Array<RouteRecordRaw> = [
         props: true,
         component: () => import("../views/UserProfile.vue"),
       },
+      {
+        path: ' ',
+        name: 'TableUser',
+        component: () => import("../views/TableUser.vue"),
+      },
     ]
   },
   {
@@ -89,11 +94,18 @@ const routes: Array<RouteRecordRaw> = [
     name: 'PruebaResultado',
     component: () => import("../views/Prueba.vue"),
   },
+
   {
     path: '/plan-tratamiento/:tr_codigo?',
     name: 'PlanTratamiento',
     component: () => import("../views/PlanTratamiento.vue"),
   },
+  {
+    path: '/plan-tratamiento2/:tr_codigo?',
+    name: 'PlanTratamiento2',
+    component: () => import("../views/PlanTratamiento2.vue"),
+  },
+
   {
     path: '/lista-verificacion/:lv_codigo/prueba/:pr_codigo/resumen',
     name: 'PruebaResumen',
@@ -103,6 +115,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/accion-mitigacion/edicion/:acm_id',
     name: 'AccionMitigacion',
     component: () => import("../views/AccionMitigacion.vue"),
+  },
+  {
+    path: '/resultado-evaluaciones',
+    name: 'ResutadoEvaluaciones',
+    component: () => import("../views/TableUser.vue"),
   },
   {
     path: '/:notFound(.*)',

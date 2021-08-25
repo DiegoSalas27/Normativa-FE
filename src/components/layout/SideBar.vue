@@ -13,9 +13,14 @@ import SideBar from '@/components/layout/SideBar.vue';
         <i :class="expand ? 'fas fa-user' : 'fas fa-user fa-lg show'"></i
         ><span v-if="expand">Mi perfil</span>
       </div>
+
+      
       <!-- <div>
         <span>{{ user.nombres }} {{ user.apellidos }}</span>
       </div> -->
+
+ 
+
       <div>
         <i :class="expand ? 'far fa-envelope' : 'far fa-envelope fa-lg show'"></i>
         <span v-if="expand">{{ user?.email }}</span>

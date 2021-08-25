@@ -35,6 +35,76 @@ export const pieChartLabels = [
   "Team E",
 ];
 
+export const lineChartSeries = [
+  {
+    name: "High - 2013",
+    data: [12, 29, 33, 36, 32, 32, 33]
+  },
+  {
+    name: "Low - 2013",
+    data: [28, 11, 14, 18, 17, 13, 13]
+  }
+];
+
+export const treeMapChartSeries = [
+  {
+    data: [
+      {
+        x: 'New Delhi',
+        y: 218
+      },
+      {
+        x: 'Kolkata',
+        y: 149
+      },
+      {
+        x: 'Mumbai',
+        y: 184
+      },
+      {
+        x: 'Ahmedabad',
+        y: 55
+      },
+      {
+        x: 'Bangaluru',
+        y: 84
+      },
+      {
+        x: 'Pune',
+        y: 31
+      },
+      {
+        x: 'Chennai',
+        y: 70
+      },
+      {
+        x: 'Jaipur',
+        y: 30
+      },
+      {
+        x: 'Surat',
+        y: 44
+      },
+      {
+        x: 'Hyderabad',
+        y: 68
+      },
+      {
+        x: 'Lucknow',
+        y: 28
+      },
+      {
+        x: 'Indore',
+        y: 19
+      },
+      {
+        x: 'Kanpur',
+        y: 29
+      }
+    ]
+  }
+];
+
 export const semiDonutSeries = [62.99, 37.01];
 
 export const stackedBarSeries = [{
@@ -232,4 +302,21 @@ export const requerimientos = [
     descripcion: `Se garantiza que las sugerencias de los trabajadores o de sus representantes sobre seguridad y salud en el trabajo se reciban y atiendan en forma oportuna y adecuada`,
     recomendacion: null,
   },
+
 ];
+
+export const DataSourcetratamiento = [
+  {codigo: 'TR001', fechaInicio: '05/06/2021',fechaFin:'11/06/2021', estado:'Solucionado',evaluacion:'EV001-Departamento Bohem',responsable:'Luis Quispe'},
+	{codigo: 'TR002', fechaInicio: '01/01/2021',fechaFin:'07/01/2021', estado:'Asignado',evaluacion:'EV002-Departamento Plaza 27',responsable:'Marcelo Lopez'}
+];
+
+export const DataSourceEvaluaciones = [
+{codigo: 'EV001', obra: 'OB001-Departamento Bohem', nivelRiesgo: 'Bajo', porcentajeCumplimiento: '30%', duracion: '12'},
+{codigo: 'EV002', obra: 'OB002-Departamento Plaza 27', nivelRiesgo: 'Medio', porcentajeCumplimiento: '60%', duracion: '24'}
+];
+
+export const DataSourceRiesgo = [
+{normativa: '29783', codigoEvaluacion: 'EV001', evaluacion: 'Evaluacion de elementos de seguridad', nivelRiesgo: 'Medio', fechaCreacion: '15/05/2021',},
+{normativa: 'ISO 45001', codigoEvaluacion: 'EV002', evaluacion: 'Evaluacion de elementos peligrosos', nivelRiesgo: 'Bajo', fechaCreacion: '25/05/2021',}
+];
+

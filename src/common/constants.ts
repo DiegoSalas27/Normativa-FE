@@ -57,6 +57,95 @@ export const columnsRolList: IColumnsGrid[] = [
   }
 ]
 
+export const columnsPlanesTratamientoList: IColumnsGrid[] = [
+  {
+    field: 'codigo',
+    title: 'Código',
+    type: 'text'
+  },
+  {
+    field: 'fechaInicio',
+    title: 'Fecha de Inicio',
+    type: 'text'
+  },
+  {
+    field: 'fechaFin',
+    title: 'Fecha de fin',
+    type: 'text'
+  },
+  {
+    field: 'estado',
+    title: 'Estado',
+    type: 'text'
+  },
+  {
+    field: 'evaluacion',
+    title: 'Evaluación',
+    type: 'text'
+  },
+  {
+    field: 'responsable',
+    title: 'Responsable',
+    type: 'text'
+  },
+] 
+
+export const columnsRiesgoNormativaList: IColumnsGrid[] = [
+  {
+    field: 'normativa',
+    title: 'Normativa',
+    type: 'text'
+  },
+  {
+    field: 'codigoEvaluacion',
+    title: 'Código de Evaluación',
+    type: 'text'
+  },
+  {
+    field: 'evaluacion',
+    title: 'Nombre de Evaluación',
+    type: 'text'
+  },
+  {
+    field: 'nivelRiesgo',
+    title: 'Nivel de Riesgo',
+    type: 'text'
+  },
+  {
+    field: 'fechaCreacion',
+    title: 'Fecha de Creación',
+    type: 'text'
+  },
+]
+
+export const columnsEvaluacionesList: IColumnsGrid[] = [
+  {
+    field: 'codigo',
+    title: 'Código',
+    type: 'text'
+  },
+  {
+    field: 'obra',
+    title: 'Obra',
+    type: 'text'
+  },
+  {
+    field: 'nivelRiesgo',
+    title: 'Nivel de Riesgo',
+    type: 'text'
+  },
+  {
+    field: 'porcentajeCumplimiento',
+    title: 'Porcentaje de Cumplimiento',
+    type: 'text'
+  },
+  {
+    field: 'duracion',
+    title: 'Duración',
+    type: 'text'
+  },
+]
+
 export const columnsPruebaLista: IColumnsGrid[] = [
   {
     field: 'id',
@@ -131,5 +220,6 @@ export const estadoAccionMitigacion = [
   'Terminado'
 ]
 
-export const BASE_URL = "https://sistemaexperto.azurewebsites.net/api/";
+// export const BASE_URL = "https://sistemaexperto.azurewebsites.net/api/";
 // export const BASE_URL = "http://localhost:5000/api/";
+export const BASE_URL = "https://localhost:44357/api/";
