@@ -3,6 +3,13 @@
     :name="userInfoJson?.nombres"
     :lastName="userInfoJson?.apellidos"
   ></nav-bar>
+  <modal
+    :show="!!loading"
+    :title="message"
+    @close="() => {}"
+    :error="error"
+    :loading="loading"
+  ></modal>
   <section class="quiz">
     <h3 class="back" @click="backToEvluacion">
       <i class="fas fa-chevron-left"></i> Salir del quiz
@@ -142,29 +149,11 @@
         v-if="evidenciaRequerimiento[stepIndex].respuestaItem != 'null'"
       >
         <p>Archivo adjunto:</p>
-        <span
-          style="
-            cursor: pointer;
-            margin-top: -30px;
-            margin-left: 70px !important;
-          "
-        >
-          <!-- <p class="link">Adjutar archivo</p> -->
-          <q-uploader
-            :url="urlUpload"
-            label="Archivo"
-            flat
-            bordered
-            auto-upload
-            color="red">
-            <template>
-              <q-list separator>
-
-              </q-list>
-            </template>
-          </q-uploader>
-          &nbsp;&nbsp; <i class="fas fa-paperclip"></i
-        ></span>
+        <div class="link">
+          <label for="files" class="btn" style="cursor: pointer;">{{ uploadText }}</label>
+          <input id="files" style="visibility:hidden;" type="file" @change="fileChange($event.target.files)">
+          <i class="fas fa-paperclip"></i>
+        </div>
       </div>
     </section>
     <button
@@ -246,30 +235,34 @@
 </template>
 
 <script lang="ts">
+import Modal from "../components/ui/Modal.vue";
 import NavBar from "@/components/layout/NavBar.vue";
 import { defineComponent } from "@vue/runtime-core";
-import { BASE_URL } from "../common/constants";
-import { handleErrors } from "../common/utils";
 import { ICriterio } from "../interfaces/criterio.interface";
-import {
-  IEvaluacion,
-  IEvaluacionDetalle
-} from "../interfaces/evaluacion.interface";
-import { IEvidencia } from "../interfaces/evidencia.interface";
-import { IEvidenciaRequerimiento } from "../interfaces/evidenciaRequerimiento.interface";
 import { IRequerimiento } from "../interfaces/listaRequerimiento.interface";
 import { IListaVerificacion } from "../interfaces/listaVerificacion.interface";
-import { IPrueba, IPruebaResultados } from "../interfaces/prueba.interface";
 import { IUser } from "../interfaces/user.interface";
 import {
   emptyEvidencia,
   emptyEvidenciaRequerimiento,
-  emptyUser
+  emptyUser,
 } from "../utils/initializer";
+import { IEvidenciaRequerimiento } from "../interfaces/evidenciaRequerimiento.interface";
+import { IEvidencia } from "../interfaces/evidencia.interface";
+import { uuidv4 } from "../utils/guid";
+import { handleErrors } from "../common/utils";
+import { IPrueba, IPruebaResultados } from "../interfaces/prueba.interface";
+import { BASE_URL, urlConstants } from "../common/constants";
+import { requerimientos } from "../common/mockdata";
+import {
+  IEvaluacion,
+  IEvaluacionDetalle,
+} from "../interfaces/evaluacion.interface";
 
 export default defineComponent({
   components: {
     NavBar,
+    Modal,
   },
   computed: {
     selectedListaVerificacion(): IListaVerificacion {
@@ -304,7 +297,8 @@ export default defineComponent({
       error: false,
       message: "",
       evaluacionDetalle: {} as Partial<IEvaluacionDetalle>,
-      urlUpload: '/document/upload',
+      files: new FormData(),
+      uploadText: "Adjuntar archivo",
     };
   },
   methods: {
@@ -357,10 +351,6 @@ export default defineComponent({
 
         await handleErrors(response);
 
-        this.loading = false;
-
-        this.error = false;
-
         this.pruebaResultados = await response.json();
       } catch (error) {
         this.error = true;
@@ -405,17 +395,9 @@ export default defineComponent({
 
         const evidencia = (await response.json()) as IEvidencia;
 
-        // debugger
-        // console.log("Evidencia", evidencia)
+        evidencia.evidenciaId && await this.upload(evidencia.evidenciaId);
 
         this.evidencia[this.stepIndex].evidenciaId = evidencia.evidenciaId;
-
-        // debugger
-        // console.log("Evidencia Copia Lista", this.evidencia[this.stepIndex])
-
-        this.loading = false;
-
-        this.error = false;
       } catch (error) {
         this.error = true;
         console.log(error);
@@ -424,11 +406,13 @@ export default defineComponent({
       }
     },
     async next(): Promise<void> {
+      this.loading = true;
       await this.registrarEvidenciaRequerimiento();
       if (this.end) {
         this.stepIndex = 0;
         await this.obtenerPruebaResults();
         this.showResultado = true;
+        this.loading = false;
         this.$router.push(
           `/evaluacion/${this.evaluacion.codigo}/prueba/${this.$route.params.pr_codigo}/resumen`
         );
@@ -443,6 +427,7 @@ export default defineComponent({
         if (this.requerimientos[this.stepIndex + 1]) {
           this.stepIndex += 1;
         } else {
+          this.loading = false;
           return;
         }
 
@@ -453,6 +438,7 @@ export default defineComponent({
           query: { req: this.questionNumber + 1 },
         });
       }
+      this.loading = false;
     },
     previous(): void {
       if (this.requerimientos[this.stepIndex - 1]) {
@@ -490,6 +476,28 @@ export default defineComponent({
 
         this.$router.push("/evaluacion/" + this.evaluacion.codigo);
       })();
+    },
+    fileChange(fileList: any) {
+      this.files = new FormData();
+      this.files.append("file", fileList[0], fileList[0].name);
+      this.uploadText = fileList[0].name;
+    },
+    async upload(evidenciaId: string) {
+      try {
+        const files = this.files;
+        await fetch(`${BASE_URL}evidencia/upload/${evidenciaId}`, {
+          method: "POST",
+          headers: new Headers({
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          }),
+          body: files
+        });
+
+        this.files = new FormData();
+        this.uploadText = "Adjuntar archivo";
+      } catch (err) {
+        console.log(err);
+      }
     },
   },
   mounted() {
@@ -794,9 +802,15 @@ p {
   margin-left: 10px;
 }
 .link {
+  margin-top: -25px;
+  margin-left: 210px !important;
   text-decoration: underline;
   cursor: pointer;
   font-weight: 100 !important;
+}
+.link #files {
+  width: 0px;
+  margin-left: 0px;
 }
 .radio-form {
   display: inline-flex;
