@@ -4,7 +4,9 @@
     :lastName="userInfoJson?.apellidos"
   ></nav-bar>
   <section class="quiz">
-    <h3 class="back" @click="backToEvluacion"><i class="fas fa-chevron-left"></i> Salir del quiz</h3>
+    <h3 class="back" @click="backToEvluacion">
+      <i class="fas fa-chevron-left"></i> Salir del quiz
+    </h3>
     <h1>Quiz</h1>
     <div v-if="!start" class="form">
       <h3 class="form-header">
@@ -140,7 +142,29 @@
         v-if="evidenciaRequerimiento[stepIndex].respuestaItem != 'null'"
       >
         <p>Archivo adjunto:</p>
-        <p class="link">ppt.doc</p>
+        <span
+          style="
+            cursor: pointer;
+            margin-top: -30px;
+            margin-left: 70px !important;
+          "
+        >
+          <!-- <p class="link">Adjutar archivo</p> -->
+          <q-uploader
+            :url="urlUpload"
+            label="Archivo"
+            flat
+            bordered
+            auto-upload
+            color="red">
+            <template>
+              <q-list separator>
+
+              </q-list>
+            </template>
+          </q-uploader>
+          &nbsp;&nbsp; <i class="fas fa-paperclip"></i
+        ></span>
       </div>
     </section>
     <button
@@ -224,26 +248,24 @@
 <script lang="ts">
 import NavBar from "@/components/layout/NavBar.vue";
 import { defineComponent } from "@vue/runtime-core";
+import { BASE_URL } from "../common/constants";
+import { handleErrors } from "../common/utils";
 import { ICriterio } from "../interfaces/criterio.interface";
+import {
+  IEvaluacion,
+  IEvaluacionDetalle
+} from "../interfaces/evaluacion.interface";
+import { IEvidencia } from "../interfaces/evidencia.interface";
+import { IEvidenciaRequerimiento } from "../interfaces/evidenciaRequerimiento.interface";
 import { IRequerimiento } from "../interfaces/listaRequerimiento.interface";
 import { IListaVerificacion } from "../interfaces/listaVerificacion.interface";
+import { IPrueba, IPruebaResultados } from "../interfaces/prueba.interface";
 import { IUser } from "../interfaces/user.interface";
 import {
   emptyEvidencia,
   emptyEvidenciaRequerimiento,
-  emptyUser,
+  emptyUser
 } from "../utils/initializer";
-import { IEvidenciaRequerimiento } from "../interfaces/evidenciaRequerimiento.interface";
-import { IEvidencia } from "../interfaces/evidencia.interface";
-import { uuidv4 } from "../utils/guid";
-import { handleErrors } from "../common/utils";
-import { IPrueba, IPruebaResultados } from "../interfaces/prueba.interface";
-import { BASE_URL, urlConstants } from "../common/constants";
-import { requerimientos } from "../common/mockdata";
-import {
-  IEvaluacion,
-  IEvaluacionDetalle,
-} from "../interfaces/evaluacion.interface";
 
 export default defineComponent({
   components: {
@@ -282,6 +304,7 @@ export default defineComponent({
       error: false,
       message: "",
       evaluacionDetalle: {} as Partial<IEvaluacionDetalle>,
+      urlUpload: '/document/upload',
     };
   },
   methods: {
@@ -369,17 +392,14 @@ export default defineComponent({
           ),
         };
 
-        const response = await fetch(
-          `${BASE_URL}evidenciarequerimiento`,
-          {
-            method: "POST",
-            headers: new Headers({
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + localStorage.getItem("token"),
-            }),
-            body: JSON.stringify(body),
-          }
-        );
+        const response = await fetch(`${BASE_URL}evidenciarequerimiento`, {
+          method: "POST",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          }),
+          body: JSON.stringify(body),
+        });
 
         await handleErrors(response);
 
@@ -409,7 +429,9 @@ export default defineComponent({
         this.stepIndex = 0;
         await this.obtenerPruebaResults();
         this.showResultado = true;
-        this.$router.push(`/evaluacion/${this.evaluacion.codigo}/prueba/${this.$route.params.pr_codigo}/resumen`);
+        this.$router.push(
+          `/evaluacion/${this.evaluacion.codigo}/prueba/${this.$route.params.pr_codigo}/resumen`
+        );
       } else {
         this.evidencia.push(emptyEvidencia());
         this.evidenciaRequerimiento.push(emptyEvidenciaRequerimiento());
@@ -449,22 +471,19 @@ export default defineComponent({
     showSummary(): void {
       this.$router.push(
         `/lista-verificacion/${this.selectedListaVerificacion.codigo}/prueba/${this.$route.params.pr_codigo}/resumen`
-      )
+      );
     },
     submit(): void {
       // cambiar visivilidad a la prueba
       (async () => {
         try {
-          await fetch(
-            `${BASE_URL}prueba/activar/${this.prueba.codigo}`,
-            {
-              method: "PUT",
-              headers: new Headers({
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + localStorage.getItem("token"),
-              }),
-            }
-          );
+          await fetch(`${BASE_URL}prueba/activar/${this.prueba.codigo}`, {
+            method: "PUT",
+            headers: new Headers({
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+          });
         } catch (err) {
           console.log(err);
         }
@@ -562,16 +581,13 @@ export default defineComponent({
 
       if (this.$route.params.pr_codigo == undefined) {
         try {
-          const response = await fetch(
-            `${BASE_URL}prueba/count`,
-            {
-              method: "GET",
-              headers: new Headers({
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + localStorage.getItem("token"),
-              }),
-            }
-          );
+          const response = await fetch(`${BASE_URL}prueba/count`, {
+            method: "GET",
+            headers: new Headers({
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+          });
 
           const number: number = await response.json();
           let zeros = "";
@@ -778,8 +794,6 @@ p {
   margin-left: 10px;
 }
 .link {
-  margin-top: -30px;
-  margin-left: 82px !important;
   text-decoration: underline;
   cursor: pointer;
   font-weight: 100 !important;
