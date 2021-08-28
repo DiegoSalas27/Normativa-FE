@@ -17,6 +17,7 @@
   ></modal>
   <section id="main" :class="{expand: expand}">
     <div>
+      
       <h2>ADMINISTRACIÓN DE {{ calculateUser() }}</h2>
       <button class="action-button massive" @click="deleteMassive()">
         Eliminación masiva

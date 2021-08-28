@@ -21,14 +21,16 @@
   ></modal>
   <section id="main">
     <h1>{{ displayTitlePage }}</h1>
-    <button
+ <!--   <button
       :class="
         $route.params.tr_codigo ? 'action-button' : 'action-button blocked'
       "
       @click="register()"
     >
       {{ displayButtonText }}
+
     </button>
+          -->
     <button
       v-if="tratamientoInfoJson.porcentajeAvance == 100"
       class="action-button"
@@ -80,15 +82,7 @@
 <!-- para volver label inneditable-->
        <span v-if="($route.params.tr_codigo && !canEdit) ||  ($route.params.tr_codigo && canEdit && !update)">{{codigoPrueba}}</span>
 <!-- para volver label inneditable-->
-        <select class="select" v-model="codigoPrueba" name="prueba">
-          <option
-            v-for="prueba in pruebas"
-            :key="prueba.pruebaId"
-            :value="prueba.codigo"
-          >
-            {{ prueba.codigo }}
-          </option>
-        </select>
+
 
       </div>
       <div class="grid-item">
@@ -299,7 +293,7 @@ export default defineComponent({
     },
     displayTitlePage(): string {
       if (!this.$route.params.tr_codigo) {
-        return "Registrar plan de tratamiento"
+        return "Visualizar plan de tratamiento"
       } else{
         if (this.update) {
           return "Editar plan de tratamiento";
@@ -467,7 +461,7 @@ export default defineComponent({
             const tratamientoCodigo = await response.json();
 
             this.$router.replace(
-              `/plan-tratamiento/${tratamientoCodigo.codigo}`
+              `/plan-tratamiento2/${tratamientoCodigo.codigo}`
             );
 
             this.showAccionesMitigacion = true;

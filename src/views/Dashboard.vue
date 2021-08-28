@@ -12,7 +12,7 @@ import NavBar from "@/components/layout/NavBar.vue";
 import SideBar from "@/components/layout/SideBar.vue";
 import { getUsuario } from "@/services/authService";
 import { defineComponent } from "@vue/runtime-core";
-import { IUser } from "../interfaces/user.interface";
+import { IUser } from "../interfaces/user.interface"; 
 import { emptyUser } from "../utils/initializer";
 
 export default defineComponent({

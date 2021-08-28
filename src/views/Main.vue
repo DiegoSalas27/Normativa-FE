@@ -1,6 +1,7 @@
 <template>
   <section id="main">
     <h1>PANEL PRINCIPAL</h1>
+
     <div v-if="userInfoJson?.rol === 'Administrador'">
       <div class="gridCards adminGrid">
         <div
@@ -14,6 +15,7 @@
         </div>
       </div>
     </div>
+
     <div v-show="userInfoJson?.rol === 'Analistas'">
       <div class="gridCards">
         <div
@@ -38,28 +40,30 @@
         </div>
       </div>
     </div>
+
     <div v-show="userInfoJson?.rol === 'Jefe de riesgos'">
       <div class="flex-col">
         <div class="flex-row">
           <div>
-            <button class="action-button" @click="generarPlan">Generar Plan</button>
+            <button class="action-button" @click="generarPlan">
+              Generar Plan
+            </button>
             <div class="card stat donut">
               <div><strong>PORCENTAJE DE CUMPLIMIENTO</strong></div>
               <div ref="semiDonut" id="chart"></div>
             </div>
           </div>
+
           <div>
             <button class="action-button">Visualizar informes</button>
-            <div
-              class="card stat donut"
-              style="height: 218.5px;"
-            >
+            <div class="card stat donut" style="height: 218.5px">
               <div><strong>EVALUACIONES REALIZADAS</strong></div>
               <br />
-              <h1 style="fontSize: 45px">{{ numberEvaluaciones }}</h1>
+              <h1 style="fontsize: 45px">{{ numberEvaluaciones }}</h1>
             </div>
           </div>
         </div>
+
         <br />
         <div class="card stat restulado-eva">
           <p><strong> PLANES DE TRATAMIENTO</strong></p>
@@ -69,6 +73,50 @@
         <div class="card stat restulado-eva">
           <p><strong>RESULTADOS DE EVALUACIONES</strong></p>
           <div ref="barChartJefe" id="chart"></div>
+        </div>
+      </div>
+    </div>
+
+    <div v-show="userInfoJson?.rol === null">
+      <div class="container">
+        <!-- TODO: Mycard -->
+        <div class="row">
+          <div class="col">
+            <div class="mycard count">
+              <div style="margin-bottom: 10px"></div>
+              <button class="btn-table" @click="goTo('TableUser', { type: 'Evaluacion' })">EVALUACIONES REALIZADAS</button>
+              <p style="font-size: 35px; font-weight: bold">
+                {{ numberEvaluaciones }}
+              </p>
+            </div>
+            <div class="mycard mydonut">
+              <div><strong>PORCENTAJE DE CUMPLIMIENTO</strong></div>
+              <div class="donut-container" ref="semiDonut" id="chart"></div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="mycard pie">
+              <div style="margin-bottom: 10px">
+                <strong>PORCENTAJE DE CUMPLIMIENTO POR OBRAS</strong> 
+              </div>
+              <div ref="treeMapChart" id="chart"></div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="mycard line">
+              <button class="btn-table" @click="goTo('TableUser', { type: 'RiesgoNormativa' })">NIVEL DE RIESGO POR NORMATIVA</button>
+              <div ref="lineChart" id="chart"></div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="mycard pie">
+              <button class="btn-table" @click="goTo('TableUser', { type: 'PlanesTratamiento' })">PLANES DE TRATAMIENTO</button>
+              <!-- <i @click="goToList('PlanesTratamiento')">icon</i> -->
+              <div ref="pieChart" id="chart"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -90,8 +138,12 @@ import {
   configurePieChartOptions,
   configureSemiDonutOptions,
   configureStackBarChartOptions,
+  configureLineChartOptions,
+  configureTreeMapChartOptions,
 } from "../common/graphics";
 import {
+  lineChartSeries,
+  treeMapChartSeries,
   pieChartLabels,
   pieChartSeries,
   semiDonutSeries,
@@ -109,12 +161,15 @@ export default defineComponent({
     return {
       rolUserActions: [] as any,
       userInfoJson: emptyUser() as IUser,
-      numberEvaluaciones: 0
+      numberEvaluaciones: 3000,
     };
   },
   methods: {
     goToList(url: string): void {
       this.$router.push({ name: url });
+    },
+    goTo(url: string, params: any ): void {
+      this.$router.push({ name: url, params: params });
     },
     calculateDashBoard() {
       switch (this.userInfoJson.rol) {
@@ -128,8 +183,9 @@ export default defineComponent({
       }
     },
     generarPlan() {
-      this.$router.push('/plan-tratamiento');
-    }
+      this.$router.push("/plan-tratamiento");
+
+    },
   },
   mounted() {
     (async () => {
@@ -139,6 +195,7 @@ export default defineComponent({
         this.calculateDashBoard();
       } catch (err) {
         console.log(err);
+        //console.log("Impresion del rol sin api" + this.userInfoJson.rol);
       }
 
       const optionsbarChart = configureBarChartOptions(
@@ -158,6 +215,9 @@ export default defineComponent({
         pieChartLabels
       );
 
+      const optionsLineChart = configureLineChartOptions(lineChartSeries);
+      const optionsTreeMapChart = configureTreeMapChartOptions(treeMapChartSeries);
+
       const optionsStackedBar = configureStackBarChartOptions(
         stackedBarSeries,
         350,
@@ -172,13 +232,32 @@ export default defineComponent({
       }
 
       if (this.$refs.barChartJefe) {
-        const barChart = new ApexCharts(this.$refs.barChartJefe, optionsbarChart);
+        const barChart = new ApexCharts(
+          this.$refs.barChartJefe,
+          optionsbarChart
+        );
         barChart.render();
       }
 
       if (this.$refs.pieChart) {
         const pieChart = new ApexCharts(this.$refs.pieChart, optionsPieChart);
         pieChart.render();
+      }
+
+      if (this.$refs.lineChart) {
+        const lineChart = new ApexCharts(
+          this.$refs.lineChart,
+          optionsLineChart
+        );
+        lineChart.render();
+      }
+      
+      if (this.$refs.treeMapChart) {
+        const treeMapChart = new ApexCharts(
+          this.$refs.treeMapChart,
+          optionsTreeMapChart
+        );
+        treeMapChart.render();
       }
 
       if (this.$refs.semiDonut) {
@@ -197,18 +276,15 @@ export default defineComponent({
         stackedBar.render();
       }
 
-      if(this.userInfoJson.rol === 'Jefe de riesgos') {
+      if (this.userInfoJson.rol === "Jefe de riesgos") {
         try {
-          const response = await fetch(
-            `${BASE_URL}evaluacion/count`,
-            {
-              method: "GET",
-              headers: new Headers({
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + localStorage.getItem("token"),
-              }),
-            }
-          );
+          const response = await fetch(`${BASE_URL}evaluacion/count`, {
+            method: "GET",
+            headers: new Headers({
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+          });
 
           this.numberEvaluaciones = await response.json();
         } catch (err) {
@@ -268,20 +344,20 @@ h1 {
   cursor: pointer;
   border: 1px solid var(--placeholder);
   border-radius: 12px;
-  width: 200px;
-  margin: auto;
+  width: 100px;
+  margin: 10px;
   padding: 20px;
   box-shadow: 0 2px 8px var(--box-shadow);
   transition: all 0.2s linear;
 }
 
 .card.stat {
-  min-width: 750px;
+  min-width: 250px;
 }
 
 .card.stat.donut {
   margin-top: 20px;
-  min-width: 330px;
+  min-width: 250px;
 }
 
 .restulado-eva {
@@ -300,5 +376,61 @@ h1 {
   margin: 35px auto;
   display: flex;
   justify-content: center;
+}
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px;
+}
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.col {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 10px;
+}
+.mycard {
+  width: 85%;
+  height: 200px;
+  margin: 10px;
+  padding: 10px;
+
+  cursor: pointer;
+  border: 1px solid var(--placeholder);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px var(--box-shadow);
+  transition: all 0.2s linear;
+}
+.mydonut {
+  height: 280px;
+}
+.donut-container {
+  width: 400px;
+}
+.count {
+  height: 100px;
+}
+.pie {
+  height: 420px;
+}
+.line {
+  height: 420px;
+}
+
+.btn-table {
+  margin-top: 10px;
+  padding: 5px 60px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+.btn-table:hover {
+  color: #fff;
 }
 </style>

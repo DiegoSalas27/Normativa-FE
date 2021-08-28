@@ -151,7 +151,7 @@
         </div>
       </div>
       <div>
-        <img src="../assets/images/obra.png" alt="obra" />
+        <img src="../assets/images/obra.png" alt="obra" />  
       </div>
     </div>
   </section>
