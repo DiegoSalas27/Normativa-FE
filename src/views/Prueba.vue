@@ -129,30 +129,108 @@
         <p>Evidencia:</p>
         <label for="nuevo" style="margin-left: 122px">Nueva</label>
         <label class="switch">
-          <input type="checkbox" name="nuevo" />
+          <input
+            type="checkbox"
+            id="checkbox"
+            name="nuevo"
+            v-model="nuevaEvidencia"
+          />
           <span class="slider round"></span>
         </label>
       </div>
-      <div
-        class="form-control"
-        v-if="evidenciaRequerimiento[stepIndex].respuestaItem != 'null'"
-      >
-        <p>Nombre del Documento:</p>
-        <input
-          style="margin-left: 20px; width: 300px"
-          type="text"
-          v-model="evidencia[stepIndex].nombre"
-        />
+      <div v-if="nuevaEvidencia">
+        <div
+          class="form-control"
+          v-if="evidenciaRequerimiento[stepIndex].respuestaItem != 'null'"
+        >
+          <p>Nombre del Documento:</p>
+          <input
+            style="margin-left: 20px; width: 300px"
+            type="text"
+            v-model="evidencia[stepIndex].nombre"
+          />
+        </div>
+        <div
+          class="form-control"
+          v-if="evidenciaRequerimiento[stepIndex].respuestaItem != 'null'"
+        >
+          <p>Archivo adjunto:</p>
+          <div class="link">
+            <label for="files" class="btn" style="cursor: pointer">{{
+              uploadText
+            }}</label>
+            <input
+              id="files"
+              style="visibility: hidden"
+              type="file"
+              @change="fileChange($event.target.files)"
+            />
+            <i class="fas fa-paperclip"></i>
+          </div>
+        </div>
       </div>
-      <div
-        class="form-control"
-        v-if="evidenciaRequerimiento[stepIndex].respuestaItem != 'null'"
-      >
-        <p>Archivo adjunto:</p>
-        <div class="link">
-          <label for="files" class="btn" style="cursor: pointer;">{{ uploadText }}</label>
-          <input id="files" style="visibility:hidden;" type="file" @change="fileChange($event.target.files)">
-          <i class="fas fa-paperclip"></i>
+      <div v-else>
+        <div
+          class="form-control"
+          v-if="evidenciaRequerimiento[stepIndex].respuestaItem != 'null'"
+        >
+          <p>Documento</p>
+          <div class="link">
+            <!-- <select class="select" v-model="codigoEvidencia" name="evidencia">
+              <option
+                v-for="evidencia in evidenciasFetched"
+                :key="evidencia.evidenciaId"
+                :value="evidencia.evidenciaId"
+              >
+                {{ evidencia.adjunto }}
+              </option>
+            </select>
+            <p style="margin-top: 3px; font-weight: 100">
+              {{ evidenciasFetched.find(ev => ev.evidenciaId == codigoEvidencia)?.adjunto }}
+            </p> -->
+            <input
+              type="text"
+              placeholder="Buscar por código"
+              @keyup="fetchEvidencias"
+              v-model.trim="evidencia[stepIndex].codigoEvidencia"
+              style="margin-left: -3px"
+            />
+            <p
+              style="
+                margin-top: 3px;
+                font-weight: 100;
+                margin-left: 20px;
+                cursor: pointer;
+              "
+              @click="downloadFile"
+            >
+              {{ evidencia[stepIndex].adjunto }}
+            </p>
+            <div style="position: absolute; left: 72px">
+              <p
+                class="dropdownSelect"
+                v-for="evidencia in evidenciasFetched"
+                :key="evidencia.evidenciaId"
+                @click="selectEvidencia(evidencia)"
+              >
+                {{ evidencia.codigo + "-" + evidencia.nombre }}
+              </p>
+            </div>
+            <!-- <p
+              v-if="hasSelectedEvidencia"
+              style="margin-top: 3px; font-weight: 100; margin-left: 20px"
+            >
+              {{
+                evidencia[stepIndex].codigo + "-" + evidencia[stepIndex].adjunto
+              }}
+            </p> -->
+          </div>
+          <!-- <p
+            v-else
+            style="margin-left: 111px; margin-top: 3px; font-weight: 100"
+          >
+            No existen evidencias creadas
+          </p> -->
         </div>
       </div>
     </section>
@@ -235,29 +313,27 @@
 </template>
 
 <script lang="ts">
-import Modal from "../components/ui/Modal.vue";
 import NavBar from "@/components/layout/NavBar.vue";
 import { defineComponent } from "@vue/runtime-core";
+import { BASE_URL } from "../common/constants";
+import { handleErrors } from "../common/utils";
+import Modal from "../components/ui/Modal.vue";
 import { ICriterio } from "../interfaces/criterio.interface";
+import {
+  IEvaluacion,
+  IEvaluacionDetalle,
+} from "../interfaces/evaluacion.interface";
+import { IEvidencia } from "../interfaces/evidencia.interface";
+import { IEvidenciaRequerimiento } from "../interfaces/evidenciaRequerimiento.interface";
 import { IRequerimiento } from "../interfaces/listaRequerimiento.interface";
 import { IListaVerificacion } from "../interfaces/listaVerificacion.interface";
+import { IPrueba, IPruebaResultados } from "../interfaces/prueba.interface";
 import { IUser } from "../interfaces/user.interface";
 import {
   emptyEvidencia,
   emptyEvidenciaRequerimiento,
   emptyUser,
 } from "../utils/initializer";
-import { IEvidenciaRequerimiento } from "../interfaces/evidenciaRequerimiento.interface";
-import { IEvidencia } from "../interfaces/evidencia.interface";
-import { uuidv4 } from "../utils/guid";
-import { handleErrors } from "../common/utils";
-import { IPrueba, IPruebaResultados } from "../interfaces/prueba.interface";
-import { BASE_URL, urlConstants } from "../common/constants";
-import { requerimientos } from "../common/mockdata";
-import {
-  IEvaluacion,
-  IEvaluacionDetalle,
-} from "../interfaces/evaluacion.interface";
 
 export default defineComponent({
   components: {
@@ -286,6 +362,7 @@ export default defineComponent({
       requerimientos: [] as IRequerimiento[],
       evidenciaRequerimiento: [] as IEvidenciaRequerimiento[],
       evidencia: [] as IEvidencia[],
+      evidenciasFetched: [] as IEvidencia[],
       pruebaResultados: {} as IPruebaResultados,
       obraId: "",
       criterioIndex: 0,
@@ -299,9 +376,23 @@ export default defineComponent({
       evaluacionDetalle: {} as Partial<IEvaluacionDetalle>,
       files: new FormData(),
       uploadText: "Adjuntar archivo",
+      nuevaEvidencia: false,
+      lastEvidenciaCodigo: "",
+      timeout: undefined as number | undefined,
+      hasSelectedEvidencia: false,
     };
   },
   methods: {
+    selectEvidencia(evidencia: IEvidencia) {
+      this.hasSelectedEvidencia = true;
+      this.evidenciasFetched = [];
+      this.evidencia[this.stepIndex] = evidencia;
+      this.evidencia[this.stepIndex].codigoEvidencia =
+        evidencia.codigo + "-" + evidencia.nombre;
+    },
+    changeUploadInterface() {
+      this.nuevaEvidencia = !this.nuevaEvidencia;
+    },
     backToEvluacion(): void {
       this.$router.push(`/evaluacion/${this.evaluacion.codigo}`);
     },
@@ -367,6 +458,11 @@ export default defineComponent({
           this.evidencia[this.stepIndex].nombre = "";
         }
 
+        if (!this.evidencia[this.stepIndex].evidenciaId) {
+          await this.evidenciasCount();
+          this.evidencia[this.stepIndex].codigo = this.lastEvidenciaCodigo;
+        }
+
         const body = {
           EvidenciaId: this.evidencia[this.stepIndex].evidenciaId
             ? this.evidencia[this.stepIndex].evidenciaId
@@ -375,12 +471,18 @@ export default defineComponent({
           PruebaCodigo: this.$route.params.pr_codigo,
 
           EvidenciaNombre: this.evidencia[this.stepIndex].nombre,
+          EvidenciaCodigo: this.evidencia[this.stepIndex].codigo,
           Justificacion:
             this.evidenciaRequerimiento[this.stepIndex].justificacion,
           RespuestaItem: JSON.parse(
             this.evidenciaRequerimiento[this.stepIndex].respuestaItem as any
           ),
         };
+
+        this.evidencia[this.stepIndex].codigoEvidencia =
+          this.evidencia[this.stepIndex].codigo +
+          "-" +
+          this.evidencia[this.stepIndex].nombre;
 
         const response = await fetch(`${BASE_URL}evidenciarequerimiento`, {
           method: "POST",
@@ -395,9 +497,10 @@ export default defineComponent({
 
         const evidencia = (await response.json()) as IEvidencia;
 
-        evidencia.evidenciaId && await this.upload(evidencia.evidenciaId);
+        evidencia.evidenciaId &&
+          (this.evidencia[this.stepIndex].evidenciaId = evidencia.evidenciaId);
 
-        this.evidencia[this.stepIndex].evidenciaId = evidencia.evidenciaId;
+        evidencia.evidenciaId && (await this.upload(evidencia.evidenciaId));
       } catch (error) {
         this.error = true;
         console.log(error);
@@ -417,8 +520,10 @@ export default defineComponent({
           `/evaluacion/${this.evaluacion.codigo}/prueba/${this.$route.params.pr_codigo}/resumen`
         );
       } else {
-        this.evidencia.push(emptyEvidencia());
-        this.evidenciaRequerimiento.push(emptyEvidenciaRequerimiento());
+        !this.evidencia[this.stepIndex + 1] &&
+          this.evidencia.push(emptyEvidencia());
+        !this.evidenciaRequerimiento[this.stepIndex + 1] &&
+          this.evidenciaRequerimiento.push(emptyEvidenciaRequerimiento());
 
         if (!this.requerimientos[this.stepIndex + 2]) {
           this.end = true;
@@ -438,7 +543,10 @@ export default defineComponent({
           query: { req: this.questionNumber + 1 },
         });
       }
+      this.files = new FormData();
       this.loading = false;
+      this.hasSelectedEvidencia = false;
+      this.nuevaEvidencia = false;
     },
     previous(): void {
       if (this.requerimientos[this.stepIndex - 1]) {
@@ -448,6 +556,8 @@ export default defineComponent({
       }
       this.questionNumber -= 1;
       this.end = false;
+      this.hasSelectedEvidencia = false;
+      this.nuevaEvidencia = false;
 
       this.$router.replace({
         path: `/evaluacion/${this.evaluacion.codigo}/prueba/${this.$route.params.pr_codigo}`,
@@ -479,19 +589,64 @@ export default defineComponent({
     },
     fileChange(fileList: any) {
       this.files = new FormData();
+      this.evidencia[this.stepIndex].evidenciaId = undefined;
       this.files.append("file", fileList[0], fileList[0].name);
       this.uploadText = fileList[0].name;
+    },
+    async downloadFile() {
+      this.loading = true;
+      try {
+        fetch(
+          `${BASE_URL}evidencia/downloadfile/${
+            this.evidencia[this.stepIndex].adjuntoURL
+          }`,
+          {
+            method: "GET",
+            headers: new Headers({
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+          })
+          .then(response => response.blob())
+          .then(blob => {
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = this.evidencia[this.stepIndex].adjunto as string;
+            document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+            a.click();    
+            a.remove();  //afterwards we remove the element again   
+            this.loading = false;
+          })
+        ;
+
+      } catch (err) {
+        console.log(err);
+      }
     },
     async upload(evidenciaId: string) {
       try {
         const files = this.files;
-        await fetch(`${BASE_URL}evidencia/upload/${evidenciaId}`, {
-          method: "POST",
-          headers: new Headers({
-            Authorization: "Bearer " + localStorage.getItem("token"),
-          }),
-          body: files
-        });
+        const response = await fetch(
+          `${BASE_URL}evidencia/upload/${evidenciaId}`,
+          {
+            method: "POST",
+            headers: new Headers({
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+            body: files,
+          }
+        );
+
+        const evidencia = (await response.json()) as IEvidencia;
+
+        console.log(evidencia, this.evidencia[this.stepIndex].evidenciaId);
+
+        if (this.evidencia[this.stepIndex].evidenciaId && evidencia) {
+          this.evidencia[this.stepIndex] = {
+            ...this.evidencia[this.stepIndex],
+            ...(evidencia as IEvidencia),
+          };
+        }
 
         this.files = new FormData();
         this.uploadText = "Adjuntar archivo";
@@ -499,9 +654,61 @@ export default defineComponent({
         console.log(err);
       }
     },
+    async fetchEvidencias(): Promise<void> {
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(async () => {
+        try {
+          const response = await fetch(
+            `${BASE_URL}evidencia/lista?filter=${
+              this.evidencia[this.stepIndex].codigoEvidencia
+            }`,
+            {
+              method: "GET",
+              headers: new Headers({
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              }),
+            }
+          );
+
+          await handleErrors(response);
+
+          this.evidenciasFetched = (await response.json()) as IEvidencia[];
+        } catch (err) {
+          console.log(err);
+        }
+      }, 1000);
+    },
+    async evidenciasCount(): Promise<void> {
+      try {
+        const response = await fetch(`${BASE_URL}evidencia/count`, {
+          method: "GET",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          }),
+        });
+
+        const number: number = await response.json();
+        let zeros = "";
+
+        if (number >= 99) {
+          zeros = "";
+        } else if (number >= 9) {
+          zeros = "0";
+        } else {
+          zeros = "00";
+        }
+
+        this.lastEvidenciaCodigo = "ED" + zeros + (number + 1).toString();
+      } catch (err) {
+        console.log(err);
+      }
+    },
   },
   mounted() {
     (async () => {
+      await this.evidenciasCount();
       let ListasVerificacion: IListaVerificacion[] = [];
       try {
         const response = await fetch(
@@ -582,6 +789,7 @@ export default defineComponent({
             a.criterio.descripcion.localeCompare(b.criterio.descripcion)
           );
         this.evidencia.push(emptyEvidencia());
+        this.evidencia[0].codigo = this.lastEvidenciaCodigo;
         this.evidenciaRequerimiento.push(emptyEvidenciaRequerimiento());
       } catch (err) {
         console.log(err);
@@ -647,8 +855,12 @@ export default defineComponent({
             evidenciasRequerimientos.forEach((er) => {
               this.evidencia.push({
                 evidenciaId: er.evidencia?.evidenciaId,
+                codigo: er.evidencia?.codigo,
                 nombre: er.evidencia?.nombre,
                 adjunto: er.evidencia?.adjunto,
+                codigoEvidencia:
+                  er.evidencia?.codigo + "-" + er.evidencia?.nombre,
+                adjuntoURL: er.evidencia?.adjuntoURL
               });
               this.evidenciaRequerimiento.push({
                 evidenciaId: er.evidenciaId,
@@ -805,7 +1017,6 @@ p {
   margin-top: -25px;
   margin-left: 210px !important;
   text-decoration: underline;
-  cursor: pointer;
   font-weight: 100 !important;
 }
 .link #files {

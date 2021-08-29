@@ -442,7 +442,6 @@ export default defineComponent({
 
       console.log(isValid);
       console.log(this.tratamientoInfoJson);
-      debugger
 
       if (isValid) {
         if (!this.$route.params.tr_codigo) {
