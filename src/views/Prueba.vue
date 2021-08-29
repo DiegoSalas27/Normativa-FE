@@ -202,7 +202,6 @@
                 margin-left: 20px;
                 cursor: pointer;
               "
-              @click="downloadFile"
             >
               {{ evidencia[stepIndex].adjunto }}
             </p>
@@ -329,6 +328,7 @@ import { IRequerimiento } from "../interfaces/listaRequerimiento.interface";
 import { IListaVerificacion } from "../interfaces/listaVerificacion.interface";
 import { IPrueba, IPruebaResultados } from "../interfaces/prueba.interface";
 import { IUser } from "../interfaces/user.interface";
+import { getUsuario } from '@/services/authService';
 import {
   emptyEvidencia,
   emptyEvidenciaRequerimiento,
@@ -593,36 +593,6 @@ export default defineComponent({
       this.files.append("file", fileList[0], fileList[0].name);
       this.uploadText = fileList[0].name;
     },
-    async downloadFile() {
-      this.loading = true;
-      try {
-        fetch(
-          `${BASE_URL}evidencia/downloadfile/${
-            this.evidencia[this.stepIndex].adjuntoURL
-          }`,
-          {
-            method: "GET",
-            headers: new Headers({
-              Authorization: "Bearer " + localStorage.getItem("token"),
-            }),
-          })
-          .then(response => response.blob())
-          .then(blob => {
-            var url = window.URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = this.evidencia[this.stepIndex].adjunto as string;
-            document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
-            a.click();    
-            a.remove();  //afterwards we remove the element again   
-            this.loading = false;
-          })
-        ;
-
-      } catch (err) {
-        console.log(err);
-      }
-    },
     async upload(evidenciaId: string) {
       try {
         const files = this.files;
@@ -708,6 +678,7 @@ export default defineComponent({
   },
   mounted() {
     (async () => {
+      this.userInfoJson = await getUsuario();
       await this.evidenciasCount();
       let ListasVerificacion: IListaVerificacion[] = [];
       try {

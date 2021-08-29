@@ -11,7 +11,7 @@
     :loading="loading"
   ></modal>
   <section id="main">
-    <h1 style="textAlign: left; cursor: pointer" @click="back">
+    <h1 style="text-align: left; cursor: pointer" @click="back">
       <i class="fas fa-chevron-circle-left"></i> Volver
     </h1>
     <br />
@@ -35,15 +35,16 @@
       </div>
       <div class="options-buttons">
         <button class="action-button" @click="summary">Resumen</button>
-        <button 
-          class="action-button" 
+        <button
+          class="action-button"
           :class="
             porcentajeCumplimientoDeseado < porcentajeCumplimiento
-              ? 'action-button blocked' 
+              ? 'action-button blocked'
               : 'action-button'
           "
-          @click="idealScenario" 
-          :disabled="porcentajeCumplimientoDeseado < porcentajeCumplimiento">
+          @click="idealScenario"
+          :disabled="porcentajeCumplimientoDeseado < porcentajeCumplimiento"
+        >
           Escenario deseado
         </button>
       </div>
@@ -62,7 +63,7 @@
             class="body-item-header flex-row"
             style="paddingbottom: 20px; paddingtop: 20px"
           >
-            <h3>Pregunta {{ req.posicion? req.posicion : index + 1 }}:</h3>
+            <h3>Pregunta {{ req.posicion ? req.posicion : index + 1 }}:</h3>
             <span style="width: 70%">{{ req.descripcion }}</span>
             <span style="marginleft: 5px">{{ respuestaItem(index) }}</span>
           </div>
@@ -80,7 +81,9 @@
               ></textarea>
               <div>
                 <i class="far fa-file-pdf"></i>
-                <span style="textdecoration: underline; cursor: pointer"
+                <span
+                  style="textdecoration: underline; cursor: pointer"
+                  @click="downloadEvidencia(evidencia[index])"
                   >Descargar evidencia</span
                 >
               </div>
@@ -143,7 +146,7 @@ import { BASE_URL, rol } from "../common/constants";
 export default defineComponent({
   components: {
     NavBar,
-    Modal
+    Modal,
   },
   data() {
     return {
@@ -163,6 +166,32 @@ export default defineComponent({
     };
   },
   methods: {
+    async downloadEvidencia(evidencia: IEvidencia): Promise<void> {
+      this.message = "Cargando...";
+      try {
+        fetch(`${BASE_URL}evidencia/downloadfile/${evidencia.adjuntoURL}`, {
+          method: "GET",
+          headers: new Headers({
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          }),
+        })
+          .then((response) => response.blob())
+          .then((blob) => {
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement("a");
+            a.href = url;
+            a.download = evidencia.adjunto as string;
+            document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+            a.click();
+            a.remove(); //afterwards we remove the element again
+
+            this.message = null;
+          });
+      
+      } catch (err) {
+        console.log(err);
+      }
+    },
     handleError() {
       this.message = null;
     },
@@ -179,7 +208,8 @@ export default defineComponent({
       await this.realScenario();
     },
     async idealScenario(): Promise<void> {
-      if (this.porcentajeCumplimientoDeseado < this.porcentajeCumplimiento) return;
+      if (this.porcentajeCumplimientoDeseado < this.porcentajeCumplimiento)
+        return;
 
       this.message = "Cargando...";
 
@@ -194,21 +224,19 @@ export default defineComponent({
             }),
           }
         );
-        
+
         await handleErrors(response);
 
         let evidenciasRequerimientos =
           (await response.json()) as IEvidenciaRequerimiento[];
 
         this.requerimientos = this.requerimientos.filter((req, index) =>
-          evidenciasRequerimientos.some(
-            (evR) => {
-              if (evR.requerimientoId == req.requerimientoId) {
-                req.posicion = index + 1;
-                return true;
-              }
+          evidenciasRequerimientos.some((evR) => {
+            if (evR.requerimientoId == req.requerimientoId) {
+              req.posicion = index + 1;
+              return true;
             }
-          )
+          })
         );
 
         if (evidenciasRequerimientos.length > 0) {
@@ -227,6 +255,8 @@ export default defineComponent({
               evidenciaId: er.evidencia?.evidenciaId,
               nombre: er.evidencia?.nombre,
               adjunto: er.evidencia?.adjunto,
+              codigo: er.evidencia?.codigo,
+              adjuntoURL: er.evidencia?.adjuntoURL,
             });
             this.evidenciaRequerimiento.push({
               evidenciaId: er.evidenciaId,
@@ -244,7 +274,6 @@ export default defineComponent({
 
         this.headingTitle = "Escenario deseado";
         this.message = "";
-
       } catch (error) {
         console.log(error);
         // this.validationForm.email = errorObj.errores.mensaje;
@@ -253,7 +282,7 @@ export default defineComponent({
 
     async realScenario(): Promise<void> {
       this.message = "Cargando...";
-      
+
       try {
         const response = await fetch(
           `${BASE_URL}listaverificaciones/lista?filter=${this.$route.params.lv_codigo}`,
@@ -328,6 +357,8 @@ export default defineComponent({
               evidenciaId: er.evidencia?.evidenciaId,
               nombre: er.evidencia?.nombre,
               adjunto: er.evidencia?.adjunto,
+              codigo: er.evidencia?.codigo,
+              adjuntoURL: er.evidencia?.adjuntoURL,
             });
             this.evidenciaRequerimiento.push({
               evidenciaId: er.evidenciaId,
@@ -345,7 +376,6 @@ export default defineComponent({
 
         this.headingTitle = "Resumen";
         this.message = "";
-
       } catch (err) {
         console.log(err);
       }
@@ -411,8 +441,7 @@ export default defineComponent({
       this.userInfoJson = await getUsuario();
       if (this.userInfoJson.rol == rol.JEFE_DE_RIESGOS) {
         this.canEdit = true;
-      } else 
-        this.canEdit = false;
+      } else this.canEdit = false;
       await this.realScenario();
     })();
   },
