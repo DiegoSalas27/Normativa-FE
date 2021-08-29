@@ -22,8 +22,8 @@
   <section id="main">
     <h1>Registrar evaluación de obra</h1>
     <button
-      :class="$route.params.id ? 'action-button' : 'action-button blocked'"
-      :disabled="!$route.params.id"
+      :class="$route.params.id && verifyPruebaCompleta ? 'action-button' : 'action-button blocked'"
+      :disabled="!$route.params.id && !verifyPruebaCompleta"
       @click="submit"
     >
       {{ !evaluacion.visibilidad ? "Guardar" : "Editar" }}
@@ -184,6 +184,9 @@ export default defineComponent({
     Modal,
   },
   computed: {
+    verifyPruebaCompleta(): boolean {
+      return this.pruebas.listaRecords.some(pr => pr.estado = 'Completa');
+    },
     selectedListaVerificacion(): IListaVerificacion {
       return this.$store.getters[
         "listaVerificacionModule/selectedListaVerificacion"
