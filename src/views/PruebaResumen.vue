@@ -126,7 +126,6 @@
     </div>
   </section>
 </template>
-
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
 import NavBar from "@/components/layout/NavBar.vue";
@@ -142,7 +141,6 @@ import { handleErrors } from "../common/utils";
 import { uuidv4 } from "../utils/guid";
 import Modal from "../components/ui/Modal.vue";
 import { BASE_URL, rol } from "../common/constants";
-
 export default defineComponent({
   components: {
     NavBar,
@@ -184,7 +182,6 @@ export default defineComponent({
             document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
             a.click();
             a.remove(); //afterwards we remove the element again
-
             this.message = null;
           });
       
@@ -210,9 +207,7 @@ export default defineComponent({
     async idealScenario(): Promise<void> {
       if (this.porcentajeCumplimientoDeseado < this.porcentajeCumplimiento)
         return;
-
       this.message = "Cargando...";
-
       try {
         const response = await fetch(
           `${BASE_URL}prueba/${this.$route.params.pr_codigo}/${this.porcentajeCumplimientoDeseado}`,
@@ -224,12 +219,9 @@ export default defineComponent({
             }),
           }
         );
-
         await handleErrors(response);
-
         let evidenciasRequerimientos =
           (await response.json()) as IEvidenciaRequerimiento[];
-
         this.requerimientos = this.requerimientos.filter((req, index) =>
           evidenciasRequerimientos.some((evR) => {
             if (evR.requerimientoId == req.requerimientoId) {
@@ -238,7 +230,6 @@ export default defineComponent({
             }
           })
         );
-
         if (evidenciasRequerimientos.length > 0) {
           this.evidencia = [];
           this.evidenciaRequerimiento = [];
@@ -249,7 +240,6 @@ export default defineComponent({
               );
             })
             .filter((evR) => evR !== undefined) as IEvidenciaRequerimiento[];
-
           evidenciasRequerimientos.forEach((er) => {
             this.evidencia.push({
               evidenciaId: er.evidencia?.evidenciaId,
@@ -271,7 +261,6 @@ export default defineComponent({
             });
           });
         }
-
         this.headingTitle = "Escenario deseado";
         this.message = "";
       } catch (error) {
@@ -279,10 +268,8 @@ export default defineComponent({
         // this.validationForm.email = errorObj.errores.mensaje;
       }
     },
-
     async realScenario(): Promise<void> {
       this.message = "Cargando...";
-
       try {
         const response = await fetch(
           `${BASE_URL}listaverificaciones/lista?filter=${this.$route.params.lv_codigo}`,
@@ -294,14 +281,11 @@ export default defineComponent({
             }),
           }
         );
-
         const listasVerificacion =
           (await response.json()) as IListaVerificacion[];
-
         const criteriosPrev = listasVerificacion[0].requerimientos
           .map((req: IRequerimiento) => req.criterio)
           .sort((a, b) => a.descripcion.localeCompare(b.descripcion));
-
         const map = new Map();
         for (const criterio of criteriosPrev) {
           if (!map.has(criterio.descripcion)) {
@@ -309,14 +293,12 @@ export default defineComponent({
             this.criterios.push(criterio);
           }
         }
-
         this.requerimientos = listasVerificacion[0].requerimientos.sort(
           (a, b) => a.criterio.descripcion.localeCompare(b.criterio.descripcion)
         );
       } catch (err) {
         console.log(err);
       }
-
       try {
         const response = await fetch(
           `${BASE_URL}evidenciarequerimiento/${this.$route.params.pr_codigo}`,
@@ -328,19 +310,14 @@ export default defineComponent({
             }),
           }
         );
-
         let evidenciasRequerimientos =
           (await response.json()) as IEvidenciaRequerimiento[];
-
         console.log(evidenciasRequerimientos);
-
         this.porcentajeCumplimiento = evidenciasRequerimientos[0]
           .pruebaPorcentajeCumplimiento as number;
-
         this.accionesMitigacionCreadas = evidenciasRequerimientos.filter(
           (evR) => evR.accionMigitagcion
         ).length;
-
         if (evidenciasRequerimientos.length > 0) {
           this.evidencia = [];
           this.evidenciaRequerimiento = [];
@@ -351,7 +328,6 @@ export default defineComponent({
               );
             })
             .filter((evR) => evR !== undefined) as IEvidenciaRequerimiento[];
-
           evidenciasRequerimientos.forEach((er) => {
             this.evidencia.push({
               evidenciaId: er.evidencia?.evidenciaId,
@@ -373,7 +349,6 @@ export default defineComponent({
             });
           });
         }
-
         this.headingTitle = "Resumen";
         this.message = "";
       } catch (err) {
@@ -398,19 +373,16 @@ export default defineComponent({
         default:
           break;
       }
-
       return respuesta;
     },
     async saveRecomendacion(index: number): Promise<void> {
       const evidenciaReq = this.evidenciaRequerimiento[index];
-
       const body = {
         TratamientoId: evidenciaReq.tratamientoId,
         AccionMitigacionId: uuidv4(),
         Descripcion: this.requerimientos[index].descripcion,
         Estado: false,
       };
-
       try {
         const response = await fetch(
           `${BASE_URL}evidenciarequerimiento/${evidenciaReq.evidenciaId}/${evidenciaReq.pruebaId}/${evidenciaReq.requerimientoId}`,
@@ -423,13 +395,9 @@ export default defineComponent({
             body: JSON.stringify(body),
           }
         );
-
         await handleErrors(response);
-
         this.evidenciaRequerimiento[index].accionMigitagcion = true;
-
         this.accionesMitigacionCreadas++;
-
         // this.$router.push(`/plan-tratamiento/${evidenciaReq.tratamientoCodigo}`);
       } catch (error) {
         console.log(error);
@@ -447,7 +415,6 @@ export default defineComponent({
   },
 });
 </script>
-
 <style scoped>
 #main {
   margin-left: 0px;

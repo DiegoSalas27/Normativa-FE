@@ -48,6 +48,14 @@ const routes: Array<RouteRecordRaw> = [
         props: true,
         component: () => import("../views/ListUser.vue"),
       },
+
+      {
+        path: 'especialistas',
+        name: 'Especialistas',
+        props: true,
+        component: () => import("../views/ListVerification.vue"),
+      },      
+
       {
         path: 'profile/jefe-de-riesgos/:id?',
         name: 'ProfileJefeRiesgos',

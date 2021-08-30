@@ -262,6 +262,7 @@ export default defineComponent({
           this.titleProfile = "REGISTRAR MIEMBRO";
           this.userInfoJson.rol = rol.ALTA_GERENCIA;
           break;
+        
       }
     },
     async fetchEspecialidades(rolName: string): Promise<void> {

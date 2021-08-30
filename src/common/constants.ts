@@ -15,13 +15,18 @@ export const urlConstants = {
   REALIZAR_PRUEBA: 'Evaluacion',
   REALIZAR_PRUEBA_EVALUACION: 'Prueba',
   VISUALIZAR_INFORME: 'TipoInforme',
+
+  GENERAR_LISTA: 'Especialistas',
+  MODIFICAR_LISTA: 'ModificarListaVerificacion'
+
 }
 
 export const rol = {
   ANALISTA: 'Analistas',
   JEFE_DE_RIESGOS: 'Jefe de riesgos',
   ADMINISTRADOR: 'Administrador',
-  ALTA_GERENCIA: 'Alta gerencia'
+  ALTA_GERENCIA: 'Alta gerencia',
+  ESPECIALISTA: 'Especialistas'
 }
 
 export const columnsRolList: IColumnsGrid[] = [
@@ -89,6 +94,56 @@ export const columnsPlanesTratamientoList: IColumnsGrid[] = [
     type: 'text'
   },
 ] 
+
+
+export const columnsVerificacionList: IColumnsGrid[] = [
+  {
+    field: 'criterios',
+    title: 'Criterios',
+    type: 'text'
+  },
+
+  { 
+    field: 'prioridad',
+    title: 'Prioridad',
+    type: 'text'
+
+  },
+] 
+
+
+
+export const columnsVerificacionList2: IColumnsGrid[] = [
+  {
+    field: 'niveles',
+    title: 'Niveles',
+    type: 'text'
+  },
+
+  { 
+    field: 'minimo',
+    title: 'Minimo',
+    type: 'text'
+
+  },
+
+  { 
+    field: 'maximo',
+    title: 'Maximo',
+    type: 'text'
+
+  },
+
+  { 
+    field: 'requerimientos',
+    title: 'Requerimientos',
+    type: 'text'
+
+  },
+  
+  
+] 
+
 
 export const columnsRiesgoNormativaList: IColumnsGrid[] = [
   {
@@ -215,11 +270,26 @@ export const AnalistaUserActions = [
   },
 ];
 
+export const EspecialistaUserActions = [
+  {
+    src: require("@/assets/images/audit.png"),
+    description: "Generar lista de verificación",
+    url: urlConstants.GENERAR_LISTA,
+  },
+  {
+    src: require("@/assets/images/informes.png"),
+    description: "Modificar lista de verificación",
+    url: urlConstants.MODIFICAR_LISTA,
+  },
+];
+
+
 export const estadoAccionMitigacion = [
   'En Proceso',
   'Terminado'
 ]
 
-// export const BASE_URL = "https://sistemaexperto.azurewebsites.net/api/";
-export const BASE_URL = "http://localhost:5000/api/";
-// export const BASE_URL = "https://localhost:44357/api/";
+
+ export const BASE_URL = "https://sistemaexperto.azurewebsites.net/api/";
+// export const BASE_URL = "http://localhost:5000/api/";
+//export const BASE_URL = "https://localhost:44357/api/";

@@ -22,7 +22,7 @@
   <section id="main">
     <h1>Registrar evaluación de obra</h1>
     <button
-      :class="$route.params.id && verifyPruebaCompleta ? 'action-button' : 'action-button blocked'"
+      :class="$route.params.id ? 'action-button' : 'action-button blocked'"
       :disabled="!$route.params.id && !verifyPruebaCompleta"
       @click="submit"
     >
@@ -187,6 +187,7 @@ export default defineComponent({
     verifyPruebaCompleta(): boolean {
       return this.pruebas.listaRecords.some(pr => pr.estado = 'Completa');
     },
+
     selectedListaVerificacion(): IListaVerificacion {
       return this.$store.getters[
         "listaVerificacionModule/selectedListaVerificacion"
@@ -576,7 +577,6 @@ export default defineComponent({
           } else {
             zeros = "00";
           }
-
 
           this.$store.dispatch("evaluacionModule/guardarEvaluacion", {
             ...this.evaluacion,

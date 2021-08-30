@@ -8,8 +8,7 @@
         :config="config"
         :actions="actions"
         :rows="5" 
-        @movePage="movePage"
-        @selectedList="selectedList" 
+
         ></grid>
       </section>
       <button class="btn-table" @click="goTo('TableUser', { type: 'RiesgoNormativa' })">NIVEL DE RIESGO POR NORMATIVA</button>

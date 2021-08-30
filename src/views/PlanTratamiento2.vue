@@ -28,7 +28,6 @@
       @click="register()"
     >
       {{ displayButtonText }}
-
     </button>
           -->
     <button
