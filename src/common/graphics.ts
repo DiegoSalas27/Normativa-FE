@@ -73,6 +73,38 @@ export const configurePieChartOptions = (
   };
 };
 
+export const configurePieChartOptions2 = (
+  series: any[],
+  width: any,
+  labels: string[],
+) => {
+  return {
+    series,
+    chart: {
+      type: 'pie',
+      width,
+      toolbar: {
+        show: true,
+      },
+      zoom: {
+        enabled: true,
+      },
+    },
+    labels,
+    responsive: [{
+      breakpoint: 480,
+      options: {
+        chart: {
+          width: 200
+        },
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }]
+  };
+};
+
 export const configureLineChartOptions = (
   series: any[],
 ) => {

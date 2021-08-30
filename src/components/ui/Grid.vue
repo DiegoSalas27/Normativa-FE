@@ -4,6 +4,7 @@
       <tr>
         <th v-if="actions?.length > 0 && actions[0].type == 'delete' && dataSource.listaRecords.length > 0">
           <input type="checkbox" id="checkbox" v-model="massiveCheck" />
+          
         </th>
         <th v-for="column in columns" :key="column.field" :style="{ textAlign: column.align ? column.align : 'left' }">
           {{ column.title }}

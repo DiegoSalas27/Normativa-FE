@@ -35,6 +35,15 @@ export const pieChartLabels = [
   "Team E",
 ];
 
+export const pieChartSeries2 = [44, 55, 13, 43, 22];
+export const pieChartLabels2 = [
+  "Team A",
+  "Team B",
+  "Team C",
+  "Team D",
+  "Team E",
+];
+ 
 export const lineChartSeries = [
   {
     name: "High - 2013",

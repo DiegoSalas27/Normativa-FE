@@ -22,7 +22,7 @@
           v-for="rol_action in rolUserActions"
           :key="rol_action.description"
           @click="goToList(rol_action.url)"
-          class="card"
+          class="cardanalista"
         >
           <img :src="rol_action.src" :alt="rol_action.src" class="image" />
           <p>{{ rol_action.description }}</p>
@@ -30,11 +30,11 @@
       </div>
 
       <div class="gridCards stats">
-        <div class="card stat">
+        <div class="card statanalista">
           <p>RESULTADOS DE EVALUACIONES</p>
           <div ref="barChart" id="chart"></div>
         </div>
-        <div class="card stat">
+        <div class="card statanalista">
           <p>PLANES DE TRATAMIENTO</p>
           <div ref="pieChart" id="chart"></div>
         </div>
@@ -77,7 +77,7 @@
       </div>
     </div>
 
-    <div v-show="userInfoJson?.rol === null">
+    <div v-show="userInfoJson?.rol === 'Alta gerencia'">
       <div class="container">
         <!-- TODO: Mycard -->
         <div class="row">
@@ -114,12 +114,27 @@
             <div class="mycard pie">
               <button class="btn-table" @click="goTo('TableUser', { type: 'PlanesTratamiento' })">PLANES DE TRATAMIENTO</button>
               <!-- <i @click="goToList('PlanesTratamiento')">icon</i> -->
-              <div ref="pieChart" id="chart"></div>
+              <div ref="pieChart2" id="chart"></div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <div v-show="userInfoJson?.rol === 'Especialistas'">
+      <div class="gridCards especialistaGrid">
+        <div
+          v-for="rol_action in rolUserActions"  
+          :key="rol_action.description"
+          @click="goToList(rol_action.url)"
+          class="gridEspecialista"
+        >
+          <img :src="rol_action.src" :alt="rol_action.src" class="image" />
+          <p>{{ rol_action.description }}</p>
+        </div>
+      </div>
+    </div>
+
   </section>
 </template>
 
@@ -130,12 +145,14 @@ import {
   AdminUserActions,
   AnalistaUserActions,
   BASE_URL,
+  EspecialistaUserActions,
   rol,
   urlConstants,
 } from "../common/constants";
 import {
   configureBarChartOptions,
   configurePieChartOptions,
+  configurePieChartOptions2,
   configureSemiDonutOptions,
   configureStackBarChartOptions,
   configureLineChartOptions,
@@ -146,6 +163,8 @@ import {
   treeMapChartSeries,
   pieChartLabels,
   pieChartSeries,
+  pieChartLabels2,
+  pieChartSeries2,
   semiDonutSeries,
   series,
   stackedBarSeries,
@@ -172,6 +191,7 @@ export default defineComponent({
       this.$router.push({ name: url, params: params });
     },
     calculateDashBoard() {
+
       switch (this.userInfoJson.rol) {
         case rol.ADMINISTRADOR:
           this.rolUserActions = AdminUserActions;
@@ -179,6 +199,8 @@ export default defineComponent({
         case rol.ANALISTA:
           this.rolUserActions = AnalistaUserActions;
           break;
+        case rol.ESPECIALISTA:
+          this.rolUserActions = EspecialistaUserActions;
         // case  rol.ALTA_GERENCIA: this.rolUserActions = AdminUserActions; break;
       }
     },
@@ -196,6 +218,7 @@ export default defineComponent({
       } catch (err) {
         console.log(err);
         //console.log("Impresion del rol sin api" + this.userInfoJson.rol);
+        //this.rolUserActions = EspecialistaUserActions;
       }
 
       const optionsbarChart = configureBarChartOptions(
@@ -214,6 +237,13 @@ export default defineComponent({
         "70%",
         pieChartLabels
       );
+
+      const optionsPieChart2 = configurePieChartOptions2(
+        pieChartSeries2,
+        "70%",
+        pieChartLabels2
+      );
+            
 
       const optionsLineChart = configureLineChartOptions(lineChartSeries);
       const optionsTreeMapChart = configureTreeMapChartOptions(treeMapChartSeries);
@@ -242,6 +272,11 @@ export default defineComponent({
       if (this.$refs.pieChart) {
         const pieChart = new ApexCharts(this.$refs.pieChart, optionsPieChart);
         pieChart.render();
+      }
+
+      if (this.$refs.pieChart) {
+        const pieChart2 = new ApexCharts(this.$refs.pieChart2, optionsPieChart2);
+        pieChart2.render();
       }
 
       if (this.$refs.lineChart) {
@@ -291,6 +326,9 @@ export default defineComponent({
           console.log(err);
         }
       }
+
+
+
     })();
   },
 });
@@ -312,6 +350,23 @@ h1 {
 .gridCards.adminGrid {
   grid-template-columns: repeat(auto-fill, minmax(42%, 1fr));
   justify-content: center;
+}
+
+.gridCards.especialistaGrid {
+  grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
+  justify-content: center;
+}
+
+.gridEspecialista {
+  cursor: pointer;
+  border: 1px solid var(--placeholder);
+  border-radius: 12px;
+  width: 200px;
+  margin: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px var(--box-shadow);
+  transition: all 0.2s linear;
+
 }
 
 .gridCards.stats {
@@ -351,8 +406,23 @@ h1 {
   transition: all 0.2s linear;
 }
 
+.cardanalista {
+  cursor: pointer;
+  border: 1px solid var(--placeholder);
+  border-radius: 12px;
+  width: 200px;
+  margin: auto;
+  padding: 20px;
+  box-shadow: 0 2px 8px var(--box-shadow);
+  transition: all 0.2s linear;
+}
+
 .card.stat {
   min-width: 250px;
+}
+
+.card.statanalista {
+  min-width: 750px;
 }
 
 .card.stat.donut {
