@@ -103,6 +103,11 @@
           placeholder="**********"
           v-model.trim="userInfoJson.password"
         />
+
+         <abbr title= "La contraseña debe tener por lo menos un número, un caracter especial y contar con 8 caracteres">
+                   
+                  <i class="fas fa-info-circle"></i></abbr>
+    
         <p
           class="error"
           v-if="validationForm.password && !skipPasswordValidation"

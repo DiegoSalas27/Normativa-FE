@@ -252,10 +252,15 @@
     <!-- Resultado -->
 
     <div v-if="showResultado">
+      <div class="containerizq">
+        
+          <div class="col">
       <table class="grid">
         <thead class="header-grid">
+
           <tr>
             <th>Criterio</th>
+
             <th>Puntaje</th>
             <th>Porcentaje de cumplimiento</th>
           </tr>
@@ -274,10 +279,13 @@
               }}
             </td>
             <td>
+                          <p>&nbsp;</p> <p>&nbsp;</p> <p>&nbsp;</p> <p>&nbsp;</p> <p>&nbsp;</p>
               {{ pruebaResultados.criteriosResultado[index].normalizedPuntaje }}
             </td>
             <td>
+               <p>&nbsp;</p> <p>&nbsp;</p><p>&nbsp;</p> <p>&nbsp;</p>
               {{
+                
                 pruebaResultados.criteriosResultado[index]
                   .porcentajeCumplimiento + "%"
               }}
@@ -285,10 +293,13 @@
           </tr>
         </tbody>
       </table>
+          </div>
+      <div class="col">     
+       <div class="containerder">
+        <h3 class="form-header final resultados">Resultados finales</h3>
 
-      <h3 class="form-header final">Resultados finales</h3>
 
-      <table class="grid summary">
+        <table class="grid summary">
         <tbody>
           <tr>
             <td>Porcentaje de cumplimiento total</td>
@@ -306,7 +317,16 @@
           Guardar prueba
         </button>
       </table>
-    </div>
+      </div>
+       </div>
+
+      </div>
+      </div>
+
+  
+
+
+
   </section>
 </template>
 
@@ -347,10 +367,13 @@ export default defineComponent({
     prueba(): IPrueba {
       return this.$store.getters["pruebaModule/obtenerPrueba"];
     },
+    
     evaluacion(): IEvaluacion {
       return this.$store.getters["evaluacionModule/obtenerEvaluacion"];
     },
   },
+
+
   data() {
     return {
       userInfoJson: emptyUser() as IUser,
@@ -420,7 +443,10 @@ export default defineComponent({
       });
       this.start = true;
     },
+
+    /////////////
     async obtenerPruebaResults(): Promise<void> {
+
       try {
         const response = await fetch(
           `${BASE_URL}prueba/${this.prueba.codigo}`,
@@ -440,6 +466,11 @@ export default defineComponent({
         // this.validationForm.email = errorObj.errores.mensaje;
       }
     },
+
+
+///////
+
+
     async registrarEvidenciaRequerimiento(): Promise<void> {
       try {
         if (
@@ -448,18 +479,10 @@ export default defineComponent({
           this.evidenciaRequerimiento[this.stepIndex].justificacion = "";
           this.evidencia[this.stepIndex].nombre = "";
         }
-
-        if (!this.evidencia[this.stepIndex].evidenciaId && 
-        this.evidencia[this.stepIndex].nombre != "" && 
-        this.evidencia[this.stepIndex].nombre != null) {
+        if (!this.evidencia[this.stepIndex].evidenciaId) {
           await this.evidenciasCount();
           this.evidencia[this.stepIndex].codigo = this.lastEvidenciaCodigo;
-          this.evidencia[this.stepIndex].codigoEvidencia =
-          this.evidencia[this.stepIndex].codigo +
-          "-" +
-          this.evidencia[this.stepIndex].nombre;
         }
-
         const body = {
           EvidenciaId: this.evidencia[this.stepIndex].evidenciaId
             ? this.evidencia[this.stepIndex].evidenciaId
@@ -474,7 +497,10 @@ export default defineComponent({
             this.evidenciaRequerimiento[this.stepIndex].respuestaItem as any
           ),
         };
-
+        this.evidencia[this.stepIndex].codigoEvidencia =
+          this.evidencia[this.stepIndex].codigo +
+          "-" +
+          this.evidencia[this.stepIndex].nombre;
         const response = await fetch(`${BASE_URL}evidenciarequerimiento`, {
           method: "POST",
           headers: new Headers({
@@ -568,6 +594,8 @@ export default defineComponent({
         this.$router.push("/evaluacion/" + this.evaluacion.codigo);
       })();
     },
+
+
     fileChange(fileList: any) {
       this.files = new FormData();
       this.evidencia[this.stepIndex].evidenciaId = undefined;
@@ -584,7 +612,7 @@ export default defineComponent({
             headers: new Headers({
               Authorization: "Bearer " + localStorage.getItem("token"),
             }),
-            body: files,
+           // body: files,
           }
         );
         const evidencia = (await response.json()) as IEvidencia;
@@ -738,9 +766,7 @@ export default defineComponent({
           });
           const number: number = await response.json();
           let zeros = "";
-          if (number >= 99) {
-            zeros = "";
-          } else if (number >= 9) {
+          if (number > 10) {
             zeros = "0";
           } else {
             zeros = "00";
@@ -787,7 +813,7 @@ export default defineComponent({
                 nombre: er.evidencia?.nombre,
                 adjunto: er.evidencia?.adjunto,
                 codigoEvidencia:
-                  (er.evidencia?.codigo && er.evidencia?.nombre) ? er.evidencia.codigo + "-" + er.evidencia?.nombre : "",
+                  er.evidencia?.codigo + "-" + er.evidencia?.nombre,
                 adjuntoURL: er.evidencia?.adjuntoURL
               });
               this.evidenciaRequerimiento.push({
@@ -862,6 +888,21 @@ h1 {
   border-radius: 5px;
   padding-bottom: 20px;
 }
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  
+}
+.col {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  
+  margin: 10px;
+}
+
+
 button {
   position: absolute;
   top: 370px;
@@ -896,9 +937,22 @@ button.main-form.final {
   color: white;
 }
 .form-header.final {
-  position: absolute;
+  position: relative;
   text-align: center;
-  top: 370px;
+  top: 230px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 500px;
+  background: #2e348a;
+  padding: 10px;
+  color: white;
+}
+
+.form-header.final.resultados {
+  position: relative;
+  text-align: center;
+  top: 320px;
   left: 0;
   right: 0;
   margin: auto;
@@ -1007,15 +1061,16 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 .grid {
-  position: absolute;
-  top: 90px;
+  position: relative;
+  top: 150px;
   left: 0;
   right: 0;
   width: 500px;
 }
 .grid.summary {
-  top: 420px;
+  top: 320px;
   text-align: left;
+  
 }
 .grid.summary tr td,
 .grid.summary tr th {
@@ -1030,6 +1085,7 @@ input:checked + .slider:before {
 }
 .header-grid tr th {
   padding: 0px !important;
+  
 }
 tbody tr td { 
   height: 50px;
@@ -1040,5 +1096,23 @@ tbody tr td {
   top: 110px;
   left: 125px;
   cursor: pointer;
+}
+.containerizq {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px;
+}
+
+.containerder {
+  width: 350%;
+  height: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 100px;
+   margin: -425px;
 }
 </style>

@@ -26,6 +26,7 @@
         $route.params.tr_codigo ? 'action-button' : 'action-button blocked'
       "
       @click="register()"
+      
     >
       {{ displayButtonText }}
     </button>
@@ -292,8 +293,11 @@ export default defineComponent({
       if (this.$route.params.tr_codigo) {
         if (this.update) {
           return "Guardar";
+          
         }
+        
         return "Editar";
+        
       }
       return "Registrar";
     },
@@ -477,6 +481,7 @@ export default defineComponent({
             this.error = false;
             this.message =
               "¡El plan de tratamiento ha sido registrado exitósamente!";
+              
 
             setTimeout(async () => {
               this.message = "";
@@ -510,6 +515,7 @@ export default defineComponent({
             this.error = false;
             this.message =
               "¡El plan de tratamiento ha sido actualizado exitósamente!";
+              location.reload();
 
             setTimeout(async () => {
               this.message = "";
@@ -666,9 +672,7 @@ export default defineComponent({
           const number: number = await response.json();
           let zeros = "";
 
-          if (number >= 99) {
-            zeros = "";
-          } else if (number >= 9) {
+          if (number > 10) {
             zeros = "0";
           } else {
             zeros = "00";
