@@ -472,17 +472,25 @@ export default defineComponent({
 
 
     async registrarEvidenciaRequerimiento(): Promise<void> {
-      try {
+try {
         if (
           this.evidenciaRequerimiento[this.stepIndex].respuestaItem === "null"
         ) {
           this.evidenciaRequerimiento[this.stepIndex].justificacion = "";
           this.evidencia[this.stepIndex].nombre = "";
         }
-        if (!this.evidencia[this.stepIndex].evidenciaId) {
+
+        if (!this.evidencia[this.stepIndex].evidenciaId && 
+        this.evidencia[this.stepIndex].nombre != "" && 
+        this.evidencia[this.stepIndex].nombre != null) {
           await this.evidenciasCount();
           this.evidencia[this.stepIndex].codigo = this.lastEvidenciaCodigo;
+          this.evidencia[this.stepIndex].codigoEvidencia =
+          this.evidencia[this.stepIndex].codigo +
+          "-" +
+          this.evidencia[this.stepIndex].nombre;
         }
+
         const body = {
           EvidenciaId: this.evidencia[this.stepIndex].evidenciaId
             ? this.evidencia[this.stepIndex].evidenciaId
@@ -497,10 +505,7 @@ export default defineComponent({
             this.evidenciaRequerimiento[this.stepIndex].respuestaItem as any
           ),
         };
-        this.evidencia[this.stepIndex].codigoEvidencia =
-          this.evidencia[this.stepIndex].codigo +
-          "-" +
-          this.evidencia[this.stepIndex].nombre;
+
         const response = await fetch(`${BASE_URL}evidenciarequerimiento`, {
           method: "POST",
           headers: new Headers({
@@ -612,7 +617,7 @@ export default defineComponent({
             headers: new Headers({
               Authorization: "Bearer " + localStorage.getItem("token"),
             }),
-           // body: files,
+            body: files,
           }
         );
         const evidencia = (await response.json()) as IEvidencia;
@@ -813,7 +818,7 @@ export default defineComponent({
                 nombre: er.evidencia?.nombre,
                 adjunto: er.evidencia?.adjunto,
                 codigoEvidencia:
-                  er.evidencia?.codigo + "-" + er.evidencia?.nombre,
+                (er.evidencia?.codigo && er.evidencia?.nombre) ? er.evidencia.codigo + "-" + er.evidencia?.nombre : "",
                 adjuntoURL: er.evidencia?.adjuntoURL
               });
               this.evidenciaRequerimiento.push({
