@@ -672,12 +672,14 @@ export default defineComponent({
           const number: number = await response.json();
           let zeros = "";
 
-          if (number > 10) {
+          if (number >= 99) {
+            zeros = "";
+          } else if (number >= 9) {
             zeros = "0";
           } else {
             zeros = "00";
           }
-
+          
           this.tratamientoInfoJson.codigo =
             "TR" + zeros + (number + 1).toString();
         } catch (err) {
