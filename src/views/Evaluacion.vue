@@ -31,11 +31,12 @@
     <div class="flex-row">
       <div class="flex-col">
         <div class="">
-          <h3>Códidgo de evaluación</h3>
+          <h3>Código de evaluación</h3>
           <img src="../assets/images/llave.png" alt="codeva" class="imgIcon" />
           <div class="non-editable">{{ evaluacion.codigo }}</div>
         </div>
         <div>
+          <br><br>
           <h3>Seleccione lista de verificación</h3>
           <img
             src="../assets/images/listav.png"
@@ -50,7 +51,7 @@
             v-model.trim="codigoListaVerificacion"
           />
           <p
-            class="dropdownSelect"
+            class="dropdownSelect tamaño"
             v-for="listaVerificacion in listasVerificacion"
             :key="listaVerificacion.listaVerificacionId"
             @click="selectListaVerificacion(listaVerificacion)"
@@ -67,13 +68,14 @@
             }}</span>
             <br />
             <p>
-              <span style="font-weight: bold">requerimientos: </span
+              <span style="font-weight: bold">Requerimientos: </span
               >{{ selectedListaVerificacion.requerimientosCount }}
             </p>
             <br />
           </div>
         </div>
         <div>
+          <br><br>
           <h3>Código de obra</h3>
           <img src="../assets/images/llave.png" alt="codobra" class="imgIcon" />
           <input
@@ -84,7 +86,7 @@
             v-model.trim="codigoObra"
           />
           <p
-            class="dropdownSelect"
+            class="dropdownSelectobras tamaño"
             v-for="obra in obras"
             :key="obra.obraId"
             @click="SelectObra(obra)"
@@ -93,6 +95,7 @@
           </p>
         </div>
         <div>
+          <br><br>
           <h3>Nombre</h3>
           <img
             src="../assets/images/carduser.png"
@@ -106,6 +109,8 @@
           />
         </div>
         <div>
+          <br>
+          <br>
           <h3>Fecha de creación</h3>
           <img src="../assets/images/date.png" alt="fecha" class="imgIcon" />
           <div class="non-editable">{{ evaluacion.fechaCreacion }}</div>
@@ -115,7 +120,9 @@
         <div>
           <h3>Estado</h3>
           <img src="../assets/images/check.png" alt="estado" class="imgIcon" />
-          <div class="non-editable">{{ evaluacion.estado }}</div>
+          <div class="non-editable transformacion">{{ evaluacion.estado }}</div>
+          <br>
+          <br>
         </div>
         <div>
           <img src="../assets/images/prueba.png" alt="prueba" class="imgIcon" />
@@ -132,7 +139,7 @@
           </button>
           <button
             v-if="pruebas.listaRecords.length > 0"
-            class="action-button massive"
+            class="action-button massive evaluacion"
             @click="deleteMassive()"
           >
             Eliminación masiva
@@ -393,7 +400,10 @@ export default defineComponent({
       });
       this.obras = [];
       this.codigoObra = obra.codigo + "-" + obra.nombre;
+      
     },
+
+
     selectListaVerificacion(listaVerificacion: IListaVerificacion) {
       this.$store.dispatch("listaVerificacionModule/guardarListaVerificacion", {
         ...listaVerificacion,
@@ -440,6 +450,7 @@ export default defineComponent({
         this.codigoObra =
           this.selectedObra.codigo + "-" + this.selectedObra.nombre;
       }
+
     },
     submit(): void {
       if (this.evaluacion.visibilidad) {
@@ -575,7 +586,7 @@ export default defineComponent({
             zeros = "0";
           } else {
             zeros = "00";
-          }
+	  }
 
           this.$store.dispatch("evaluacionModule/guardarEvaluacion", {
             ...this.evaluacion,
@@ -591,7 +602,7 @@ export default defineComponent({
     })();
   },
 });
-</script>
+</script> 
 
 <style scoped>
 .link {
@@ -621,6 +632,7 @@ input {
   top: 10 0px;
   right: 50px;
 }
+
 .action-button.blocked {
   background: var(--accent);
   cursor: auto;
@@ -631,8 +643,26 @@ input {
   right: 0px;
   width: 240px;
 }
+
+.action-button.massive.evaluacion {
+  position: relative;
+  top: 10px;
+  right: -35px;
+  width: 200px;
+}
+
+
 #main {
   text-align: left;
   margin-left: 100px;
 }
+
+.transformacion { 
+  text-transform: capitalize;
+  }   
+
+.tamaño {
+	font-size: 10pt;
+}
+
 </style>

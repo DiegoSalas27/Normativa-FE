@@ -19,23 +19,58 @@
       <div>
         <h4 style="display: inline">
           Ingrese el porcentaje de cumplimiento deseado:
+
         </h4>
         <input
           class="percentage"
           type="number"
           :min="porcentajeCumplimiento"
+
+          
           @change="setValue"
           :value="porcentajeCumplimientoDeseado"
         />
+               <abbr title= "El valor debe ser mayor o igual ">
+                   
+                  <i class="fas fa-info-circle"></i></abbr>
+    
       </div>
+      
+
+
       <div>
+
+ 
+      </div>
+      
+<div>
+      <table>
+        <tr>
+          <td><h4 style="display: inline">Nivel de riesgo</h4></td>
+          <td><span>{{ nivelDeRiesgo }}</span></td>
+        </tr>
+        <tr>
+          <td><h4 style="display: inline">Porcentaje de cumplimiento actual  </h4></td>
+            <td><span>{{porcentajeCumplimiento}} %</span></td>
+        </tr>
+      </table>
+      </div>
+
+      <!-- <div>
         <h4 style="display: inline">Porcentaje actual:</h4>
         &nbsp;&nbsp;
         <span>{{ porcentajeCumplimiento }}%</span>
-      </div>
+      </div> -->
+
+    
+  
       <div class="options-buttons">
+
+   
         <button class="action-button" @click="summary">Resumen</button>
+   
         <button
+        
           class="action-button"
           :class="
             porcentajeCumplimientoDeseado < porcentajeCumplimiento
@@ -46,9 +81,11 @@
           :disabled="porcentajeCumplimientoDeseado < porcentajeCumplimiento"
         >
           Escenario deseado
+          
         </button>
-      </div>
+      </div>  
     </div>
+    
     <div class="summary">
       <div class="header-summary">
         <h1>{{ headingTitle }}</h1>
@@ -67,6 +104,9 @@
             <span style="width: 70%">{{ req.descripcion }}</span>
             <span style="marginleft: 5px">{{ respuestaItem(index) }}</span>
           </div>
+
+          
+
           <div class="body-item-content" style="paddingbottom: 20px">
             <div class="flex-row">
               <p>Justificación:</p>
@@ -141,11 +181,18 @@ import { handleErrors } from "../common/utils";
 import { uuidv4 } from "../utils/guid";
 import Modal from "../components/ui/Modal.vue";
 import { BASE_URL, rol } from "../common/constants";
+import { IPrueba, IPruebaResultados } from "../interfaces/prueba.interface";
+
+
 export default defineComponent({
   components: {
     NavBar,
     Modal,
   },
+
+
+
+
   data() {
     return {
       userInfoJson: emptyUser() as IUser,
@@ -156,9 +203,11 @@ export default defineComponent({
       criterios: [] as ICriterio[],
       porcentajeCumplimiento: 0,
       porcentajeCumplimientoDeseado: 0,
+      nivelDeRiesgo:"",
       accionesMitigacionCreadas: 0,
       message: null as string | null,
       loading: false,
+      pruebaResultados:{ }as IPruebaResultados,
       error: false,
       canEdit: false,
     };
@@ -268,6 +317,9 @@ export default defineComponent({
         // this.validationForm.email = errorObj.errores.mensaje;
       }
     },
+
+
+    
     async realScenario(): Promise<void> {
       this.message = "Cargando...";
       try {
@@ -299,6 +351,10 @@ export default defineComponent({
       } catch (err) {
         console.log(err);
       }
+
+
+
+//////////////////////////////////////////////////////      
       try {
         const response = await fetch(
           `${BASE_URL}evidenciarequerimiento/${this.$route.params.pr_codigo}`,
@@ -353,8 +409,38 @@ export default defineComponent({
         this.message = "";
       } catch (err) {
         console.log(err);
+
+      }
+
+
+    },
+
+////////    //////////
+    async obtenerPruebaResults(): Promise<void> {
+      
+      try {
+        const response = await fetch(
+          `${BASE_URL}prueba/${this.$route.params.pr_codigo}`,
+          {
+            method: "GET",
+            headers: new Headers({
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+          }
+        );
+        await handleErrors(response);
+        this.pruebaResultados = await response.json();
+        this.nivelDeRiesgo=this.pruebaResultados.nivelDeRiesgo;
+      } catch (error) {
+        this.error = true;
+        const errorObj = JSON.parse(error.message);
+        // this.validationForm.email = errorObj.errores.mensaje;
       }
     },
+
+////////////
+
     respuestaItem(index: number): string {
       let respuesta = "No implementado";
       switch (this.evidenciaRequerimiento[index]?.respuestaItem) {
@@ -411,6 +497,7 @@ export default defineComponent({
         this.canEdit = true;
       } else this.canEdit = false;
       await this.realScenario();
+      await this.obtenerPruebaResults();
     })();
   },
 });
@@ -431,6 +518,18 @@ export default defineComponent({
   height: 55.2px;
   top: -32px;
   border-right: 1px solid white;
+}
+table, th, td {
+  border: 8px solid rgba(5, 111, 160, 0.678);
+  border-collapse: collapse;
+  position:relative;
+    margin: 5px 2px;
+      top: -2px;
+      
+}
+td {
+  padding: 10px;
+  text-align: left;
 }
 .options-buttons button:nth-child(2) {
   position: relative;

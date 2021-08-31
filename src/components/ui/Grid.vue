@@ -190,8 +190,10 @@ h3 {
   color: #3378ff;
   font-weight: bold;
   position: relative;
-  left: 80px;
+  left: 150px;
   font-size: 14px;
+  
+
 }
 
 i:hover {

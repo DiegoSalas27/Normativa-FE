@@ -26,6 +26,7 @@
         $route.params.tr_codigo ? 'action-button' : 'action-button blocked'
       "
       @click="register()"
+      
     >
       {{ displayButtonText }}
     </button>
@@ -292,8 +293,11 @@ export default defineComponent({
       if (this.$route.params.tr_codigo) {
         if (this.update) {
           return "Guardar";
+          
         }
+        
         return "Editar";
+        
       }
       return "Registrar";
     },
@@ -477,6 +481,7 @@ export default defineComponent({
             this.error = false;
             this.message =
               "¡El plan de tratamiento ha sido registrado exitósamente!";
+              
 
             setTimeout(async () => {
               this.message = "";
@@ -510,6 +515,7 @@ export default defineComponent({
             this.error = false;
             this.message =
               "¡El plan de tratamiento ha sido actualizado exitósamente!";
+              location.reload();
 
             setTimeout(async () => {
               this.message = "";
@@ -673,7 +679,7 @@ export default defineComponent({
           } else {
             zeros = "00";
           }
-
+          
           this.tratamientoInfoJson.codigo =
             "TR" + zeros + (number + 1).toString();
         } catch (err) {

@@ -1,5 +1,8 @@
 <template>
+
+   <section class="fondou">
   <section id="main">
+ 
     <h1>PANEL PRINCIPAL</h1>
 
     <div v-if="userInfoJson?.rol === 'Administrador'">
@@ -81,6 +84,7 @@
       <div class="container">
         <!-- TODO: Mycard -->
         <div class="row">
+
           <div class="col">
             <div class="mycard count">
               <div style="margin-bottom: 10px"></div>
@@ -94,6 +98,8 @@
               <div class="donut-container" ref="semiDonut" id="chart"></div>
             </div>
           </div>
+
+
           <div class="col">
             <div class="mycard pie">
               <div style="margin-bottom: 10px">
@@ -103,13 +109,18 @@
             </div>
           </div>
         </div>
+
+        
         <div class="row">
+
           <div class="col">
             <div class="mycard line">
               <button class="btn-table" @click="goTo('TableUser', { type: 'RiesgoNormativa' })">NIVEL DE RIESGO POR NORMATIVA</button>
               <div ref="lineChart" id="chart"></div>
             </div>
           </div>
+
+
           <div class="col">
             <div class="mycard pie">
               <button class="btn-table" @click="goTo('TableUser', { type: 'PlanesTratamiento' })">PLANES DE TRATAMIENTO</button>
@@ -118,6 +129,8 @@
             </div>
           </div>
         </div>
+
+
       </div>
     </div>
 
@@ -134,8 +147,12 @@
         </div>
       </div>
     </div>
-
+    </section>
   </section>
+  
+
+
+
 </template>
 
 <script lang="ts">
@@ -399,7 +416,7 @@ h1 {
   cursor: pointer;
   border: 1px solid var(--placeholder);
   border-radius: 12px;
-  width: 100px;
+  width: 200px;
   margin: 10px;
   padding: 20px;
   box-shadow: 0 2px 8px var(--box-shadow);
@@ -502,5 +519,19 @@ h1 {
 }
 .btn-table:hover {
   color: #fff;
+}
+.fondou {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -3;
+  background-image: url("../assets/images/blanquito.jpg");
+  height: 100%;
+  
+  background-repeat: no-repeat;
+  background-size: cover;
+  
 }
 </style>
