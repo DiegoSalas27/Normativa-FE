@@ -3,6 +3,7 @@ export interface ITratamiento {
   tratamientoId?: string;
   evaluacionId: string;
   usuarioId?: string | null;
+  estadosTratamientoId?: string | null;
   nombre: string;
   codigo: string;
   fechaInicio?: any;

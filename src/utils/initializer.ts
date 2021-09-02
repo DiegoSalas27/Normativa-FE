@@ -26,6 +26,7 @@ export const emptyTratamiento = (): ITratamiento => ({
 	tratamientoId: '',
 	evaluacionId: '',
 	usuarioId: null,
+	estadosTratamientoId: null, 
 	nombre: '',
 	codigo: '',
 	fechaInicio: null,

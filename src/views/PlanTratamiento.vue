@@ -107,6 +107,28 @@
         </p>
       </div>
       <div class="grid-item">
+        <h4>Estado:</h4>
+        <img src="../assets/images/estado.png" alt="codeva" class="imgIcon" />
+        <span v-if="($route.params.tr_codigo && !update)">{{ estadoCalc() }}</span>
+        <select
+          v-if="(update || !$route.params.tr_codigo)"
+          class="select"
+          v-model="tratamientoInfoJson.estadosTratamientoId"
+          @change="changedEstado"
+          name="estado"
+        >
+          <option
+            v-for="estado in estadoList"
+            :key="estado.estadosTratamientoId"
+            :value="estado.estadosTratamientoId"
+          >
+            {{
+              estado.nombre
+            }}
+          </option>
+        </select>
+      </div>
+      <div v-if="asignadoSeleccionado" class="grid-item">
         <h4>Responsable:</h4>
         <img src="../assets/images/user.png" alt="codeva" class="imgIcon" />
         <span v-if="($route.params.tr_codigo && !canEdit) ||  ($route.params.tr_codigo && canEdit && !update)">{{ analistaCalc() }}</span>
@@ -252,32 +274,32 @@
 </template>
 
 <script lang="ts">
-import Modal from "../components/ui/Modal.vue";
+import NavBar from "@/components/layout/NavBar.vue";
+import ConfirmationModal from "@/components/ui/ConfirmationModal.vue";
 import { getUsuario } from "@/services/authService";
 import { emptyTratamiento, emptyUser } from "@/utils/initializer";
 import { defineComponent } from "@vue/runtime-core";
-import { IUser, IUsuarioLista } from "../interfaces/user.interface";
-import NavBar from "@/components/layout/NavBar.vue";
-import {
-  IEvaluacion,
-  IEvaluacionListado,
-} from "../interfaces/evaluacion.interface";
-import {
-  IPruebaDetalleLista,
-  PruebaList,
-} from "../interfaces/prueba.interface";
+import { BASE_URL, rol } from "../common/constants";
 import {
   handleErrors,
   propertiesSubSet,
-  validateNotEmpty,
+  validateNotEmpty
 } from "../common/utils";
+import Modal from "../components/ui/Modal.vue";
+import { IAccionMitigacion } from "../interfaces/accionMitigacion";
+import { IEstadoTratamiento } from '../interfaces/estadoTratamiento';
+import {
+  IEvaluacion,
+  IEvaluacionListado
+} from "../interfaces/evaluacion.interface";
+import {
+  PruebaList
+} from "../interfaces/prueba.interface";
 import {
   IObtenerTratamiento,
-  ITratamiento,
+  ITratamiento
 } from "../interfaces/tratamiento.interface";
-import { IAccionMitigacion } from "../interfaces/accionMitigacion";
-import { BASE_URL, rol } from "../common/constants";
-import ConfirmationModal from "@/components/ui/ConfirmationModal.vue";
+import { IUser, IUsuarioLista } from "../interfaces/user.interface";
 
 export default defineComponent({
   components: {
@@ -321,6 +343,7 @@ export default defineComponent({
       timeout: undefined as number | undefined,
       evaluacionList: [] as IEvaluacionListado[],
       analistaList: [] as IUsuarioLista[],
+      estadoList: [] as IEstadoTratamiento[],
       pruebas: [] as PruebaList[],
       showAccionesMitigacion: false,
       validationForm: {} as ITratamiento,
@@ -337,6 +360,7 @@ export default defineComponent({
       showModalConfirmation: false,
       massiveDelete: false,
       canEdit: false,
+      asignadoSeleccionado: false,
     };
   },
   watch: {
@@ -355,6 +379,25 @@ export default defineComponent({
     },
   },
   methods: {
+    async changedEstado(event: { target: HTMLInputElement }) {
+      const estado = this.estadoList.find(el => el.estadosTratamientoId == event.target.value) 
+      if (estado && (estado.nombre == 'Asignado' || estado.nombre == 'En proceso')) {
+        this.asignadoSeleccionado = true;
+      } else {
+        this.asignadoSeleccionado = false;
+      }
+    },
+    estadoCalc(): string {
+      const estado = this.estadoList.find(
+        (es) => es.estadosTratamientoId == this.tratamientoInfoJson.estadosTratamientoId
+      );
+      if (estado) {
+        if (estado.nombre == 'Asignado' || estado.nombre == 'En proceso') {
+        this.asignadoSeleccionado = true;
+        } 
+        return estado.nombre;
+      } else return "En proceso";
+    },
     analistaCalc(): string {
       const analista = this.analistaList.find(
         (an) => an.usuarioId == this.tratamientoInfoJson.usuarioId
@@ -452,7 +495,6 @@ export default defineComponent({
 
       console.log(isValid);
       console.log(this.tratamientoInfoJson);
-      debugger
 
       if (isValid) {
         if (!this.$route.params.tr_codigo) {
@@ -531,6 +573,30 @@ export default defineComponent({
         `/lista-verificacion/${this.codigoListaVerificacion}/prueba/${this.codigoPrueba}/resumen`
       );
     },
+    async fetchTratamientoEstados(): Promise<void> {
+      try {
+        const response = await fetch(
+          `${BASE_URL}estadotratamiento/lista?rolUsuario=${this.userInfoJson.rol}`,
+          {
+            method: "GET",
+            headers: new Headers({
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+          }
+        );
+
+        this.estadoList =
+          (await response.json()) as IEstadoTratamiento[];
+
+        if (!this.$route.params.tr_codigo) {
+          this.estadoList = this.estadoList.filter(e => e.nombre == 'Sin asignar' ||  e.nombre == 'Asignado')
+        }
+
+      } catch (err) {
+        console.log(err);
+      }
+    },
     async fetchTratamiento(): Promise<void> {
       try {
         const response = await fetch(
@@ -547,11 +613,22 @@ export default defineComponent({
         const tratamientoObtenido =
           (await response.json()) as IObtenerTratamiento;
 
+
+        console.log(tratamientoObtenido);
+        debugger
+
         const validateArray = Object.keys(this.tratamientoInfoJson);
+
+        console.log(validateArray);
+        debugger
+
         this.tratamientoInfoJson = propertiesSubSet<ITratamiento>(
           validateArray,
           tratamientoObtenido
         );
+
+        console.log(this.tratamientoInfoJson);
+        debugger
 
         this.codigoEvaluacion = tratamientoObtenido.codigoEvaluacion;
         this.pruebas = tratamientoObtenido.pruebas.filter(
@@ -690,6 +767,8 @@ export default defineComponent({
         await this.fetchTratamiento();
         await this.fetchAccionesMitigacion();
       }
+
+      await this.fetchTratamientoEstados();
     })();
   },
 });
