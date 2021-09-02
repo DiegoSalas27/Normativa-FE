@@ -79,7 +79,7 @@
         <h4>Código de prueba:</h4>
         <img src="../assets/images/llave.png" alt="codeva" class="imgIcon" />
 <!-- para volver label inneditable-->
-       <span v-if="($route.params.tr_codigo && !canEdit) ||  ($route.params.tr_codigo && canEdit && !update)">{{codigoPrueba}}</span>
+
 <!-- para volver label inneditable-->
         <select class="select" v-model="codigoPrueba" name="prueba">
           <option

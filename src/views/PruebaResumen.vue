@@ -268,7 +268,9 @@ export default defineComponent({
             }),
           }
         );
+
         await handleErrors(response);
+
         let evidenciasRequerimientos =
           (await response.json()) as IEvidenciaRequerimiento[];
         this.requerimientos = this.requerimientos.filter((req, index) =>
@@ -313,8 +315,10 @@ export default defineComponent({
         this.headingTitle = "Escenario deseado";
         this.message = "";
       } catch (error) {
-        console.log(error);
-        // this.validationForm.email = errorObj.errores.mensaje;
+        this.error = true;
+        const errorObj = JSON.parse(error.message);
+        const mensaje = errorObj.errores.mensaje;
+        this.message = mensaje;
       }
     },
 
