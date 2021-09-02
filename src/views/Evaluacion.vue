@@ -36,7 +36,7 @@
           <div class="non-editable">{{ evaluacion.codigo }}</div>
         </div>
         <div>
-          <br><br>
+          <br /><br />
           <h3>Seleccione lista de verificación</h3>
           <img
             src="../assets/images/listav.png"
@@ -75,7 +75,7 @@
           </div>
         </div>
         <div>
-          <br><br>
+          <br /><br />
           <h3>Código de obra</h3>
           <img src="../assets/images/llave.png" alt="codobra" class="imgIcon" />
           <input
@@ -95,7 +95,7 @@
           </p>
         </div>
         <div>
-          <br><br>
+          <br /><br />
           <h3>Nombre</h3>
           <img
             src="../assets/images/carduser.png"
@@ -109,8 +109,8 @@
           />
         </div>
         <div>
-          <br>
-          <br>
+          <br />
+          <br />
           <h3>Fecha de creación</h3>
           <img src="../assets/images/date.png" alt="fecha" class="imgIcon" />
           <div class="non-editable">{{ evaluacion.fechaCreacion }}</div>
@@ -121,8 +121,8 @@
           <h3>Estado</h3>
           <img src="../assets/images/check.png" alt="estado" class="imgIcon" />
           <div class="non-editable transformacion">{{ evaluacion.estado }}</div>
-          <br>
-          <br>
+          <br />
+          <br />
         </div>
         <div>
           <img src="../assets/images/prueba.png" alt="prueba" class="imgIcon" />
@@ -132,7 +132,8 @@
             :disabled="
               ((!selectedObra.obraId ||
                 !selectedListaVerificacion.listaVerificacionId) &&
-              !$route.params.id) || blockRealizarPrueba
+                !$route.params.id) ||
+              blockRealizarPrueba
             "
           >
             Realizar prueba
@@ -158,7 +159,7 @@
         </div>
       </div>
       <div>
-        <img src="../assets/images/obra.png" alt="obra" />  
+        <img src="../assets/images/obra.png" alt="obra" />
       </div>
     </div>
   </section>
@@ -169,7 +170,12 @@ import NavBar from "@/components/layout/NavBar.vue";
 import Grid from "@/components/ui/Grid.vue";
 import { emptyUser } from "@/utils/initializer";
 import { defineComponent } from "@vue/runtime-core";
-import { actions, BASE_URL, columnsPruebaLista, entity } from "../common/constants";
+import {
+  actions,
+  BASE_URL,
+  columnsPruebaLista,
+  entity,
+} from "../common/constants";
 import { fechaCreacionPruebaVacia } from "../common/mockdata";
 import { IDataSource } from "../interfaces/dataSource";
 import {
@@ -182,6 +188,7 @@ import { IUser } from "../interfaces/user.interface";
 import { getUsuario } from "../services/authService";
 import ConfirmationModal from "@/components/ui/ConfirmationModal.vue";
 import Modal from "../components/ui/Modal.vue";
+import { emptyObra, emptyVerificationList, emptyEvaluacion, emptyPrueba } from '../utils/initializer';
 
 export default defineComponent({
   components: {
@@ -192,7 +199,7 @@ export default defineComponent({
   },
   computed: {
     verifyPruebaCompleta(): boolean {
-      return this.pruebas.listaRecords.some(pr => pr.estado = 'Completa');
+      return this.pruebas.listaRecords.some((pr) => (pr.estado = "Completa"));
     },
 
     selectedListaVerificacion(): IListaVerificacion {
@@ -252,7 +259,9 @@ export default defineComponent({
     async confirmMassiveDelete(): Promise<void> {
       Promise.all(
         this.entityList.map(async (el) => {
-          const foundTest = this.pruebas.listaRecords.find((pr) => pr.id == +el);
+          const foundTest = this.pruebas.listaRecords.find(
+            (pr) => pr.id == +el
+          );
           if (foundTest) {
             try {
               const response = await fetch(
@@ -295,7 +304,7 @@ export default defineComponent({
       } else {
         this.$router.push(
           `/lista-verificacion/${this.selectedListaVerificacion.codigo}/prueba/${selectedPrueba?.codigo}/resumen`
-        )
+        );
       }
     },
     selectedList(entityList: string[]): void {
@@ -400,9 +409,7 @@ export default defineComponent({
       });
       this.obras = [];
       this.codigoObra = obra.codigo + "-" + obra.nombre;
-      
     },
-
 
     selectListaVerificacion(listaVerificacion: IListaVerificacion) {
       this.$store.dispatch("listaVerificacionModule/guardarListaVerificacion", {
@@ -450,7 +457,6 @@ export default defineComponent({
         this.codigoObra =
           this.selectedObra.codigo + "-" + this.selectedObra.nombre;
       }
-
     },
     submit(): void {
       if (this.evaluacion.visibilidad) {
@@ -529,7 +535,7 @@ export default defineComponent({
         this.selectedObra.obraId = evaluacionDetalle.obraId;
 
         this.pruebas.listaRecords = [];
-
+        
         evaluacionDetalle.pruebaList.forEach((prueba, index) => {
           this.pruebas.listaRecords.push({
             id: index + 1,
@@ -540,7 +546,9 @@ export default defineComponent({
           });
         });
 
-        this.blockRealizarPrueba = this.pruebas.listaRecords.some(pr => pr.estado == "Pendiente");
+        this.blockRealizarPrueba = this.pruebas.listaRecords.some(
+          (pr) => pr.estado == "Pendiente"
+        );
 
         this.rows = this.pruebas.listaRecords.length;
 
@@ -560,22 +568,31 @@ export default defineComponent({
       }
     },
   },
+  unmounted() {
+    this.$store.dispatch("obraModule/guardarObra", emptyObra());
+    this.$store.dispatch("listaVerificacionModule/guardarListaVerificacion", emptyVerificationList());
+    this.$store.dispatch("evaluacionModule/guardarEvaluacion", emptyEvaluacion());
+    this.$store.dispatch("pruebaModule/guardarPrueba", emptyPrueba());
+  },
   mounted() {
     (async () => {
       this.userInfoJson = await getUsuario();
 
       if (!this.$route.params.id) {
+        this.pruebas = {
+          listaRecords: [],
+          numeroPaginas: 1,
+          totalRecords: 0,
+        }
+
         try {
-          const response = await fetch(
-            `${BASE_URL}evaluacion/count`,
-            {
-              method: "GET",
-              headers: new Headers({
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + localStorage.getItem("token"),
-              }),
-            }
-          );
+          const response = await fetch(`${BASE_URL}evaluacion/count`, {
+            method: "GET",
+            headers: new Headers({
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+          });
 
           const number: number = await response.json();
           let zeros = "";
@@ -586,7 +603,7 @@ export default defineComponent({
             zeros = "0";
           } else {
             zeros = "00";
-	  }
+          }
 
           this.$store.dispatch("evaluacionModule/guardarEvaluacion", {
             ...this.evaluacion,
@@ -651,18 +668,16 @@ input {
   width: 200px;
 }
 
-
 #main {
   text-align: left;
   margin-left: 100px;
 }
 
-.transformacion { 
+.transformacion {
   text-transform: capitalize;
-  }   
-
-.tamaño {
-	font-size: 10pt;
 }
 
+.tamaño {
+  font-size: 10pt;
+}
 </style>

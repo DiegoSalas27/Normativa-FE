@@ -471,7 +471,7 @@ export default defineComponent({
       };
       try {
         const response = await fetch(
-          `${BASE_URL}evidenciarequerimiento/${evidenciaReq.evidenciaId}/${evidenciaReq.pruebaId}/${evidenciaReq.requerimientoId}`,
+          `${BASE_URL}evidenciarequerimiento/${evidenciaReq.pruebaId}/${evidenciaReq.requerimientoId}`,
           {
             method: "PUT",
             headers: new Headers({
