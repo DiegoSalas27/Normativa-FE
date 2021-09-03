@@ -34,11 +34,11 @@
 
       <div class="gridCards stats">
         <div class="card statanalista">
-          <p>RESULTADOS DE EVALUACIONES</p>
+          <button class="btn-table" @click="goTo('TableUser', { type: 'RiesgoNormativa' })">RESULTADOS DE EVALUACIONES</button>
           <div ref="barChart" id="chart"></div>
         </div>
         <div class="card statanalista">
-          <p>PLANES DE TRATAMIENTO</p>
+          <button class="btn-table" @click="goTo('TableUser', { type: 'PlanesTratamiento' })">PLANES DE TRATAMIENTO</button>
           <div ref="pieChart" id="chart"></div>
         </div>
       </div>
@@ -69,12 +69,12 @@
 
         <br />
         <div class="card stat restulado-eva">
-          <p><strong> PLANES DE TRATAMIENTO</strong></p>
+          <button class="btn-table" @click="goTo('TableUser', { type: 'PlanesTratamiento' })">PLANES DE TRATAMIENTO</button>
           <div ref="stackedBar" id="chart"></div>
         </div>
         <br />
         <div class="card stat restulado-eva">
-          <p><strong>RESULTADOS DE EVALUACIONES</strong></p>
+          <button class="btn-table" @click="goTo('TableUser', { type: 'RiesgoNormativa' })">RESULTADOS DE EVALUACIONES</button>
           <div ref="barChartJefe" id="chart"></div>
         </div>
       </div>
@@ -328,7 +328,7 @@ export default defineComponent({
         stackedBar.render();
       }
 
-      if (this.userInfoJson.rol === "Jefe de riesgos") {
+      if (this.userInfoJson.rol === "Jefe de riesgos"||this.userInfoJson.rol === "Alta gerencia") {
         try {
           const response = await fetch(`${BASE_URL}evaluacion/count`, {
             method: "GET",
