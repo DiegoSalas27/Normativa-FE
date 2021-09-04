@@ -1,19 +1,15 @@
 export const series = [
   {
-    name: "PRODUCT A",
+    name: "Riesgo Bajo", //verde
     data: [44, 55, 41, 67, 22, 43],
   },
   {
-    name: "PRODUCT B",
+    name: "Riesgo Medio", //Naranja
     data: [13, 23, 20, 8, 13, 27],
   },
   {
-    name: "PRODUCT C",
+    name: "Riesgo Alto", //Rojo
     data: [11, 17, 15, 15, 21, 14],
-  },
-  {
-    name: "PRODUCT D",
-    data: [21, 7, 25, 13, 22, 8],
   },
 ];
 
@@ -117,20 +113,20 @@ export const treeMapChartSeries = [
 export const semiDonutSeries = [62.99, 37.01];
 
 export const stackedBarSeries = [{
-  name: 'Marine Sprite',
-  data: [44, 55, 41, 37, 22, 43, 21]
+  name: 'Cancelado',
+  data: [44, null, 41, 37, 22, 43, 21]
 }, {
-  name: 'Striking Calf',
-  data: [53, 32, 33, 52, 13, 43, 32]
+  name: 'Sin asignar',
+  data: [53, 32, null, 52, null, 43, 32]
 }, {
-  name: 'Tank Picture',
-  data: [12, 17, 11, 9, 15, 11, 20]
+  name: 'En proceso',
+  data: [12, 17, 11, null, 15, 11, 20]
 }, {
-  name: 'Bucket Slope',
-  data: [9, 7, 5, 8, 6, 9, 4]
+  name: 'Solucionado',
+  data: [9, 7, null, 8, null, 9, 4]
 }, {
-  name: 'Reborn Kid',
-  data: [25, 12, 19, 32, 25, 24, 10]
+  name: 'Asignado',
+  data: [25, null, 19, null, 25, 24, 10]
 }];
 
 export const xAxisCategoriesStacked = [2008, 2009, 2010, 2011, 2012, 2013, 2014];

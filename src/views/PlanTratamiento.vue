@@ -613,22 +613,12 @@ export default defineComponent({
         const tratamientoObtenido =
           (await response.json()) as IObtenerTratamiento;
 
-
-        console.log(tratamientoObtenido);
-        debugger
-
         const validateArray = Object.keys(this.tratamientoInfoJson);
-
-        console.log(validateArray);
-        debugger
 
         this.tratamientoInfoJson = propertiesSubSet<ITratamiento>(
           validateArray,
           tratamientoObtenido
         );
-
-        console.log(this.tratamientoInfoJson);
-        debugger
 
         this.codigoEvaluacion = tratamientoObtenido.codigoEvaluacion;
         this.pruebas = tratamientoObtenido.pruebas.filter(

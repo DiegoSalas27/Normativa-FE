@@ -1,6 +1,7 @@
 import { IObra } from './obra.interface';
 import { IListaVerificacion } from './listaVerificacion.interface';
 import { IPruebaDetalleLista } from './prueba.interface';
+import { INivelRiesgo } from './nivelesRiesgo.interface';
 
 export interface IEvaluacion {
   evaluacionId?: string;
@@ -41,4 +42,13 @@ export interface IEvaluacionListado {
   tieneTratamiento?: string;
   visbilidad: boolean;
   pruebaList: IPruebaDetalleLista[];
+}
+
+export interface IStatisticsEvaluacionResult {
+  series: INivelRiesgo[];
+  xAxisCategories: string[];
+}
+
+export interface IStatisticsEvaluacionCumplimiento {
+  gaugeSeries: number[];
 }

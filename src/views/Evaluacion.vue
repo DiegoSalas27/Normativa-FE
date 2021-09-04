@@ -426,9 +426,11 @@ export default defineComponent({
         EvaluacionNombre: this.evaluacion.nombre,
         ObraId: this.selectedObra.obraId,
         ListaVerificacionId: this.selectedListaVerificacion.listaVerificacionId,
+        UsuarioId: this.userInfoJson.id,
       };
 
-      // Guardar evaluacion
+      // Guardar evaluacion 
+      console.log(body);
 
       try {
         await fetch(`${BASE_URL}evaluacion`, {

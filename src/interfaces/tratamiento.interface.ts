@@ -24,3 +24,18 @@ export interface IObtenerTratamiento {
   listaVerificacionCodigo: string;
   pruebas: PruebaList[];
 }
+
+export interface IStatisticsTratamientoResultDto {
+  pieChartSeries: number[]
+  pieChartLabels: string[]
+}
+
+export interface IStatisticsTratamientoResultAnalistasDto {
+  stackedBarSeries: StackedBarSeries[]
+  xAxisCategoriesStacked: string[];
+}
+
+interface StackedBarSeries {
+  name: string;
+  data: number[];
+}
