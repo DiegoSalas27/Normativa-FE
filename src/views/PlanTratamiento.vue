@@ -361,6 +361,7 @@ export default defineComponent({
       massiveDelete: false,
       canEdit: false,
       asignadoSeleccionado: false,
+      hasTouchedEstado: false,
     };
   },
   watch: {
@@ -380,6 +381,7 @@ export default defineComponent({
   },
   methods: {
     async changedEstado(event: { target: HTMLInputElement }) {
+      this.hasTouchedEstado = true;
       const estado = this.estadoList.find(el => el.estadosTratamientoId == event.target.value) 
       if (estado && (estado.nombre == 'Asignado' || estado.nombre == 'En proceso')) {
         this.asignadoSeleccionado = true;
@@ -396,7 +398,7 @@ export default defineComponent({
         this.asignadoSeleccionado = true;
         } 
         return estado.nombre;
-      } else return "En proceso";
+      } else return "";
     },
     analistaCalc(): string {
       const analista = this.analistaList.find(
@@ -449,6 +451,11 @@ export default defineComponent({
         });
 
         this.analistaList = (await response.json()) as IUsuarioLista[];
+
+        this.tratamientoInfoJson.usuarioId == null && (
+          this.tratamientoInfoJson.usuarioId = this.analistaList[0].usuarioId
+        );
+
       } catch (err) {
         console.log(err);
       }
@@ -493,8 +500,15 @@ export default defineComponent({
 
       let isValid = validateNotEmpty(jsonToValidate, this.validationForm);
 
-      console.log(isValid);
-      console.log(this.tratamientoInfoJson);
+      const estado = this.estadoList.find(el => el.estadosTratamientoId ==  this.tratamientoInfoJson.estadosTratamientoId);
+
+      if (this.userInfoJson.rol == 'Jefe de riesgos' && 
+          estado?.nombre == 'En proceso' && this.hasTouchedEstado)
+      {
+        this.error = true;
+        this.message = "Este estado solo puede ser seleccionado por un analista";
+        return;
+      }
 
       if (isValid) {
         if (!this.$route.params.tr_codigo) {
@@ -592,6 +606,10 @@ export default defineComponent({
         if (!this.$route.params.tr_codigo) {
           this.estadoList = this.estadoList.filter(e => e.nombre == 'Sin asignar' ||  e.nombre == 'Asignado')
         }
+
+        (this.tratamientoInfoJson.estadosTratamientoId == null ||
+        this.tratamientoInfoJson.estadosTratamientoId == undefined) &&
+        (this.tratamientoInfoJson.estadosTratamientoId = this.estadoList[0].estadosTratamientoId);
 
       } catch (err) {
         console.log(err);

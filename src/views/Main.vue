@@ -262,7 +262,6 @@ export default defineComponent({
           console.log(err);
         }
     },
-    
     async devolverPlanesTratamientoPorAnalista(): Promise<IStatisticsTratamientoResultAnalistasDto | undefined> {
        try {
           const response = await fetch(`${BASE_URL}plantratamiento/statistics/resultados/analistas`, {
@@ -356,7 +355,6 @@ export default defineComponent({
         );
         stackedBar.render();
       }
-
 
       // Hasta aca es lo que le pertenece al jefe de riesgos
 
