@@ -1,10 +1,11 @@
 <template>
   <div class="login">
     <h1>BIENVENIDO AL SISTEMA EXPERTO</h1>
-    <base-card>
-      <h1>Login</h1>
+    <base-card class="base">
+      <div class="logo"></div>
       <form @submit.prevent="submitForm">
         <div class="form-control">
+          <i class="fa fa-user icon"></i>
           <input
             type="text"
             id="user"
@@ -16,6 +17,7 @@
           </p>
         </div>
         <div class="form-control">
+          <i class="fa fa-lock icon"></i>
           <input
             type="password"
             id="password"
@@ -26,7 +28,7 @@
             {{ validationForm.password }}
           </p>
         </div>
-        <base-button mode="action-button">{{
+        <base-button class="btn-primary" mode="action-button">{{
           submitButtonCaption
         }}</base-button>
         <!-- <base-button type="button" mode="flat" @click="switchAuthMode"
@@ -148,11 +150,27 @@ export default defineComponent({
 
 
 <style scoped>
+
+h1 {
+  font-family: 'Segoe UI', sans-serif;
+}
+
 .login {
   z-index: 0;
   height: 100vh;
   width: 100vw;
   background: url("../assets/images/construccion2.jpg") no-repeat center center;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.login .logo {
+  width: 7rem;
+  height: 9.8rem;
+  /*border-radius: 100%;*/
+  margin-left: 30%;
+  background: url("../assets/images/logo-login.png") no-repeat center center;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -186,18 +204,52 @@ export default defineComponent({
   padding-right: 35%;
 }
 
+.login .base {
+  background-color: rgba(0, 0, 0, 0);
+  box-shadow: none;
+}
+
 .form-control {
-  margin: 20px 0;
+  margin: 30px 20px;
+}
+
+.icon {
+  z-index: 1;
+  position: absolute;
+  left: 3.1rem;
+  margin-top: 0.5rem;
+  color: rgb(27, 27, 27);
+}
+
+.btn-primary {
+  margin-top: 2.5rem;
+  border-radius: 10px;
+  background-color: #4F6FFF;
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: 600;
+}
+
+.error {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: rgb(27, 27, 27);
+  color: #4F6FFF;;
+  font-size: 13px;
+  margin-top: 0.5rem;
+  font-weight: 800;
+  text-align: center;
 }
 
 input[type="text"],
 input[type="password"],
 textarea:focus {
+  z-index: 0;
   width: 100%;
-  border-radius: 4px;
+  font-family: 'Segoe UI', sans-serif;
+  border-radius: 15px;
   border: 0.5px solid var(--placeholder);
   outline: none;
   border: 1px solid var(--accent);
-  padding: 12px 20px;
+  padding: 15px 35px;
 }
 </style>
