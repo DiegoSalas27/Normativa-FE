@@ -400,7 +400,7 @@ export default defineComponent({
 
       if (this.userInfoJson.rol === "Jefe de riesgos" || this.userInfoJson.rol === "Alta gerencia") {
         try {
-          const response = await fetch(`${BASE_URL}evaluacion/count`, {
+          const response = await fetch(`${BASE_URL}evaluacion/count?visible=true`, {
             method: "GET",
             headers: new Headers({
               "Content-Type": "application/json",
