@@ -44,6 +44,7 @@ export default defineComponent({
       },
       actions: [] as any,
       page: 1,
+      quantity: 5,
       entityList: [] as string[],
     };
   },
@@ -124,7 +125,7 @@ export default defineComponent({
     async listPlanTratamiento(): Promise<void> {
       try {
         const response = await fetch(
-          `${BASE_URL}plantratamiento/lista?filter=`,
+          `${BASE_URL}plantratamiento/lista?page=${this.page}&quantity=${this.quantity}`,
           {
             method: "GET",
             headers: new Headers({
@@ -133,20 +134,13 @@ export default defineComponent({
             }),
           }
         );
-        this.dataSource = { listaRecords: [], numeroPaginas: 1, totalRecords: 1} as IDataSource<ITratamiento>
-        this.dataSource.listaRecords = (await response.json());
-        this.dataSource.listaRecords = this.dataSource.listaRecords.map(e => {
-            return {
-                ...e, 
-                fechaInicio: e.fechaInicio? (moment(e.fechaInicio)).format('DD/MM/YYYY') : '',
-                fechaFin: e.fechaFin? (moment(e.fechaInicio)).format('DD/MM/YYYY') : ''
-            }
-        });
+     
+        this.dataSource = (await response.json()) as IDataSource<any>;
         
       } catch (error) {
         console.log(error);
       }
-      console.log("a")
+     
     },
     async listRiesgoNormativa(): Promise<void> {
       try {

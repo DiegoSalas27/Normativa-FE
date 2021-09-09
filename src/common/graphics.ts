@@ -134,6 +134,97 @@ export const configurePieChartOptions = (
   };
 };
 
+export const configureBarListOptions = (
+  series:any[],
+  XAxisPrueba: string[] | number[],
+  )=> {
+    return{
+      series: [{
+        data: series
+      }],
+      chart: {
+        type:'bar',
+        height: 350
+      },
+        plotOptions: {
+          bar: {
+            borderRadius: 4,
+            horizontal: true,
+          }
+        },
+        dataLabels: {
+          enabled: false
+        },
+        xaxis: {
+          categories:  XAxisPrueba,
+        },
+    };
+  };
+      
+ 
+
+
+export const configureGaugeOptions2 = (
+  series: any[],
+) => {
+  return {
+    series,
+    chart: {
+      type: 'radialBar',
+      offsetY: -20,
+      sparkline: {
+        enabled: true
+      }
+    },
+    plotOptions: {
+      radialBar: {
+        startAngle: -90,
+        endAngle: 90,
+        track: {
+          background: "#e7e7e7",
+          strokeWidth: '97%',
+          margin: 5, // margin is in pixels
+          dropShadow: {
+            enabled: true,
+            top: 2,
+            left: 0,
+            color: '#999',
+            opacity: 1,
+            blur: 2
+          }
+        },
+        dataLabels: {
+          name: {
+            show: false
+          },
+          value: {
+            offsetY: -2,
+            fontSize: '22px'
+          }
+        }
+      }
+    },
+    grid: {
+      padding: {
+        top: -10
+      }
+    },
+    fill: {
+      type: 'gradient',
+      gradient: {
+        shade: 'light',
+        shadeIntensity: 0.4,
+        inverseColors: false,
+        opacityFrom: 1,
+        opacityTo: 1,
+        stops: [0, 50, 53, 91]
+      },
+    },
+    labels: ['Porcentaje de cumplimiento'],
+  };
+};
+
+
 export const configurePieChartOptions2 = (
   series: any[],
   width: any,

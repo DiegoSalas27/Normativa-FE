@@ -30,6 +30,11 @@ export interface IStatisticsTratamientoResultDto {
   pieChartLabels: string[]
 }
 
+export interface IStatisticsTratamientoResultListaDto {
+  pieChartSeriesLista: number[]
+  pieChartLabelsLista: string[]
+}
+
 export interface IStatisticsTratamientoResultAnalistasDto {
   stackedBarSeries: StackedBarSeries[]
   xAxisCategoriesStacked: string[];
