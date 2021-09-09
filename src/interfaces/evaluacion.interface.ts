@@ -52,3 +52,19 @@ export interface IStatisticsEvaluacionResult {
 export interface IStatisticsEvaluacionCumplimiento {
   gaugeSeries: number[];
 }
+
+export interface IStatisticsEvaluacionCumplimientoPrueba {
+  gaugeSeries2: number[];
+}
+
+export interface IStatisticsEvaluacionCumplimientoPruebaLista{
+  
+  stackedBarSeriesPrueba: StackedBarSeriesPrueba[];
+  xAxisPruebaStacked: string[];
+
+}
+
+interface StackedBarSeriesPrueba {
+  name: string;
+  data: number[];
+}

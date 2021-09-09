@@ -93,10 +93,11 @@
                 {{ numberEvaluaciones }}
               </p>
             </div>
-            <!-- <div class="mycard mydonut"> cambiar nombre de ref
-              <div><strong>PORCENTAJE DE CUMPLIMIENTO</strong></div>
-              <div class="donut-container" ref="semiDonut" id="chart"></div>
-            </div> -->
+              <div class="mycard mydonut" style="height: 350px">
+                <div><strong>PORCENTAJE DE CUMPLIMIENTO</strong></div>
+                <div ref="gauge2" id="chart"></div>
+
+            </div> 
           </div>
 
 
@@ -105,7 +106,7 @@
               <div style="margin-bottom: 10px">
                 <strong>PORCENTAJE DE CUMPLIMIENTO POR OBRAS</strong> 
               </div>
-              <div ref="treeMapChart" id="chart"></div>
+              <div ref="StackedBarPrueba" id="chart"></div>
             </div>
           </div>
         </div>
@@ -163,20 +164,22 @@ import {
   AnalistaUserActions,
   BASE_URL,
   EspecialistaUserActions,
-  rol
+  rol,
 } from "../common/constants";
 import {
-  configureBarChartOptions, configureGaugeOptions, configureLineChartOptions, configurePieChartOptions,
+  configureBarChartOptions, configureGaugeOptions, configureLineChartOptions, configurePieChartOptions,  configureGaugeOptions2, configureBarListOptions,
   configurePieChartOptions2,
-  configureStackBarChartOptions, configureTreeMapChartOptions
+  configureStackBarChartOptions, configureTreeMapChartOptions,
 } from "../common/graphics";
 import {
   lineChartSeries, pieChartLabels2,
-  pieChartSeries2, treeMapChartSeries
+  pieChartSeries2, treeMapChartSeries,
 } from "../common/mockdata";
 import { handleErrors } from "../common/utils";
-import { IStatisticsEvaluacionCumplimiento, IStatisticsEvaluacionResult } from "../interfaces/evaluacion.interface";
-import { IStatisticsTratamientoResultAnalistasDto, IStatisticsTratamientoResultDto } from "../interfaces/tratamiento.interface";
+import { IStatisticsEvaluacionCumplimiento, IStatisticsEvaluacionResult,
+IStatisticsEvaluacionCumplimientoPrueba, IStatisticsEvaluacionCumplimientoPruebaLista, } from "../interfaces/evaluacion.interface";
+import { IStatisticsTratamientoResultAnalistasDto, IStatisticsTratamientoResultDto,IStatisticsTratamientoResultListaDto,
+ } from "../interfaces/tratamiento.interface";
 import { IUser } from "../interfaces/user.interface";
 import { getUsuario } from "../services/authService";
 import { emptyUser } from "../utils/initializer";
@@ -246,6 +249,31 @@ export default defineComponent({
           console.log(err);
         }
     },
+
+
+async devolverResultadosTratamientosLista(): Promise<
+      IStatisticsTratamientoResultListaDto | undefined
+    > {
+      try {
+        const response = await fetch(
+          `${BASE_URL}plantratamiento/statistics/resultadoslista`,
+          {
+            method: "GET",
+            headers: new Headers({
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+          }
+        );
+
+        await handleErrors(response);
+        return (await response.json()) as IStatisticsTratamientoResultListaDto;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+
     async devolverCumplimientoEvaluaciones(): Promise<IStatisticsEvaluacionCumplimiento | undefined> {
        try {
           const response = await fetch(`${BASE_URL}evaluacion/statistics/cumplimiento`, {
@@ -262,6 +290,54 @@ export default defineComponent({
           console.log(err);
         }
     },
+
+
+    async devolverCumplimientoEvaluacionesPruebas(): Promise<
+      IStatisticsEvaluacionCumplimientoPrueba | undefined
+    > {
+      try {
+        const response = await fetch(
+          `${BASE_URL}evaluacion/statistics/cumplimientoprueba`,
+          {
+            method: "GET",
+            headers: new Headers({
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+          }
+        );
+
+        await handleErrors(response);
+        return (await response.json()) as IStatisticsEvaluacionCumplimientoPrueba;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    async devolverCumplimientoEvaluacionesPruebasLista(): Promise<
+      IStatisticsEvaluacionCumplimientoPruebaLista | undefined
+    > {
+      try {
+        const response = await fetch(
+          `${BASE_URL}evaluacion/statistics/cumplimientopruebalista`,
+          {
+            method: "GET",
+            headers: new Headers({
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+          }
+        );
+
+        await handleErrors(response);
+        return (await response.json()) as IStatisticsEvaluacionCumplimientoPruebaLista;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+
+
     async devolverPlanesTratamientoPorAnalista(): Promise<IStatisticsTratamientoResultAnalistasDto | undefined> {
        try {
           const response = await fetch(`${BASE_URL}plantratamiento/statistics/resultados/analistas`, {
@@ -358,16 +434,48 @@ export default defineComponent({
 
       // Hasta aca es lo que le pertenece al jefe de riesgos
 
+       //esto le pertence a alta gerencia
+
+      const { gaugeSeries2 } =
+        (await this.devolverCumplimientoEvaluacionesPruebas()) as IStatisticsEvaluacionCumplimientoPrueba;
+      const optionsSemiDonut = configureGaugeOptions2(gaugeSeries2);
+
+      if (this.$refs.gauge2) {
+        const gauge2 = new ApexCharts(this.$refs.gauge2, optionsSemiDonut);
+        gauge2.render();
+      }
+
+      const { pieChartSeriesLista, pieChartLabelsLista } =
+        (await this.devolverResultadosTratamientosLista()) as IStatisticsTratamientoResultListaDto;
+
+      const { stackedBarSeriesPrueba, xAxisPruebaStacked } =
+        (await this.devolverCumplimientoEvaluacionesPruebasLista()) as IStatisticsEvaluacionCumplimientoPruebaLista;
+
+      
+
+      const optionsStackedBarPrueba = configureBarListOptions(
+        stackedBarSeriesPrueba,
+        xAxisPruebaStacked
+      );
+
+
       const optionsPieChart2 = configurePieChartOptions2(
-        pieChartSeries2,
+        pieChartSeriesLista,
         "70%",
-        pieChartLabels2
+        pieChartLabelsLista
       );
             
 
       const optionsLineChart = configureLineChartOptions(lineChartSeries);
       const optionsTreeMapChart = configureTreeMapChartOptions(treeMapChartSeries);
-      
+
+      if (this.$refs.StackedBarPrueba) {
+        const StackedBarPrueba = new ApexCharts(
+          this.$refs.StackedBarPrueba,
+          optionsStackedBarPrueba
+        );
+        StackedBarPrueba.render();
+      }
 
       if (this.$refs.barChartJefe) {
         const barChart = new ApexCharts(
@@ -397,6 +505,8 @@ export default defineComponent({
         );
         treeMapChart.render();
       }
+
+      //hasta aca le pertenece alta gerencia
 
       if (this.userInfoJson.rol === "Jefe de riesgos" || this.userInfoJson.rol === "Alta gerencia") {
         try {
