@@ -36,7 +36,10 @@ import {
 } from "@/common/constants";
 import ConfirmationModal from "@/components/ui/ConfirmationModal.vue";
 import Grid from "@/components/ui/Grid.vue";
-import { IEvaluacionListado } from "@/interfaces/evaluacion.interface";
+import {
+  IEvaluacion,
+  IEvaluacionListado,
+} from "@/interfaces/evaluacion.interface";
 import { defineComponent } from "@vue/runtime-core";
 import Modal from "../components/ui/Modal.vue";
 import { IDataSource } from "../interfaces/dataSource";
@@ -51,7 +54,7 @@ export default defineComponent({
   },
   data() {
     return {
-      dataSource: emptyDataSource() as IDataSource<IEvaluacionListado>,
+      dataSource: emptyDataSource() as IDataSource<IEvaluacion>,
       // dataSource: emptyDataSource() as IDataSource<IUser>,
       columns: columnsEvaluacionesList,
       // columns: columnsRolList,
@@ -105,8 +108,7 @@ export default defineComponent({
           }
         );
 
-        this.dataSource =
-          (await response.json()) as IDataSource<IEvaluacionListado>;
+        this.dataSource = (await response.json()) as IDataSource<IEvaluacion>;
         // this.dataSource = (await response.json()) as IDataSource<IUser>;
         console.log("this.dataSource");
         console.log(this.dataSource);

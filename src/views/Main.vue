@@ -53,12 +53,9 @@
       </div>
 
       <div v-show="userInfoJson?.rol === 'Jefe de riesgos'">
-        <div class="flex-col">
-          <div class="flex-row">
+        <div class="flex-col" style="margin: 0 2vw">
+          <div class="flex-row" style="justify-content: space-between">
             <div>
-              <button class="action-button" @click="generarPlan">
-                Generar Plan
-              </button>
               <div class="card stat donut" style="height: 218.5px">
                 <div><strong>PORCENTAJE DE CUMPLIMIENTO</strong></div>
                 <div ref="gauge" id="chart"></div>
@@ -66,7 +63,12 @@
             </div>
 
             <div>
-              <button class="action-button">Visualizar informes</button>
+              <button class="action-button" @click="generarPlan">
+                Generar Plan
+              </button>
+            </div>
+
+            <div>
               <div class="card stat donut" style="height: 218.5px">
                 <div><strong>EVALUACIONES REALIZADAS</strong></div>
                 <br />
@@ -75,25 +77,28 @@
             </div>
           </div>
 
-          <br />
-          <div class="card stat restulado-eva">
-            <button
-              class="btn-table"
-              @click="goTo('TableUser', { type: 'PlanesTratamiento' })"
-            >
-              PLANES DE TRATAMIENTO
-            </button>
-            <div ref="stackedBar" id="chart"></div>
+          <div class="flex-row" style="justify-content: space-between">
+            <div class="card stat restulado-eva">
+              <button
+                class="btn-table"
+                @click="goTo('TableUser', { type: 'PlanesTratamiento' })"
+              >
+                PLANES DE TRATAMIENTO
+              </button>
+              <div ref="stackedBar" id="chart"></div>
+            </div>
           </div>
-          <br />
-          <div class="card stat restulado-eva">
-            <button
-              class="btn-table"
-              @click="goTo('TableUser', { type: 'RiesgoNormativa' })"
-            >
-              RESULTADOS DE EVALUACIONES
-            </button>
-            <div ref="barChartJefe" id="chart"></div>
+
+          <div class="flex-row" style="justify-content: space-between">
+            <div class="card stat restulado-eva">
+              <button
+                class="btn-table"
+                @click="goTo('TableUser', { type: 'RiesgoNormativa' })"
+              >
+                RESULTADOS DE EVALUACIONES
+              </button>
+              <div ref="barChartJefe" id="chart"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -582,7 +587,11 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style>
+body {
+  background-color: #d2d2d2;
+}
+
 h1 {
   font-weight: bold;
   font-size: 2.5vw;
@@ -645,6 +654,7 @@ h1 {
 }
 
 .card {
+  background-color: ghostwhite;
   cursor: pointer;
   border: 1px solid var(--placeholder);
   border-radius: 12px;
@@ -681,7 +691,7 @@ h1 {
 
 .restulado-eva {
   min-width: 450px !important;
-  width: 81% !important;
+  width: 100% !important;
 }
 
 .card:hover {
