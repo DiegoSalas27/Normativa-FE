@@ -283,7 +283,7 @@ export const EspecialistaUserActions = [
   },
   {
     src: require("@/assets/images/ModificarEvaluaciones_Especialista.png"),
-    description: "Modificar lista de evaluaciones",
+    description: "Modificar evaluaciones",
     url: urlConstants.MODIFICAR_EVALUACIONES,
   },
 ];
