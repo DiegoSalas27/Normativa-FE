@@ -14,15 +14,14 @@ import SideBar from '@/components/layout/SideBar.vue';
         ><span v-if="expand">Mi perfil</span>
       </div>
 
-      
       <!-- <div>
         <span>{{ user.nombres }} {{ user.apellidos }}</span>
       </div> -->
 
- 
-
       <div>
-        <i :class="expand ? 'far fa-envelope' : 'far fa-envelope fa-lg show'"></i>
+        <i
+          :class="expand ? 'far fa-envelope' : 'far fa-envelope fa-lg show'"
+        ></i>
         <span v-if="expand">{{ user?.email }}</span>
       </div>
       <div>
@@ -31,7 +30,9 @@ import SideBar from '@/components/layout/SideBar.vue';
       </div>
       <div>
         <i
-          :class="expand ? 'fas fa-user-shield' : 'fas fa-user-shield fa-lg show'"
+          :class="
+            expand ? 'fas fa-user-shield' : 'fas fa-user-shield fa-lg show'
+          "
         ></i>
         <span v-if="expand">{{ user?.rol }}</span>
       </div>
@@ -40,10 +41,7 @@ import SideBar from '@/components/layout/SideBar.vue';
         >Salir &nbsp;&nbsp; <i class="fas fa-sign-out-alt"></i>
       </router-link>
     </nav>
-    <button
-      @click="minimize"
-      :class="expand ? 'leftArrow' : 'rightArrow'"
-    >
+    <button @click="minimize" :class="expand ? 'leftArrow' : 'rightArrow'">
       <i :class="expand ? 'arrow left' : 'arrow right'"></i>
     </button>
   </section>
@@ -76,7 +74,6 @@ export default defineComponent({
     },
   },
 });
-
 </script>
 
 
@@ -93,7 +90,7 @@ export default defineComponent({
 }
 
 .sideBarMenu {
-  background-color: var(--primary-variant);
+  background-color: #003d7f;
   box-shadow: 0 0.1px 5px var(--nav-bg);
   color: white;
   height: calc(100vh - 60px);
@@ -182,7 +179,7 @@ export default defineComponent({
   border-width: 0 2px 2px 0;
   display: inline-block;
   padding: 3px;
-  transition: 0.200s;
+  transition: 0.2s;
 }
 
 .sideBarMenu div {

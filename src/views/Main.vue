@@ -1,159 +1,180 @@
 <template>
+  <section class="fondou">
+    <section id="main">
+      <h1>PANEL PRINCIPAL</h1>
 
-   <section class="fondou">
-  <section id="main">
- 
-    <h1>PANEL PRINCIPAL</h1>
-
-    <div v-if="userInfoJson?.rol === 'Administrador'">
-      <div class="gridCards adminGrid">
-        <div
-          v-for="rol_action in rolUserActions"
-          :key="rol_action.description"
-          @click="goToList(rol_action.url)"
-          class="card"
-        >
-          <img :src="rol_action.src" :alt="rol_action.src" class="image" />
-          <p>{{ rol_action.description }}</p>
-        </div>
-      </div>
-    </div>
-
-    <div v-show="userInfoJson?.rol === 'Analistas'">
-      <div class="gridCards">
-        <div
-          v-for="rol_action in rolUserActions"
-          :key="rol_action.description"
-          @click="goToList(rol_action.url)"
-          class="cardanalista"
-        >
-          <img :src="rol_action.src" :alt="rol_action.src" class="image" />
-          <p>{{ rol_action.description }}</p>
+      <div v-if="userInfoJson?.rol === 'Administrador'">
+        <div class="gridCards adminGrid">
+          <div
+            v-for="rol_action in rolUserActions"
+            :key="rol_action.description"
+            @click="goToList(rol_action.url)"
+            class="card"
+          >
+            <img :src="rol_action.src" :alt="rol_action.src" class="image" />
+            <p>{{ rol_action.description }}</p>
+          </div>
         </div>
       </div>
 
-      <div class="gridCards stats">
-        <div class="card statanalista">
-          <button class="btn-table" @click="goTo('TableUser', { type: 'RiesgoNormativa' })">RESULTADOS DE EVALUACIONES</button>
-          <div ref="barChart" id="chart"></div>
+      <div v-show="userInfoJson?.rol === 'Analistas'">
+        <div class="gridCards">
+          <div
+            v-for="rol_action in rolUserActions"
+            :key="rol_action.description"
+            @click="goToList(rol_action.url)"
+            class="cardanalista"
+          >
+            <img :src="rol_action.src" :alt="rol_action.src" class="image" />
+            <p>{{ rol_action.description }}</p>
+          </div>
         </div>
-        <div class="card statanalista">
-          <button class="btn-table" @click="goTo('TableUser', { type: 'PlanesTratamiento' })">PLANES DE TRATAMIENTO</button>
-          <div ref="pieChart" id="chart"></div>
-        </div>
-      </div>
-    </div>
 
-    <div v-show="userInfoJson?.rol === 'Jefe de riesgos'">
-      <div class="flex-col">
-        <div class="flex-row">
-          <div>
-            <button class="action-button" @click="generarPlan">
-              Generar Plan
+        <div class="gridCards stats">
+          <div class="card statanalista">
+            <button
+              class="btn-table"
+              @click="goTo('TableUser', { type: 'RiesgoNormativa' })"
+            >
+              RESULTADOS DE EVALUACIONES
             </button>
-            <div class="card stat donut" style="height: 218.5px">
-              <div><strong>PORCENTAJE DE CUMPLIMIENTO</strong></div>
-              <div ref="gauge" id="chart"></div>
-            </div>
+            <div ref="barChart" id="chart"></div>
           </div>
-
-          <div>
-            <button class="action-button">Visualizar informes</button>
-            <div class="card stat donut" style="height: 218.5px">
-              <div><strong>EVALUACIONES REALIZADAS</strong></div>
-              <br />
-              <h1 style="fontsize: 45px">{{ numberEvaluaciones }}</h1>
-            </div>
+          <div class="card statanalista">
+            <button
+              class="btn-table"
+              @click="goTo('TableUser', { type: 'PlanesTratamiento' })"
+            >
+              PLANES DE TRATAMIENTO
+            </button>
+            <div ref="pieChart" id="chart"></div>
           </div>
-        </div>
-
-        <br />
-        <div class="card stat restulado-eva">
-          <button class="btn-table" @click="goTo('TableUser', { type: 'PlanesTratamiento' })">PLANES DE TRATAMIENTO</button>
-          <div ref="stackedBar" id="chart"></div>
-        </div>
-        <br />
-        <div class="card stat restulado-eva">
-          <button class="btn-table" @click="goTo('TableUser', { type: 'RiesgoNormativa' })">RESULTADOS DE EVALUACIONES</button>
-          <div ref="barChartJefe" id="chart"></div>
         </div>
       </div>
-    </div>
 
-    <div v-show="userInfoJson?.rol === 'Alta gerencia'">
-      <div class="container">
-        <!-- TODO: Mycard -->
-        <div class="row">
-
-          <div class="col">
-            <div class="mycard count">
-              <div style="margin-bottom: 10px"></div>
-              <button class="btn-table" @click="goTo('TableUser', { type: 'Evaluacion' })">EVALUACIONES REALIZADAS</button>
-              <p style="font-size: 35px; font-weight: bold">
-                {{ numberEvaluaciones }}
-              </p>
+      <div v-show="userInfoJson?.rol === 'Jefe de riesgos'">
+        <div class="flex-col">
+          <div class="flex-row">
+            <div>
+              <button class="action-button" @click="generarPlan">
+                Generar Plan
+              </button>
+              <div class="card stat donut" style="height: 218.5px">
+                <div><strong>PORCENTAJE DE CUMPLIMIENTO</strong></div>
+                <div ref="gauge" id="chart"></div>
+              </div>
             </div>
+
+            <div>
+              <button class="action-button">Visualizar informes</button>
+              <div class="card stat donut" style="height: 218.5px">
+                <div><strong>EVALUACIONES REALIZADAS</strong></div>
+                <br />
+                <h1 style="fontsize: 45px">{{ numberEvaluaciones }}</h1>
+              </div>
+            </div>
+          </div>
+
+          <br />
+          <div class="card stat restulado-eva">
+            <button
+              class="btn-table"
+              @click="goTo('TableUser', { type: 'PlanesTratamiento' })"
+            >
+              PLANES DE TRATAMIENTO
+            </button>
+            <div ref="stackedBar" id="chart"></div>
+          </div>
+          <br />
+          <div class="card stat restulado-eva">
+            <button
+              class="btn-table"
+              @click="goTo('TableUser', { type: 'RiesgoNormativa' })"
+            >
+              RESULTADOS DE EVALUACIONES
+            </button>
+            <div ref="barChartJefe" id="chart"></div>
+          </div>
+        </div>
+      </div>
+
+      <div v-show="userInfoJson?.rol === 'Alta gerencia'">
+        <div class="container">
+          <!-- TODO: Mycard -->
+          <div class="row">
+            <div class="col">
+              <div class="mycard count">
+                <div style="margin-bottom: 10px"></div>
+                <button
+                  class="btn-table"
+                  @click="goTo('TableUser', { type: 'Evaluacion' })"
+                >
+                  EVALUACIONES REALIZADAS
+                </button>
+                <p style="font-size: 35px; font-weight: bold">
+                  {{ numberEvaluaciones }}
+                </p>
+              </div>
               <div class="mycard mydonut" style="height: 350px">
                 <div><strong>PORCENTAJE DE CUMPLIMIENTO</strong></div>
                 <div ref="gauge2" id="chart"></div>
-
-            </div> 
-          </div>
-
-
-          <div class="col">
-            <div class="mycard pie">
-              <div style="margin-bottom: 10px">
-                <strong>PORCENTAJE DE CUMPLIMIENTO POR OBRAS</strong> 
               </div>
-              <div ref="StackedBarPrueba" id="chart"></div>
+            </div>
+
+            <div class="col">
+              <div class="mycard pie">
+                <div style="margin-bottom: 10px">
+                  <strong>PORCENTAJE DE CUMPLIMIENTO POR OBRAS</strong>
+                </div>
+                <div ref="StackedBarPrueba" id="chart"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <div class="mycard line">
+                <button
+                  class="btn-table"
+                  @click="goTo('TableUser', { type: 'RiesgoNormativa' })"
+                >
+                  NIVEL DE RIESGO POR NORMATIVA
+                </button>
+                <div ref="lineChart" id="chart"></div>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="mycard pie">
+                <button
+                  class="btn-table"
+                  @click="goTo('TableUser', { type: 'PlanesTratamiento' })"
+                >
+                  PLANES DE TRATAMIENTO
+                </button>
+                <!-- <i @click="goToList('PlanesTratamiento')">icon</i> -->
+                <div ref="pieChart2" id="chart"></div>
+              </div>
             </div>
           </div>
         </div>
-
-        
-        <div class="row">
-
-          <div class="col">
-            <div class="mycard line">
-              <button class="btn-table" @click="goTo('TableUser', { type: 'RiesgoNormativa' })">NIVEL DE RIESGO POR NORMATIVA</button>
-              <div ref="lineChart" id="chart"></div>
-            </div>
-          </div>
-
-
-          <div class="col">
-            <div class="mycard pie">
-              <button class="btn-table" @click="goTo('TableUser', { type: 'PlanesTratamiento' })">PLANES DE TRATAMIENTO</button>
-              <!-- <i @click="goToList('PlanesTratamiento')">icon</i> -->
-              <div ref="pieChart2" id="chart"></div>
-            </div>
-          </div>
-        </div>
-
-
       </div>
-    </div>
 
-    <div v-show="userInfoJson?.rol === 'Especialistas'">
-      <div class="gridCards especialistaGrid">
-        <div
-          v-for="rol_action in rolUserActions"  
-          :key="rol_action.description"
-          @click="goToList(rol_action.url)"
-          class="gridEspecialista"
-        >
-          <img :src="rol_action.src" :alt="rol_action.src" class="image" />
-          <p>{{ rol_action.description }}</p>
+      <div v-show="userInfoJson?.rol === 'Especialistas'">
+        <div class="gridCards especialistaGrid">
+          <div
+            v-for="rol_action in rolUserActions"
+            :key="rol_action.description"
+            @click="goToList(rol_action.url)"
+            class="gridEspecialista"
+          >
+            <img :src="rol_action.src" :alt="rol_action.src" class="image" />
+            <p>{{ rol_action.description }}</p>
+          </div>
         </div>
       </div>
-    </div>
     </section>
   </section>
-  
-
-
-
 </template>
 
 <script lang="ts">
@@ -167,19 +188,34 @@ import {
   rol,
 } from "../common/constants";
 import {
-  configureBarChartOptions, configureGaugeOptions, configureLineChartOptions, configurePieChartOptions,  configureGaugeOptions2, configureBarListOptions,
+  configureBarChartOptions,
+  configureGaugeOptions,
+  configureLineChartOptions,
+  configurePieChartOptions,
+  configureGaugeOptions2,
+  configureBarListOptions,
   configurePieChartOptions2,
-  configureStackBarChartOptions, configureTreeMapChartOptions,
+  configureStackBarChartOptions,
+  configureTreeMapChartOptions,
 } from "../common/graphics";
 import {
-  lineChartSeries, pieChartLabels2,
-  pieChartSeries2, treeMapChartSeries,
+  lineChartSeries,
+  pieChartLabels2,
+  pieChartSeries2,
+  treeMapChartSeries,
 } from "../common/mockdata";
 import { handleErrors } from "../common/utils";
-import { IStatisticsEvaluacionCumplimiento, IStatisticsEvaluacionResult,
-IStatisticsEvaluacionCumplimientoPrueba, IStatisticsEvaluacionCumplimientoPruebaLista, } from "../interfaces/evaluacion.interface";
-import { IStatisticsTratamientoResultAnalistasDto, IStatisticsTratamientoResultDto,IStatisticsTratamientoResultListaDto,
- } from "../interfaces/tratamiento.interface";
+import {
+  IStatisticsEvaluacionCumplimiento,
+  IStatisticsEvaluacionResult,
+  IStatisticsEvaluacionCumplimientoPrueba,
+  IStatisticsEvaluacionCumplimientoPruebaLista,
+} from "../interfaces/evaluacion.interface";
+import {
+  IStatisticsTratamientoResultAnalistasDto,
+  IStatisticsTratamientoResultDto,
+  IStatisticsTratamientoResultListaDto,
+} from "../interfaces/tratamiento.interface";
 import { IUser } from "../interfaces/user.interface";
 import { getUsuario } from "../services/authService";
 import { emptyUser } from "../utils/initializer";
@@ -196,11 +232,10 @@ export default defineComponent({
     goToList(url: string): void {
       this.$router.push({ name: url });
     },
-    goTo(url: string, params: any ): void {
+    goTo(url: string, params: any): void {
       this.$router.push({ name: url, params: params });
     },
     calculateDashBoard() {
-
       switch (this.userInfoJson.rol) {
         case rol.ADMINISTRADOR:
           this.rolUserActions = AdminUserActions;
@@ -215,43 +250,51 @@ export default defineComponent({
     },
     generarPlan() {
       this.$router.push("/plan-tratamiento");
-
     },
-    async devolerResultadosEvaluaciones(): Promise<IStatisticsEvaluacionResult | undefined> {
-       try {
-          const response = await fetch(`${BASE_URL}evaluacion/statistics/resultados?userId=${this.userInfoJson.id}`, {
+    async devolerResultadosEvaluaciones(): Promise<
+      IStatisticsEvaluacionResult | undefined
+    > {
+      try {
+        const response = await fetch(
+          `${BASE_URL}evaluacion/statistics/resultados?userId=${this.userInfoJson.id}`,
+          {
             method: "GET",
             headers: new Headers({
               "Content-Type": "application/json",
               Authorization: "Bearer " + localStorage.getItem("token"),
             }),
-          });
+          }
+        );
 
-          await handleErrors(response);
-          return (await response.json()) as IStatisticsEvaluacionResult;
-        } catch (err) {
-          console.log(err);
-        }
+        await handleErrors(response);
+        return (await response.json()) as IStatisticsEvaluacionResult;
+      } catch (err) {
+        console.log(err);
+      }
     },
-    async devolverResultadosTratamientos(): Promise<IStatisticsTratamientoResultDto | undefined> {
-       try {
-          const response = await fetch(`${BASE_URL}plantratamiento/statistics/resultados?userId=${this.userInfoJson.id}`, {
+    async devolverResultadosTratamientos(): Promise<
+      IStatisticsTratamientoResultDto | undefined
+    > {
+      try {
+        const response = await fetch(
+          `${BASE_URL}plantratamiento/statistics/resultados?userId=${this.userInfoJson.id}`,
+          {
             method: "GET",
             headers: new Headers({
               "Content-Type": "application/json",
               Authorization: "Bearer " + localStorage.getItem("token"),
             }),
-          });
+          }
+        );
 
-          await handleErrors(response);
-          return (await response.json()) as IStatisticsTratamientoResultDto;
-        } catch (err) {
-          console.log(err);
-        }
+        await handleErrors(response);
+        return (await response.json()) as IStatisticsTratamientoResultDto;
+      } catch (err) {
+        console.log(err);
+      }
     },
 
-
-async devolverResultadosTratamientosLista(): Promise<
+    async devolverResultadosTratamientosLista(): Promise<
       IStatisticsTratamientoResultListaDto | undefined
     > {
       try {
@@ -273,24 +316,27 @@ async devolverResultadosTratamientosLista(): Promise<
       }
     },
 
-
-    async devolverCumplimientoEvaluaciones(): Promise<IStatisticsEvaluacionCumplimiento | undefined> {
-       try {
-          const response = await fetch(`${BASE_URL}evaluacion/statistics/cumplimiento`, {
+    async devolverCumplimientoEvaluaciones(): Promise<
+      IStatisticsEvaluacionCumplimiento | undefined
+    > {
+      try {
+        const response = await fetch(
+          `${BASE_URL}evaluacion/statistics/cumplimiento`,
+          {
             method: "GET",
             headers: new Headers({
               "Content-Type": "application/json",
               Authorization: "Bearer " + localStorage.getItem("token"),
             }),
-          });
+          }
+        );
 
-          await handleErrors(response);
-          return (await response.json()) as IStatisticsEvaluacionCumplimiento;
-        } catch (err) {
-          console.log(err);
-        }
+        await handleErrors(response);
+        return (await response.json()) as IStatisticsEvaluacionCumplimiento;
+      } catch (err) {
+        console.log(err);
+      }
     },
-
 
     async devolverCumplimientoEvaluacionesPruebas(): Promise<
       IStatisticsEvaluacionCumplimientoPrueba | undefined
@@ -336,24 +382,27 @@ async devolverResultadosTratamientosLista(): Promise<
       }
     },
 
-
-
-    async devolverPlanesTratamientoPorAnalista(): Promise<IStatisticsTratamientoResultAnalistasDto | undefined> {
-       try {
-          const response = await fetch(`${BASE_URL}plantratamiento/statistics/resultados/analistas`, {
+    async devolverPlanesTratamientoPorAnalista(): Promise<
+      IStatisticsTratamientoResultAnalistasDto | undefined
+    > {
+      try {
+        const response = await fetch(
+          `${BASE_URL}plantratamiento/statistics/resultados/analistas`,
+          {
             method: "GET",
             headers: new Headers({
               "Content-Type": "application/json",
               Authorization: "Bearer " + localStorage.getItem("token"),
             }),
-          });
+          }
+        );
 
-          await handleErrors(response);
-          return (await response.json()) as IStatisticsTratamientoResultAnalistasDto;
-        } catch (err) {
-          console.log(err);
-        }
-    }
+        await handleErrors(response);
+        return (await response.json()) as IStatisticsTratamientoResultAnalistasDto;
+      } catch (err) {
+        console.log(err);
+      }
+    },
   },
   mounted() {
     (async () => {
@@ -367,10 +416,12 @@ async devolverResultadosTratamientosLista(): Promise<
         //this.rolUserActions = EspecialistaUserActions;
       }
 
-      // Esto pertenece al analista 
-      
-      const { series, xAxisCategories } = await this.devolerResultadosEvaluaciones() as IStatisticsEvaluacionResult; // para analista y jefe de riesgos
-      const { pieChartSeries, pieChartLabels } = await this.devolverResultadosTratamientos() as IStatisticsTratamientoResultDto;
+      // Esto pertenece al analista
+
+      const { series, xAxisCategories } =
+        (await this.devolerResultadosEvaluaciones()) as IStatisticsEvaluacionResult; // para analista y jefe de riesgos
+      const { pieChartSeries, pieChartLabels } =
+        (await this.devolverResultadosTratamientos()) as IStatisticsTratamientoResultDto;
 
       const optionsbarChart = configureBarChartOptions(
         series,
@@ -403,18 +454,15 @@ async devolverResultadosTratamientosLista(): Promise<
 
       // Esto pertenece al jefe de riesgos
 
-      const { gaugeSeries } = 
-        await this.devolverCumplimientoEvaluaciones() as IStatisticsEvaluacionCumplimiento;
-      const { stackedBarSeries, xAxisCategoriesStacked } = 
-        await this.devolverPlanesTratamientoPorAnalista() as IStatisticsTratamientoResultAnalistasDto;
-        
+      const { gaugeSeries } =
+        (await this.devolverCumplimientoEvaluaciones()) as IStatisticsEvaluacionCumplimiento;
+      const { stackedBarSeries, xAxisCategoriesStacked } =
+        (await this.devolverPlanesTratamientoPorAnalista()) as IStatisticsTratamientoResultAnalistasDto;
+
       const optionsGauge = configureGaugeOptions(gaugeSeries);
 
       if (this.$refs.gauge) {
-        const gauge = new ApexCharts(
-          this.$refs.gauge,
-          optionsGauge
-        );
+        const gauge = new ApexCharts(this.$refs.gauge, optionsGauge);
         gauge.render();
       }
 
@@ -434,7 +482,7 @@ async devolverResultadosTratamientosLista(): Promise<
 
       // Hasta aca es lo que le pertenece al jefe de riesgos
 
-       //esto le pertence a alta gerencia
+      //esto le pertence a alta gerencia
 
       const { gaugeSeries2 } =
         (await this.devolverCumplimientoEvaluacionesPruebas()) as IStatisticsEvaluacionCumplimientoPrueba;
@@ -451,23 +499,20 @@ async devolverResultadosTratamientosLista(): Promise<
       const { stackedBarSeriesPrueba, xAxisPruebaStacked } =
         (await this.devolverCumplimientoEvaluacionesPruebasLista()) as IStatisticsEvaluacionCumplimientoPruebaLista;
 
-      
-
       const optionsStackedBarPrueba = configureBarListOptions(
         stackedBarSeriesPrueba,
         xAxisPruebaStacked
       );
-
 
       const optionsPieChart2 = configurePieChartOptions2(
         pieChartSeriesLista,
         "70%",
         pieChartLabelsLista
       );
-            
 
       const optionsLineChart = configureLineChartOptions(lineChartSeries);
-      const optionsTreeMapChart = configureTreeMapChartOptions(treeMapChartSeries);
+      const optionsTreeMapChart =
+        configureTreeMapChartOptions(treeMapChartSeries);
 
       if (this.$refs.StackedBarPrueba) {
         const StackedBarPrueba = new ApexCharts(
@@ -486,7 +531,10 @@ async devolverResultadosTratamientosLista(): Promise<
       }
 
       if (this.$refs.pieChart) {
-        const pieChart2 = new ApexCharts(this.$refs.pieChart2, optionsPieChart2);
+        const pieChart2 = new ApexCharts(
+          this.$refs.pieChart2,
+          optionsPieChart2
+        );
         pieChart2.render();
       }
 
@@ -497,7 +545,7 @@ async devolverResultadosTratamientosLista(): Promise<
         );
         lineChart.render();
       }
-      
+
       if (this.$refs.treeMapChart) {
         const treeMapChart = new ApexCharts(
           this.$refs.treeMapChart,
@@ -508,24 +556,27 @@ async devolverResultadosTratamientosLista(): Promise<
 
       //hasta aca le pertenece alta gerencia
 
-      if (this.userInfoJson.rol === "Jefe de riesgos" || this.userInfoJson.rol === "Alta gerencia") {
+      if (
+        this.userInfoJson.rol === "Jefe de riesgos" ||
+        this.userInfoJson.rol === "Alta gerencia"
+      ) {
         try {
-          const response = await fetch(`${BASE_URL}evaluacion/count?visible=true`, {
-            method: "GET",
-            headers: new Headers({
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + localStorage.getItem("token"),
-            }),
-          });
+          const response = await fetch(
+            `${BASE_URL}evaluacion/count?visible=true`,
+            {
+              method: "GET",
+              headers: new Headers({
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              }),
+            }
+          );
 
           this.numberEvaluaciones = await response.json();
         } catch (err) {
           console.log(err);
         }
       }
-
-
-
     })();
   },
 });
@@ -534,6 +585,7 @@ async devolverResultadosTratamientosLista(): Promise<
 <style scoped>
 h1 {
   font-weight: bold;
+  font-size: 2.5vw;
 }
 
 .gridCards {
@@ -550,11 +602,12 @@ h1 {
 }
 
 .gridCards.especialistaGrid {
-  grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(20%, 1fr));
   justify-content: center;
 }
 
 .gridEspecialista {
+  background-color: ghostwhite;
   cursor: pointer;
   border: 1px solid var(--placeholder);
   border-radius: 12px;
@@ -563,7 +616,6 @@ h1 {
   padding: 20px;
   box-shadow: 0 2px 8px var(--box-shadow);
   transition: all 0.2s linear;
-
 }
 
 .gridCards.stats {
@@ -707,11 +759,11 @@ h1 {
   right: 0;
   bottom: 0;
   z-index: -3;
-  background-image: url("../assets/images/blanquito.jpg");
+  background-color: #d2d2d2;
+  /* background-image: url("../assets/images/blanquito.jpg"); */
   height: 100%;
-  
+
   background-repeat: no-repeat;
   background-size: cover;
-  
 }
 </style>
