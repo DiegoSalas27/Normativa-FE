@@ -151,7 +151,7 @@
           <br />
         </div>
         <div>
-          <div v-if="action == 'registrar'">
+          <div v-if="action != 'visualizar'">
             <img
               src="../assets/images/prueba.png"
               alt="prueba"
