@@ -20,13 +20,22 @@
     :loading="loading"
   ></modal>
   <section id="main">
-    <h1>Registrar evaluación de obra</h1>
+    <h1>
+      {{
+        action == "registrar"
+          ? "Registrar evaluación de obra"
+          : action == "editar"
+          ? "Editar evaluación"
+          : "Visualizar evaluación"
+      }}
+    </h1>
     <button
+      v-if="action != 'registrar'"
       :class="$route.params.id ? 'action-button' : 'action-button blocked'"
       :disabled="!$route.params.id && !verifyPruebaCompleta"
       @click="submit"
     >
-      {{ !evaluacion.visibilidad ? "Guardar" : "Editar" }}
+      {{ action == "editar" ? "Guardar" : "Editar" }}
     </button>
     <div class="flex-row">
       <div class="flex-col">
@@ -35,7 +44,7 @@
           <img src="../assets/images/llave.png" alt="codeva" class="imgIcon" />
           <div class="non-editable">{{ evaluacion.codigo }}</div>
         </div>
-        <div>
+        <div v-if="action == 'registrar'">
           <br /><br />
           <h3>Seleccione lista de verificación</h3>
           <img
@@ -105,6 +114,7 @@
           <input
             type="text"
             :placeholder="evaluacion.nombre"
+            :disabled="action == 'visualizar'"
             v-model.trim="evaluacion.nombre"
           />
         </div>
@@ -125,26 +135,32 @@
           <br />
         </div>
         <div>
-          <img src="../assets/images/prueba.png" alt="prueba" class="imgIcon" />
-          <button
-            class="link"
-            @click="startQuiz()"
-            :disabled="
-              ((!selectedObra.obraId ||
-                !selectedListaVerificacion.listaVerificacionId) &&
-                !$route.params.id) ||
-              blockRealizarPrueba
-            "
-          >
-            Realizar prueba
-          </button>
-          <button
-            v-if="pruebas.listaRecords.length > 0"
-            class="action-button massive evaluacion"
-            @click="deleteMassive()"
-          >
-            Eliminación masiva
-          </button>
+          <div v-if="action == 'registrar'">
+            <img
+              src="../assets/images/prueba.png"
+              alt="prueba"
+              class="imgIcon"
+            />
+            <button
+              class="link"
+              @click="startQuiz()"
+              :disabled="
+                ((!selectedObra.obraId ||
+                  !selectedListaVerificacion.listaVerificacionId) &&
+                  !$route.params.id) ||
+                blockRealizarPrueba
+              "
+            >
+              Realizar prueba
+            </button>
+            <button
+              v-if="pruebas.listaRecords.length > 0"
+              class="action-button massive evaluacion"
+              @click="deleteMassive()"
+            >
+              Eliminación masiva
+            </button>
+          </div>
           <grid
             :dataSource="pruebas"
             :columns="columns"
@@ -156,6 +172,10 @@
             @movePage="() => {}"
             @selectedList="selectedList"
           ></grid>
+        </div>
+        <div v-if="action != 'registrar'">
+          <br />
+          <h3>Observaciones</h3>
         </div>
       </div>
       <div>
@@ -188,7 +208,12 @@ import { IUser } from "../interfaces/user.interface";
 import { getUsuario } from "../services/authService";
 import ConfirmationModal from "@/components/ui/ConfirmationModal.vue";
 import Modal from "../components/ui/Modal.vue";
-import { emptyObra, emptyVerificationList, emptyEvaluacion, emptyPrueba } from '../utils/initializer';
+import {
+  emptyObra,
+  emptyVerificationList,
+  emptyEvaluacion,
+  emptyPrueba,
+} from "../utils/initializer";
 
 export default defineComponent({
   components: {
@@ -217,6 +242,7 @@ export default defineComponent({
   data() {
     return {
       userInfoJson: emptyUser() as IUser,
+      action: "",
       pruebas: fechaCreacionPruebaVacia as IDataSource<{
         id: number;
         fechaCreacion: string;
@@ -429,7 +455,7 @@ export default defineComponent({
         UsuarioId: this.userInfoJson.id,
       };
 
-      // Guardar evaluacion 
+      // Guardar evaluacion
       console.log(body);
 
       try {
@@ -461,6 +487,10 @@ export default defineComponent({
       }
     },
     submit(): void {
+      //this.action == visualizar significa que esta en http://localhost:8080/evaluacion/EV007
+      //else significa que esta en http://localhost:8080/evaluacion/EV007/editar
+
+      // if (this.action == visualizar) {
       if (this.evaluacion.visibilidad) {
         (async () => {
           const body: Partial<IEvaluacion> = {
@@ -482,7 +512,7 @@ export default defineComponent({
           } catch (err) {
             console.log(err);
           }
-
+          // this.$router.push(`/evaluacion/${this.evaluacion.codigo}/editar`);
           this.$router.push("/dashboard");
         })();
       } else {
@@ -501,7 +531,7 @@ export default defineComponent({
           } catch (err) {
             console.log(err);
           }
-
+          // this.$router.push(`/evaluacion/${this.evaluacion.codigo}`);
           this.$router.push("/dashboard");
         })();
       }
@@ -537,7 +567,7 @@ export default defineComponent({
         this.selectedObra.obraId = evaluacionDetalle.obraId;
 
         this.pruebas.listaRecords = [];
-        
+
         evaluacionDetalle.pruebaList.forEach((prueba, index) => {
           this.pruebas.listaRecords.push({
             id: index + 1,
@@ -572,11 +602,27 @@ export default defineComponent({
   },
   unmounted() {
     this.$store.dispatch("obraModule/guardarObra", emptyObra());
-    this.$store.dispatch("listaVerificacionModule/guardarListaVerificacion", emptyVerificationList());
-    this.$store.dispatch("evaluacionModule/guardarEvaluacion", emptyEvaluacion());
+    this.$store.dispatch(
+      "listaVerificacionModule/guardarListaVerificacion",
+      emptyVerificationList()
+    );
+    this.$store.dispatch(
+      "evaluacionModule/guardarEvaluacion",
+      emptyEvaluacion()
+    );
     this.$store.dispatch("pruebaModule/guardarPrueba", emptyPrueba());
   },
   mounted() {
+    //action: visualizar, editar o registrar
+    this.action = window.location.href.split("/").slice(-1).pop()!;
+    this.action =
+      this.action != "editar" && this.action != "registrar"
+        ? "visualizar"
+        : this.action;
+
+    // console.log("this.action");
+    // console.log(this.action);
+
     (async () => {
       this.userInfoJson = await getUsuario();
 
@@ -585,7 +631,7 @@ export default defineComponent({
           listaRecords: [],
           numeroPaginas: 1,
           totalRecords: 0,
-        }
+        };
 
         try {
           const response = await fetch(`${BASE_URL}evaluacion/count`, {

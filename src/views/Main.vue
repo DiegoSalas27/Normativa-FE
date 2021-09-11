@@ -1,7 +1,9 @@
 <template>
   <section>
     <section id="main">
-      <h1 style="font-weight: 900; font-size: xx-large">PANEL PRINCIPAL</h1>
+      <h1 style="font-weight: 900 !important; font-size: xx-large">
+        PANEL PRINCIPAL
+      </h1>
       <div v-if="userInfoJson?.rol === 'Administrador'">
         <div class="gridCards adminGrid">
           <div
@@ -17,19 +19,17 @@
       </div>
 
       <div v-show="userInfoJson?.rol === 'Analistas'">
-        <div class="gridCards">
-          <div
-            v-for="rol_action in rolUserActions"
-            :key="rol_action.description"
-            @click="goToList(rol_action.url)"
-            class="cardanalista"
-          >
-            <img :src="rol_action.src" :alt="rol_action.src" class="image" />
-            <p>{{ rol_action.description }}</p>
-          </div>
+        <div
+          v-for="rol_action in rolUserActions"
+          :key="rol_action.description"
+          @click="goToList(rol_action.url)"
+          class="cardanalista"
+        >
+          <img :src="rol_action.src" :alt="rol_action.src" class="image" />
+          <p>{{ rol_action.description }}</p>
         </div>
 
-        <div class="gridCards stats">
+        <div class="stats">
           <div class="card statanalista">
             <button
               class="btn-table"
@@ -50,7 +50,6 @@
           </div>
         </div>
       </div>
-
       <div v-show="userInfoJson?.rol === 'Jefe de riesgos'">
         <div class="flex-col" style="margin: 0 2vw">
           <div class="flex-row" style="justify-content: space-between">
@@ -618,6 +617,7 @@ h1 {
 }
 
 .gridCards.especialistaGrid {
+  margin-top: 11vw;
   grid-template-columns: repeat(auto-fill, minmax(20%, 1fr));
   justify-content: center;
 }
@@ -673,6 +673,7 @@ h1 {
 }
 
 .cardanalista {
+  background-color: ghostwhite;
   cursor: pointer;
   border: 1px solid var(--placeholder);
   border-radius: 12px;
