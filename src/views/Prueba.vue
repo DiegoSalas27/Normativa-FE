@@ -253,80 +253,83 @@
 
     <div v-if="showResultado">
       <div class="containerizq">
-        
-          <div class="col">
-      <table class="grid">
-        <thead class="header-grid">
+        <div class="col">
+          <table class="grid">
+            <thead class="header-grid">
+              <tr>
+                <th>Criterio</th>
 
-          <tr>
-            <th>Criterio</th>
+                <th>Puntaje</th>
+                <th>Porcentaje de cumplimiento</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(row, index) in pruebaResultados.criteriosResultado
+                  .length"
+                :key="row"
+              >
+                <td>
+                  {{
+                    pruebaResultados.criteriosResultado[index].descripcion +
+                    " (" +
+                    pruebaResultados.criteriosResultado[index].peso +
+                    ") "
+                  }}
+                </td>
+                <td>
+                  <p>&nbsp;</p>
+                  <p>&nbsp;</p>
+                  <p>&nbsp;</p>
+                  <p>&nbsp;</p>
+                  <p>&nbsp;</p>
+                  {{
+                    pruebaResultados.criteriosResultado[index].normalizedPuntaje
+                  }}
+                </td>
+                <td>
+                  <p>&nbsp;</p>
+                  <p>&nbsp;</p>
+                  <p>&nbsp;</p>
+                  <p>&nbsp;</p>
+                  {{
+                    pruebaResultados.criteriosResultado[index]
+                      .porcentajeCumplimiento + "%"
+                  }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col">
+          <div class="containerder">
+            <h3 class="form-header final resultados">Resultados finales</h3>
 
-            <th>Puntaje</th>
-            <th>Porcentaje de cumplimiento</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(row, index) in pruebaResultados.criteriosResultado.length"
-            :key="row"
-          >
-            <td>
-              {{
-                pruebaResultados.criteriosResultado[index].descripcion +
-                " (" +
-                pruebaResultados.criteriosResultado[index].peso +
-                ") "
-              }}
-            </td>
-            <td>
-                          <p>&nbsp;</p> <p>&nbsp;</p> <p>&nbsp;</p> <p>&nbsp;</p> <p>&nbsp;</p>
-              {{ pruebaResultados.criteriosResultado[index].normalizedPuntaje }}
-            </td>
-            <td>
-               <p>&nbsp;</p> <p>&nbsp;</p><p>&nbsp;</p> <p>&nbsp;</p>
-              {{
-                
-                pruebaResultados.criteriosResultado[index]
-                  .porcentajeCumplimiento + "%"
-              }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            <table class="grid summary">
+              <tbody>
+                <tr>
+                  <td>Porcentaje de cumplimiento total</td>
+                  <td>{{ pruebaResultados.porcentajeCumplimientoTotal }}%</td>
+                </tr>
+                <tr>
+                  <td>Nivel de riesgo</td>
+                  <td>{{ pruebaResultados.nivelDeRiesgo }}</td>
+                </tr>
+              </tbody>
+              <button
+                class="action-button main-form left final"
+                @click="showSummary"
+              >
+                Visualizar resumen
+              </button>
+              <button class="action-button main-form final" @click="submit">
+                Guardar prueba
+              </button>
+            </table>
           </div>
-      <div class="col">     
-       <div class="containerder">
-        <h3 class="form-header final resultados">Resultados finales</h3>
-
-
-        <table class="grid summary">
-        <tbody>
-          <tr>
-            <td>Porcentaje de cumplimiento total</td>
-            <td>{{ pruebaResultados.porcentajeCumplimientoTotal }}%</td>
-          </tr>
-          <tr>
-            <td>Nivel de riesgo</td>
-            <td>{{ pruebaResultados.nivelDeRiesgo }}</td>
-          </tr>
-        </tbody>
-        <button class="action-button main-form left final" @click="showSummary">
-          Visualizar resumen
-        </button>
-        <button class="action-button main-form final" @click="submit">
-          Guardar prueba
-        </button>
-      </table>
+        </div>
       </div>
-       </div>
-
-      </div>
-      </div>
-
-  
-
-
-
+    </div>
   </section>
 </template>
 
@@ -347,7 +350,7 @@ import { IRequerimiento } from "../interfaces/listaRequerimiento.interface";
 import { IListaVerificacion } from "../interfaces/listaVerificacion.interface";
 import { IPrueba, IPruebaResultados } from "../interfaces/prueba.interface";
 import { IUser } from "../interfaces/user.interface";
-import { getUsuario } from '@/services/authService';
+import { getUsuario } from "@/services/authService";
 import {
   emptyEvidencia,
   emptyEvidenciaRequerimiento,
@@ -367,12 +370,11 @@ export default defineComponent({
     prueba(): IPrueba {
       return this.$store.getters["pruebaModule/obtenerPrueba"];
     },
-    
+
     evaluacion(): IEvaluacion {
       return this.$store.getters["evaluacionModule/obtenerEvaluacion"];
     },
   },
-
 
   data() {
     return {
@@ -446,7 +448,6 @@ export default defineComponent({
 
     /////////////
     async obtenerPruebaResults(): Promise<void> {
-
       try {
         const response = await fetch(
           `${BASE_URL}prueba/${this.prueba.codigo}`,
@@ -467,12 +468,10 @@ export default defineComponent({
       }
     },
 
-
-///////
-
+    ///////
 
     async registrarEvidenciaRequerimiento(): Promise<void> {
-try {
+      try {
         if (
           this.evidenciaRequerimiento[this.stepIndex].respuestaItem === "null"
         ) {
@@ -480,15 +479,17 @@ try {
           this.evidencia[this.stepIndex].nombre = "";
         }
 
-        if (!this.evidencia[this.stepIndex].evidenciaId && 
-        this.evidencia[this.stepIndex].nombre != "" && 
-        this.evidencia[this.stepIndex].nombre != null) {
+        if (
+          !this.evidencia[this.stepIndex].evidenciaId &&
+          this.evidencia[this.stepIndex].nombre != "" &&
+          this.evidencia[this.stepIndex].nombre != null
+        ) {
           await this.evidenciasCount();
           this.evidencia[this.stepIndex].codigo = this.lastEvidenciaCodigo;
           this.evidencia[this.stepIndex].codigoEvidencia =
-          this.evidencia[this.stepIndex].codigo +
-          "-" +
-          this.evidencia[this.stepIndex].nombre;
+            this.evidencia[this.stepIndex].codigo +
+            "-" +
+            this.evidencia[this.stepIndex].nombre;
         }
 
         const body = {
@@ -599,7 +600,6 @@ try {
         this.$router.push("/evaluacion/" + this.evaluacion.codigo);
       })();
     },
-
 
     fileChange(fileList: any) {
       this.files = new FormData();
@@ -779,7 +779,7 @@ try {
           } else {
             zeros = "00";
           }
-          
+
           this.$store.dispatch("pruebaModule/guardarPrueba", {
             ...this.prueba,
             codigo: "PR" + zeros + (number + 1).toString(),
@@ -822,8 +822,10 @@ try {
                 nombre: er.evidencia?.nombre,
                 adjunto: er.evidencia?.adjunto,
                 codigoEvidencia:
-                (er.evidencia?.codigo && er.evidencia?.nombre) ? er.evidencia.codigo + "-" + er.evidencia?.nombre : "",
-                adjuntoURL: er.evidencia?.adjuntoURL
+                  er.evidencia?.codigo && er.evidencia?.nombre
+                    ? er.evidencia.codigo + "-" + er.evidencia?.nombre
+                    : "",
+                adjuntoURL: er.evidencia?.adjuntoURL,
               });
               this.evidenciaRequerimiento.push({
                 evidenciaId: er.evidenciaId,
@@ -901,16 +903,14 @@ h1 {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  
 }
 .col {
   display: flex;
   flex-direction: column;
   width: 100%;
-  
+
   margin: 10px;
 }
-
 
 button {
   position: absolute;
@@ -1079,7 +1079,6 @@ input:checked + .slider:before {
 .grid.summary {
   top: 320px;
   text-align: left;
-  
 }
 .grid.summary tr td,
 .grid.summary tr th {
@@ -1094,9 +1093,8 @@ input:checked + .slider:before {
 }
 .header-grid tr th {
   padding: 0px !important;
-  
 }
-tbody tr td { 
+tbody tr td {
   height: 50px;
   padding: 0px !important;
 }
@@ -1122,6 +1120,6 @@ tbody tr td {
   flex-direction: column;
   justify-content: center;
   padding: 100px;
-   margin: -425px;
+  margin: -425px;
 }
 </style>

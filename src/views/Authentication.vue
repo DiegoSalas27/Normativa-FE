@@ -110,27 +110,24 @@ export default defineComponent({
 
       if (this.formIsValid) {
         try {
-          const response = await fetch(
-            `${BASE_URL}usuario/login`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                Email: this.user,
-                Password: this.password,
-              }),
-            }
-          );
+          const response = await fetch(`${BASE_URL}usuario/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              Email: this.user,
+              Password: this.password,
+            }),
+          });
 
-          await handleErrors(response)
+          await handleErrors(response);
 
           const userInfo = (await response.json()) as IUser;
 
           localStorage.setItem("token", userInfo.token as string);
 
-          this.$router.replace('/dashboard');
+          this.$router.replace("/dashboard");
         } catch (error) {
           const errorObj = JSON.parse(error.message);
           this.validationForm.password = errorObj.errores.usuario;
@@ -150,10 +147,9 @@ export default defineComponent({
 
 
 <style scoped>
-
-h1 {
+/* h1 {
   font-family: 'Segoe UI', sans-serif;
-}
+} */
 
 .login {
   z-index: 0;
@@ -224,16 +220,16 @@ h1 {
 .btn-primary {
   margin-top: 2.5rem;
   border-radius: 10px;
-  background-color: #4F6FFF;
+  background-color: #4f6fff;
   color: white;
-  font-family: 'Segoe UI', sans-serif;
+  /* font-family: 'Segoe UI', sans-serif; */
   font-weight: 600;
 }
 
 .error {
-  font-family: 'Segoe UI', sans-serif;
+  /* font-family: 'Segoe UI', sans-serif; */
   background-color: rgb(27, 27, 27);
-  color: #4F6FFF;;
+  color: #4f6fff;
   font-size: 13px;
   margin-top: 0.5rem;
   font-weight: 800;
@@ -245,7 +241,7 @@ input[type="password"],
 textarea:focus {
   z-index: 0;
   width: 100%;
-  font-family: 'Segoe UI', sans-serif;
+  /* font-family: 'Segoe UI', sans-serif; */
   border-radius: 15px;
   border: 0.5px solid var(--placeholder);
   outline: none;

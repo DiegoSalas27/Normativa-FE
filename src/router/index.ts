@@ -54,7 +54,14 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Especialistas',
         props: true,
         component: () => import("../views/ListVerification.vue"),
-      },      
+      },
+
+      {
+        path: 'evaluaciones',
+        name: 'ModificarEvaluaciones',
+        props: true,
+        component: () => import("../views/ListEvaluacion.vue"),
+      },
 
       {
         path: 'profile/jefe-de-riesgos/:id?',

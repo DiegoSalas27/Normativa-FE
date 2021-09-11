@@ -1,16 +1,31 @@
 :root {
-  --primary-color: #4B5093;
-  --primary-variant: #3c3E7E;
-  --secondary-color: #7DCA67;
-  --secondary-variant: #5CA553;
-  --accent: #616161;
-  --placeholder: #C6C6C6;
-  --error: #F44336;
-  --success: #00E676;
-  --warning: #FFEA00;
-  --danger: #E53935;
-  --box-shadow: rgba(0, 0, 0, 0.26);
-  --nav-bg: rgb(31, 31, 31);
+
+  --primary-color: #0f7c90;
+
+  --primary-variant: #003d7f;
+
+  --secondary-color: #7dca67;
+
+  --secondary-variant: #5ca553;
+
+  --accent: #ff1212;
+
+  --placeholder: #1b1b1b;
+
+  --error: #f44336;
+
+  --success: #00e676;
+
+  --warning: #ffea00;
+
+  --danger: #e53935;
+
+  --box-shadow: #333;
+
+  --nav-bg: #1b1b1b;
+
   --footer: #1f1f41;
-  --linear-gradient: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgb(41, 41, 41));
+
+  --linear-gradient: linear-gradient(180deg, rgba(0, 0, 0, 0.5), #292929);
+
 }
