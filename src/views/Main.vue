@@ -1,8 +1,7 @@
 <template>
-  <section class="fondou">
+  <section>
     <section id="main">
-      <h1>PANEL PRINCIPAL</h1>
-
+      <h1 style="font-weight: 900; font-size: xx-large">PANEL PRINCIPAL</h1>
       <div v-if="userInfoJson?.rol === 'Administrador'">
         <div class="gridCards adminGrid">
           <div
@@ -62,10 +61,18 @@
               </div>
             </div>
 
-            <div>
+            <div style="padding: 30px">
               <button class="action-button" @click="generarPlan">
                 Generar Plan
               </button>
+              <br />
+              <br />
+              <img
+                src="@/assets/images/Icon_GeneraPlan_Jefe.png"
+                alt="Generar Plan Icono"
+                width="130"
+                height="130"
+              />
             </div>
 
             <div>
@@ -593,8 +600,8 @@ body {
 }
 
 h1 {
-  font-weight: bold;
-  font-size: 2.5vw;
+  font-weight: 900;
+  font-size: xx-large;
 }
 
 .gridCards {
@@ -690,6 +697,11 @@ h1 {
 }
 
 .restulado-eva {
+  box-sizing: border-box;
+  background: ghostwhite;
+  font-style: normal;
+  font-weight: 100;
+  font-family: system-ui;
   min-width: 450px !important;
   width: 100% !important;
 }
