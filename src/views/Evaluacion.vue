@@ -809,12 +809,17 @@ export default defineComponent({
   background: white;
 }
 input,
-select {
+select,
+.link {
   display: block;
   margin-top: -34px;
   margin-left: 41px;
   width: 165px;
   height: 30px;
+}
+
+button.link {
+  width: 100px;
 }
 
 input.comentario-box {
