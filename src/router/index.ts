@@ -89,7 +89,7 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
   {
-    path: '/evaluacion/:id?/registrar',
+    path: '/evaluacion/:id/registrar',
     name: urlConstants.REALIZAR_PRUEBA,
     props: true,
     component: () => import("../views/Evaluacion.vue"),
@@ -100,7 +100,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/Evaluacion.vue"),
   },
   {
-    path: '/evaluacion/:id?/editar',
+    path: '/evaluacion/:id/editar',
     props: true,
     component: () => import("../views/Evaluacion.vue"),
   },

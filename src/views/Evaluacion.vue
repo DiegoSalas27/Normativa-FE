@@ -129,8 +129,24 @@
       <div class="flex-col">
         <div>
           <h3>Estado</h3>
+
           <img src="../assets/images/check.png" alt="estado" class="imgIcon" />
-          <div class="non-editable transformacion">{{ evaluacion.estado }}</div>
+          <div v-if="action != 'editar'">
+            <div class="non-editable transformacion">
+              {{ evaluacion.estado }}
+            </div>
+          </div>
+          <div v-else>
+            <select class="select" v-model="estadoSelected" name="prueba">
+              <option
+                v-for="estado in estados"
+                :key="estado.estadoId"
+                :value="estado.estado"
+              >
+                {{ estado.estado }}
+              </option>
+            </select>
+          </div>
           <br />
           <br />
         </div>
@@ -174,8 +190,56 @@
           ></grid>
         </div>
         <div v-if="action != 'registrar'">
-          <br />
-          <h3>Observaciones</h3>
+          <div id="comentarios">
+            <br />
+            <h3>Comentarios</h3>
+            <div v-if="action == 'editar'">
+              <br />
+              <div style="display: flex; gap: 1vw">
+                <input
+                  class="comentario-box"
+                  type="text"
+                  v-model="comentarioInput"
+                  placeholder="Escribe tu comentario"
+                />
+                <button
+                  class="action-button blocked comentario-button"
+                  @click="sendMessage"
+                >
+                  Enviar
+                </button>
+              </div>
+              <br />
+            </div>
+            <div v-if="comentarioLista.lenght != 0">
+              <div
+                class="comentario-lista"
+                v-for="(comentario, index) in comentarioLista"
+                :key="comentario.descripcion"
+              >
+                <div class="card" style="display: flex; gap: 1vw">
+                  <img
+                    :src="require('@/assets/images/adminImg.png')"
+                    alt="userImage"
+                    class="userImage"
+                  />
+                  <div>
+                    <h4>
+                      {{ comentario.nombreUsuario }}
+                      {{ "(" + comentario.usuarioRol + ")" }}
+                    </h4>
+                    <p>{{ comentario.descripcion }}</p>
+                  </div>
+                  <!-- <p>{{ calculateTimeFromNow(comentario.fechaCreacion) }}</p> -->
+                  <p>{{ comentario.fechaCreacion }}</p>
+                  <p v-if="index == 0" style="color: #7aadff">Último mensaje</p>
+                </div>
+              </div>
+            </div>
+            <div v-else>
+              <h4>xd</h4>
+            </div>
+          </div>
         </div>
       </div>
       <div>
@@ -214,6 +278,9 @@ import {
   emptyEvaluacion,
   emptyPrueba,
 } from "../utils/initializer";
+import { IEvidenciaRequerimientoAccionMitigacion } from "@/interfaces/accionMitigacion";
+import { IComentarioLista } from "@/interfaces/comentario.interface";
+import moment from "moment";
 
 export default defineComponent({
   components: {
@@ -241,6 +308,36 @@ export default defineComponent({
   },
   data() {
     return {
+      estados: [
+        {
+          estado: "Pendiente",
+          estadoId: 1,
+        },
+        {
+          estado: "Aprobado",
+          estadoId: 2,
+        },
+        {
+          estado: "Rechazado",
+          estadoId: 3,
+        },
+      ],
+      comentarioLista: [
+        {
+          nombreUsuario: "nombre",
+          fechaCreacion: new Date().toISOString().slice(0, 10),
+          descripcion: "asdasdasdasdasdasd",
+          usuarioRol: "rol",
+        },
+        {
+          nombreUsuario: "nombre",
+          fechaCreacion: new Date().toISOString().slice(0, 10),
+          descripcion: "asdasdasdasdasdasd",
+          usuarioRol: "rol",
+        },
+      ],
+      estadoSelected: "",
+      comentarioInput: "",
       userInfoJson: emptyUser() as IUser,
       action: "",
       pruebas: fechaCreacionPruebaVacia as IDataSource<{
@@ -277,6 +374,10 @@ export default defineComponent({
     };
   },
   methods: {
+    calculateTimeFromNow(date: Date) {
+      moment.tz.setDefault("America/Lima");
+      return moment(date).locale("es").fromNow();
+    },
     delete(id: string): void {
       this.id = id;
       this.modalTitle = "Está seguro que desea eliminar la prueba " + id + "?";
@@ -613,6 +714,9 @@ export default defineComponent({
     this.$store.dispatch("pruebaModule/guardarPrueba", emptyPrueba());
   },
   mounted() {
+    console.log("comentarioLista");
+    console.log(this.comentarioLista);
+
     //action: visualizar, editar o registrar
     this.action = window.location.href.split("/").slice(-1).pop()!;
     this.action =
@@ -670,6 +774,33 @@ export default defineComponent({
 </script> 
 
 <style scoped>
+.card {
+  background-color: ghostwhite;
+  cursor: pointer;
+  border: 1px solid var(--placeholder);
+  border-radius: 12px;
+  margin: 10px 0;
+  padding: 5px;
+  height: 60px;
+  box-shadow: 0 2px 8px var(--box-shadow);
+  transition: all 0.2s linear;
+}
+
+.comentario-lista img {
+  position: relative;
+  width: 53px;
+  height: 60px;
+}
+
+.comentario-lista .flex-row {
+  border: 2px solid #dadada;
+  align-items: center;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 5px;
+  margin-left: 10px;
+}
+
 .link {
   margin-top: -30px;
   margin-left: 41px;
@@ -677,13 +808,23 @@ export default defineComponent({
   cursor: pointer;
   background: white;
 }
-input {
+input,
+select {
   display: block;
   margin-top: -34px;
   margin-left: 41px;
   width: 165px;
   height: 30px;
 }
+
+input.comentario-box {
+  display: block;
+  margin-top: 0px;
+  margin-left: 0px;
+  width: 75%;
+  height: 37px;
+}
+
 .flex-row {
   margin-top: 50px;
   min-width: 800px;
@@ -696,6 +837,10 @@ input {
   position: absolute;
   top: 10 0px;
   right: 50px;
+}
+
+.action-button.comentario-button {
+  position: static;
 }
 
 .action-button.blocked {
