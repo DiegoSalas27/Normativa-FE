@@ -89,8 +89,18 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
   {
-    path: '/evaluacion/:id?',
+    path: '/evaluacion/:id/registrar',
     name: urlConstants.REALIZAR_PRUEBA,
+    props: true,
+    component: () => import("../views/Evaluacion.vue"),
+  },
+  {
+    path: '/evaluacion/:id?',
+    props: true,
+    component: () => import("../views/Evaluacion.vue"),
+  },
+  {
+    path: '/evaluacion/:id/editar',
     props: true,
     component: () => import("../views/Evaluacion.vue"),
   },

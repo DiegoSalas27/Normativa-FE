@@ -259,14 +259,9 @@ export const AdminUserActions = [
 
 export const AnalistaUserActions = [
   {
-    src: require("@/assets/images/audit.png"),
+    src: require("@/assets/images/RealizarPrueba_Analista.png"),
     description: "Realizar prueba",
     url: urlConstants.REALIZAR_PRUEBA,
-  },
-  {
-    src: require("@/assets/images/informes.png"),
-    description: "Visualizar informes",
-    url: urlConstants.VISUALIZAR_INFORME,
   },
 ];
 
