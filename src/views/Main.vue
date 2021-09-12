@@ -33,7 +33,7 @@
           <div class="card statanalista">
             <button
               class="btn-table"
-              @click="goTo('TableUser', { type: 'RiesgoNormativa' })"
+              @click="goTo('TableUser', { type: 'Evaluacion' })"
             >
               RESULTADOS DE EVALUACIONES
             </button>
@@ -76,6 +76,7 @@
 
             <div>
               <div class="card stat donut" style="height: 218.5px">
+                
                 <div><strong>EVALUACIONES REALIZADAS</strong></div>
                 <br />
                 <h1 style="fontsize: 45px">{{ numberEvaluaciones }}</h1>
@@ -99,7 +100,7 @@
             <div class="card stat restulado-eva">
               <button
                 class="btn-table"
-                @click="goTo('TableUser', { type: 'RiesgoNormativa' })"
+                @click="goTo('TableUser', { type: 'Evaluacion' })"
               >
                 RESULTADOS DE EVALUACIONES
               </button>
