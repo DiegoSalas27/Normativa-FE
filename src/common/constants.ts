@@ -17,8 +17,8 @@ export const urlConstants = {
   VISUALIZAR_INFORME: 'TipoInforme',
 
   GENERAR_LISTA: 'Especialistas',
-  MODIFICAR_LISTA: 'ModificarListaVerificacion'
-
+  MODIFICAR_LISTA: 'ModificarListaVerificacion',
+  MODIFICAR_EVALUACIONES: 'ModificarEvaluaciones'
 }
 
 export const rol = {
@@ -93,7 +93,7 @@ export const columnsPlanesTratamientoList: IColumnsGrid[] = [
     title: 'Responsable',
     type: 'text'
   },
-] 
+]
 
 
 export const columnsVerificacionList: IColumnsGrid[] = [
@@ -103,13 +103,13 @@ export const columnsVerificacionList: IColumnsGrid[] = [
     type: 'text'
   },
 
-  { 
+  {
     field: 'prioridad',
     title: 'Prioridad',
     type: 'text'
 
   },
-] 
+]
 
 
 
@@ -120,29 +120,29 @@ export const columnsVerificacionList2: IColumnsGrid[] = [
     type: 'text'
   },
 
-  { 
+  {
     field: 'minimo',
     title: 'Minimo',
     type: 'text'
 
   },
 
-  { 
+  {
     field: 'maximo',
     title: 'Maximo',
     type: 'text'
 
   },
 
-  { 
+  {
     field: 'requerimientos',
     title: 'Requerimientos',
     type: 'text'
 
   },
-  
-  
-] 
+
+
+]
 
 
 export const columnsRiesgoNormativaList: IColumnsGrid[] = [
@@ -259,27 +259,27 @@ export const AdminUserActions = [
 
 export const AnalistaUserActions = [
   {
-    src: require("@/assets/images/audit.png"),
+    src: require("@/assets/images/RealizarPrueba_Analista.png"),
     description: "Realizar prueba",
     url: urlConstants.REALIZAR_PRUEBA,
-  },
-  {
-    src: require("@/assets/images/informes.png"),
-    description: "Visualizar informes",
-    url: urlConstants.VISUALIZAR_INFORME,
   },
 ];
 
 export const EspecialistaUserActions = [
   {
-    src: require("@/assets/images/audit.png"),
+    src: require("@/assets/images/GenerarListaVerificación_Especialista.jpg"),
     description: "Generar lista de verificación",
     url: urlConstants.GENERAR_LISTA,
   },
   {
-    src: require("@/assets/images/informes.png"),
+    src: require("@/assets/images/ModificarListaVerificación_Especialista.jpg"),
     description: "Modificar lista de verificación",
     url: urlConstants.MODIFICAR_LISTA,
+  },
+  {
+    src: require("@/assets/images/ModificarEvaluaciones_Especialista.png"),
+    description: "Modificar evaluaciones",
+    url: urlConstants.MODIFICAR_EVALUACIONES,
   },
 ];
 

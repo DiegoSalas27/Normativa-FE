@@ -1,30 +1,33 @@
-@import url(//db.onlinewebfonts.com/c/623c7118249e082fe87a78e08506cb4b?family=Segoe+UI);
+@import url('http://fonts.cdnfonts.com/css/segoe-ui-4');
 
 * {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-  font-family: 'Roboto';
+  box-sizing    : border-box;
+  padding       : 0;
+  margin        : 0;
+  font-family   : 'Segoe UI', sans-serif;
+  /* font-family: 'Roboto'; */
 }
 
 html {
-  min-height: 100%; /* make sure it is at least as tall as the viewport */
-  position: relative;
+  min-height: 100%;
+  /* make sure it is at least as tall as the viewport */
+  position  : relative;
 }
 
-body{
-  height:100%; /* force the BODY element to match the height of the HTML element */
+body {
+  height: 100%;
+  /* force the BODY element to match the height of the HTML element */
 }
 
-::placeholder { 
+::placeholder {
   color: var(--placeholder);
 }
 
 #main {
   margin-left: 220px;
-  margin-top: 100px;
-  text-align: center;
-  transition: 500ms;
+  margin-top : 100px;
+  text-align : center;
+  transition : 500ms;
 }
 
 .expand {
@@ -33,24 +36,24 @@ body{
 
 .impact {
   font-weight: bold;
-  font-size: 30px;
+  font-size  : 30px;
 }
 
 .action-button {
-  background: var(--primary-color);
+  background   : var(--primary-color);
   border-radius: 5px;
-  padding: 10px 45px 10px 45px;
-  width: 140px;
-  color: white;
+  padding      : 10px 45px 10px 45px;
+  width        : 140px;
+  color        : white;
 }
 
 button,
 button:active,
 button:focus {
-  border: none;
-  text-decoration: none;
-  cursor: pointer;
-  outline: none;
+  border            : none;
+  text-decoration   : none;
+  cursor            : pointer;
+  outline           : none;
   -moz-outline-style: none;
 }
 
@@ -59,43 +62,44 @@ button:hover {
 }
 
 
-input, .select {
-  border: 1px solid var(--placeholder);
+input,
+.select {
+  border       : 1px solid var(--placeholder);
   border-radius: 4px;
-  padding: 5px;
-  padding-left: 10px;
-  outline: none;
+  padding      : 5px;
+  padding-left : 10px;
+  outline      : none;
 }
 
 input:focus {
-  border-color: var(--primary-color); 
+  border-color: var(--primary-color);
 }
 
 
 .errorMessage {
-  color: var(--error);
+  color     : var(--error);
   margin-top: 0.5rem;
-  font-size: 0.7rem;
+  font-size : 0.7rem;
 }
 
 .error {
-  color: var(--error);
+  color      : var(--error);
   font-weight: lighter !important;
 }
 
 .flex-col {
-  display: flex;
+  display       : flex;
   flex-direction: column;
 }
 
 .flex-row {
-  display: flex;
-  flex-direction: row;
+  display        : flex;
+  flex-direction : row;
   justify-content: space-between;
 }
 
 input {
-  width: 250px;
+  width : 250px;
   height: 35px;
 }
 
@@ -103,14 +107,15 @@ input {
 
 
 .grid {
-  font-family: "Reem Kufi", sans-serif;
-  margin: 0 auto;
-  margin-top: 20px;
-  background: white;
-  border-radius: 2px;
-  border-collapse: collapse; /*delete inner border*/
-  box-shadow: 0 0.1px 5px var(--accent);
-  width: 95%;
+  /* font-family    : "Reem Kufi", sans-serif; */
+  margin         : 0 auto;
+  margin-top     : 20px;
+  background     : white;
+  border-radius  : 2px;
+  border-collapse: collapse;
+  /*delete inner border*/
+  box-shadow     : 0 0.1px 5px var(--accent);
+  width          : 95%;
 }
 
 /* .header-grid  {
@@ -118,23 +123,23 @@ input {
 } */
 
 .header-grid tr th {
-  height: 71px;
-  padding: 25px 0;
+  height          : 71px;
+  padding         : 25px 0;
   background-color: #ecf3ff;
 }
 
 tbody {
-  border-bottom-left-radius: 8px;
+  border-bottom-left-radius : 8px;
   border-bottom-right-radius: 8px;
 }
 
 tbody tr:last-child {
-  border-bottom-left-radius: 8px;
+  border-bottom-left-radius : 8px;
   border-bottom-right-radius: 8px;
 }
 
 tbody tr td {
-  height: 71px;
+  height : 71px;
   padding: 25px 10px;
 }
 
@@ -148,57 +153,64 @@ td:nth-child(2) {
 
 .imgIcon {
   margin-top: 15px;
-  width: 30px;
-  height: 30px;
+  width     : 30px;
+  height    : 30px;
 }
+
 .non-editable {
-  margin-top: -34px;
-  margin-left: 41px;
-  padding-top: 5px;
+  margin-top    : -34px;
+  margin-left   : 41px;
+  padding-top   : 5px;
   padding-bottom: 5px;
-  width: 165px;
-  background: var(--accent);
-  color: white;
-  font-weight: bold;
-  border-radius: 3px;
-  text-align: center;
+  width         : 165px;
+  background    : var(--accent);
+  color         : white;
+  font-weight   : bold;
+  border-radius : 3px;
+  text-align    : center;
 }
+
 .dropdownSelect {
   /* position: absolute; */
-  left: 141px;
+  left            : 141px;
   background-color: #f6f6f6;
-  padding: 12px 16px;
-  width: 252px;
-  overflow: auto;
-  border: 1px solid #ddd;
-  z-index: 1;
-  cursor: pointer;
+  padding         : 12px 16px;
+  width           : 252px;
+  overflow        : auto;
+  border          : 1px solid #ddd;
+  z-index         : 1;
+  cursor          : pointer;
 }
+
 .dropdownSelectobras {
-  position: absolute; 
-  left: 141px;
+  position        : absolute;
+  left            : 141px;
   background-color: #f6f6f6;
-  padding: 12px 16px;
-  width: 252px;
-  overflow: auto;
-  border: 1px solid #ddd;
-  z-index: 1;
-  cursor: pointer;
+  padding         : 12px 16px;
+  width           : 252px;
+  overflow        : auto;
+  border          : 1px solid #ddd;
+  z-index         : 1;
+  cursor          : pointer;
 }
+
 .dropdownSelect:hover {
   background-color: #ddd;
 }
+
 .label {
-  padding: 5px 10px;
+  padding      : 5px 10px;
   border-radius: 5px;
-  color: white;
+  color        : white;
 }
+
 .label.success {
   background: var(--success);
 }
+
 .label.error {
   background: var(--error);
-} 
+}
 
 .relative {
   position: relative;

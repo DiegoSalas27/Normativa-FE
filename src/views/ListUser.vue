@@ -15,9 +15,8 @@
     :error="error"
     :loading="loading"
   ></modal>
-  <section id="main" :class="{expand: expand}">
+  <section id="main" :class="{ expand: expand }">
     <div>
-      
       <h2>ADMINISTRACIÓN DE {{ calculateUser() }}</h2>
       <button class="action-button massive" @click="deleteMassive()">
         Eliminación masiva
@@ -44,7 +43,7 @@ import { actions, BASE_URL, entity } from "@/common/constants";
 import { IUser } from "../interfaces/user.interface";
 import { columnsRolList } from "../common/constants";
 import { defineComponent } from "@vue/runtime-core";
-import { IDataSource } from '../interfaces/dataSource';
+import { IDataSource } from "../interfaces/dataSource";
 import { emptyDataSource } from "../utils/initializer";
 
 export default defineComponent({
@@ -100,7 +99,7 @@ export default defineComponent({
       this.showModalConfirmation = false;
     },
     calculateUser(): string {
-      console.log(this.$route)
+      console.log(this.$route);
       switch (this.$route.path) {
         case "/dashboard/alta-gerencia":
           this.userRol = "ALTA GERENCIA";
@@ -128,6 +127,8 @@ export default defineComponent({
         );
 
         this.dataSource = (await response.json()) as IDataSource<IUser>;
+        console.log("this.dataSource");
+        console.log(this.dataSource);
       } catch (error) {
         console.log(error);
       }
@@ -166,16 +167,13 @@ export default defineComponent({
       await Promise.all(
         this.entityList.map(async (id: string) => {
           try {
-            const response = await fetch(
-              `${BASE_URL}usuario/${id}`,
-              {
-                method: "DELETE",
-                headers: new Headers({
-                  "Content-Type": "application/json",
-                  Authorization: "Bearer " + localStorage.getItem("token"),
-                }),
-              }
-            );
+            const response = await fetch(`${BASE_URL}usuario/${id}`, {
+              method: "DELETE",
+              headers: new Headers({
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              }),
+            });
           } catch (error) {
             console.log(error);
           }
@@ -196,16 +194,13 @@ export default defineComponent({
     async confirmDelete(): Promise<void> {
       this.closeModal();
       try {
-        const response = await fetch(
-          `${BASE_URL}${this.entity}/${this.id}`,
-          {
-            method: "DELETE",
-            headers: new Headers({
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + localStorage.getItem("token"),
-            }),
-          }
-        );
+        const response = await fetch(`${BASE_URL}${this.entity}/${this.id}`, {
+          method: "DELETE",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          }),
+        });
 
         this.message = `El ${this.entity} fue eliminado`;
         this.id = "";
@@ -239,7 +234,7 @@ export default defineComponent({
       } catch (error) {
         console.log(error);
       }
-       await this.listUsersByRol();
+      await this.listUsersByRol();
     })();
   },
 });
