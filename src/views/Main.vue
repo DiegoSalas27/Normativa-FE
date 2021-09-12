@@ -434,7 +434,7 @@ async devolverResultadosTratamientosLista(): Promise<
 
       // Hasta aca es lo que le pertenece al jefe de riesgos
 
-       //esto le pertence a alta gerencia
+       // esto le pertence a alta gerencia
 
       const { gaugeSeries2 } =
         (await this.devolverCumplimientoEvaluacionesPruebas()) as IStatisticsEvaluacionCumplimientoPrueba;

@@ -26,26 +26,31 @@
         $route.params.tr_codigo ? 'action-button' : 'action-button blocked'
       "
       @click="register()"
-      
     >
       {{ displayButtonText }}
     </button>
-    <button
+    <!-- <button
       v-if="tratamientoInfoJson.porcentajeAvance == 100"
       class="action-button"
       style="top: 140px"
       @click="register()"
     >
       Generar informe
-    </button>
+    </button> -->
     <div class="grid-container">
       <div class="grid-item">
         <h4>Código de tratamiento:</h4>
         <img src="../assets/images/llave.png" alt="codeva" class="imgIcon" />
-        <span v-if="($route.params.tr_codigo && !canEdit) ||  ($route.params.tr_codigo && canEdit && !update)">{{ tratamientoInfoJson.codigo }}</span>
+        <span
+          v-if="
+            ($route.params.tr_codigo && !canEdit) ||
+            ($route.params.tr_codigo && canEdit && !update)
+          "
+          >{{ tratamientoInfoJson.codigo }}</span
+        >
         <input
           v-if="(update || !$route.params.tr_codigo) && canEdit"
-          type="text" 
+          type="text"
           disabled="true"
           :placeholder="tratamientoInfoJson.codigo"
         />
@@ -53,7 +58,13 @@
       <div class="grid-item">
         <h4>Código de evaluación:</h4>
         <img src="../assets/images/llave.png" alt="codeva" class="imgIcon" />
-        <span v-if="($route.params.tr_codigo && !canEdit) ||  ($route.params.tr_codigo && canEdit && !update)">{{ codigoEvaluacion }}</span>
+        <span
+          v-if="
+            ($route.params.tr_codigo && !canEdit) ||
+            ($route.params.tr_codigo && canEdit && !update)
+          "
+          >{{ codigoEvaluacion }}</span
+        >
         <input
           v-if="(update || !$route.params.tr_codigo) && canEdit"
           type="text"
@@ -78,9 +89,9 @@
       <div class="grid-item">
         <h4>Código de prueba:</h4>
         <img src="../assets/images/llave.png" alt="codeva" class="imgIcon" />
-<!-- para volver label inneditable-->
+        <!-- para volver label inneditable-->
 
-<!-- para volver label inneditable-->
+        <!-- para volver label inneditable-->
         <select class="select" v-model="codigoPrueba" name="prueba">
           <option
             v-for="prueba in pruebas"
@@ -90,12 +101,17 @@
             {{ prueba.codigo }}
           </option>
         </select>
-
       </div>
       <div class="grid-item">
         <h4>Nombre del plan de tratamiento:</h4>
         <img src="../assets/images/listav.png" alt="codeva" class="imgIcon" />
-        <span v-if="($route.params.tr_codigo && !canEdit) ||  ($route.params.tr_codigo && canEdit && !update)">{{ tratamientoInfoJson.nombre }}</span>
+        <span
+          v-if="
+            ($route.params.tr_codigo && !canEdit) ||
+            ($route.params.tr_codigo && canEdit && !update)
+          "
+          >{{ tratamientoInfoJson.nombre }}</span
+        >
         <input
           v-if="(update || !$route.params.tr_codigo) && canEdit"
           type="text"
@@ -109,9 +125,11 @@
       <div class="grid-item">
         <h4>Estado:</h4>
         <img src="../assets/images/estado.png" alt="codeva" class="imgIcon" />
-        <span v-if="($route.params.tr_codigo && !update)">{{ estadoCalc() }}</span>
+        <span v-if="$route.params.tr_codigo && !update">{{
+          estadoCalc()
+        }}</span>
         <select
-          v-if="(update || !$route.params.tr_codigo)"
+          v-if="update || !$route.params.tr_codigo"
           class="select"
           v-model="tratamientoInfoJson.estadosTratamientoId"
           @change="changedEstado"
@@ -122,16 +140,20 @@
             :key="estado.estadosTratamientoId"
             :value="estado.estadosTratamientoId"
           >
-            {{
-              estado.nombre
-            }}
+            {{ estado.nombre }}
           </option>
         </select>
       </div>
       <div v-if="asignadoSeleccionado" class="grid-item">
         <h4>Responsable:</h4>
         <img src="../assets/images/user.png" alt="codeva" class="imgIcon" />
-        <span v-if="($route.params.tr_codigo && !canEdit) ||  ($route.params.tr_codigo && canEdit && !update)">{{ analistaCalc() }}</span>
+        <span
+          v-if="
+            ($route.params.tr_codigo && !canEdit) ||
+            ($route.params.tr_codigo && canEdit && !update)
+          "
+          >{{ analistaCalc() }}</span
+        >
         <select
           v-if="(update || !$route.params.tr_codigo) && canEdit"
           class="select"
@@ -209,9 +231,14 @@
             </td>
             <td style="width: 60%; text-align: left">
               <div>
-                <span v-if="($route.params.tr_codigo && !canEdit) ||  (canEdit && !update)" style="width: 90%">{{
-                  accion.descripcion
-                }}</span>
+                <span
+                  v-if="
+                    ($route.params.tr_codigo && !canEdit) ||
+                    (canEdit && !update)
+                  "
+                  style="width: 90%"
+                  >{{ accion.descripcion }}</span
+                >
                 <input
                   v-if="update && canEdit"
                   type="text"
@@ -283,21 +310,19 @@ import { BASE_URL, rol } from "../common/constants";
 import {
   handleErrors,
   propertiesSubSet,
-  validateNotEmpty
+  validateNotEmpty,
 } from "../common/utils";
 import Modal from "../components/ui/Modal.vue";
 import { IAccionMitigacion } from "../interfaces/accionMitigacion";
-import { IEstadoTratamiento } from '../interfaces/estadoTratamiento';
+import { IEstadoTratamiento } from "../interfaces/estadoTratamiento";
 import {
   IEvaluacion,
-  IEvaluacionListado
+  IEvaluacionListado,
 } from "../interfaces/evaluacion.interface";
-import {
-  PruebaList
-} from "../interfaces/prueba.interface";
+import { PruebaList } from "../interfaces/prueba.interface";
 import {
   IObtenerTratamiento,
-  ITratamiento
+  ITratamiento,
 } from "../interfaces/tratamiento.interface";
 import { IUser, IUsuarioLista } from "../interfaces/user.interface";
 
@@ -315,24 +340,22 @@ export default defineComponent({
       if (this.$route.params.tr_codigo) {
         if (this.update) {
           return "Guardar";
-          
         }
-        
+
         return "Editar";
-        
       }
       return "Registrar";
     },
     displayTitlePage(): string {
       if (!this.$route.params.tr_codigo) {
-        return "Registrar plan de tratamiento"
-      } else{
+        return "Registrar plan de tratamiento";
+      } else {
         if (this.update) {
           return "Editar plan de tratamiento";
         }
         return "Visualizar plan de tratamiento";
       }
-    }
+    },
   },
   data() {
     return {
@@ -366,8 +389,7 @@ export default defineComponent({
   },
   watch: {
     async codigoPrueba() {
-      if (this.$route.params.tr_codigo)
-        await this.fetchAccionesMitigacion();
+      if (this.$route.params.tr_codigo) await this.fetchAccionesMitigacion();
     },
     massiveCheck(): void {
       if (this.massiveCheck) {
@@ -382,8 +404,13 @@ export default defineComponent({
   methods: {
     async changedEstado(event: { target: HTMLInputElement }) {
       this.hasTouchedEstado = true;
-      const estado = this.estadoList.find(el => el.estadosTratamientoId == event.target.value) 
-      if (estado && (estado.nombre == 'Asignado' || estado.nombre == 'En proceso')) {
+      const estado = this.estadoList.find(
+        (el) => el.estadosTratamientoId == event.target.value
+      );
+      if (
+        estado &&
+        (estado.nombre == "Asignado" || estado.nombre == "En proceso")
+      ) {
         this.asignadoSeleccionado = true;
       } else {
         this.asignadoSeleccionado = false;
@@ -391,12 +418,14 @@ export default defineComponent({
     },
     estadoCalc(): string {
       const estado = this.estadoList.find(
-        (es) => es.estadosTratamientoId == this.tratamientoInfoJson.estadosTratamientoId
+        (es) =>
+          es.estadosTratamientoId ==
+          this.tratamientoInfoJson.estadosTratamientoId
       );
       if (estado) {
-        if (estado.nombre == 'Asignado' || estado.nombre == 'En proceso') {
-        this.asignadoSeleccionado = true;
-        } 
+        if (estado.nombre == "Asignado" || estado.nombre == "En proceso") {
+          this.asignadoSeleccionado = true;
+        }
         return estado.nombre;
       } else return "";
     },
@@ -452,10 +481,8 @@ export default defineComponent({
 
         this.analistaList = (await response.json()) as IUsuarioLista[];
 
-        this.tratamientoInfoJson.usuarioId == null && (
-          this.tratamientoInfoJson.usuarioId = this.analistaList[0].usuarioId
-        );
-
+        this.tratamientoInfoJson.usuarioId == null &&
+          (this.tratamientoInfoJson.usuarioId = this.analistaList[0].usuarioId);
       } catch (err) {
         console.log(err);
       }
@@ -500,13 +527,20 @@ export default defineComponent({
 
       let isValid = validateNotEmpty(jsonToValidate, this.validationForm);
 
-      const estado = this.estadoList.find(el => el.estadosTratamientoId ==  this.tratamientoInfoJson.estadosTratamientoId);
+      const estado = this.estadoList.find(
+        (el) =>
+          el.estadosTratamientoId ==
+          this.tratamientoInfoJson.estadosTratamientoId
+      );
 
-      if (this.userInfoJson.rol == 'Jefe de riesgos' && 
-          estado?.nombre == 'En proceso' && this.hasTouchedEstado)
-      {
+      if (
+        this.userInfoJson.rol == "Jefe de riesgos" &&
+        estado?.nombre == "En proceso" &&
+        this.hasTouchedEstado
+      ) {
         this.error = true;
-        this.message = "Este estado solo puede ser seleccionado por un analista";
+        this.message =
+          "Este estado solo puede ser seleccionado por un analista";
         return;
       }
 
@@ -537,7 +571,6 @@ export default defineComponent({
             this.error = false;
             this.message =
               "¡El plan de tratamiento ha sido registrado exitósamente!";
-              
 
             setTimeout(async () => {
               this.message = "";
@@ -571,7 +604,7 @@ export default defineComponent({
             this.error = false;
             this.message =
               "¡El plan de tratamiento ha sido actualizado exitósamente!";
-              location.reload();
+            location.reload();
 
             setTimeout(async () => {
               this.message = "";
@@ -600,17 +633,18 @@ export default defineComponent({
           }
         );
 
-        this.estadoList =
-          (await response.json()) as IEstadoTratamiento[];
+        this.estadoList = (await response.json()) as IEstadoTratamiento[];
 
         if (!this.$route.params.tr_codigo) {
-          this.estadoList = this.estadoList.filter(e => e.nombre == 'Sin asignar' ||  e.nombre == 'Asignado')
+          this.estadoList = this.estadoList.filter(
+            (e) => e.nombre == "Sin asignar" || e.nombre == "Asignado"
+          );
         }
 
         (this.tratamientoInfoJson.estadosTratamientoId == null ||
-        this.tratamientoInfoJson.estadosTratamientoId == undefined) &&
-        (this.tratamientoInfoJson.estadosTratamientoId = this.estadoList[0].estadosTratamientoId);
-
+          this.tratamientoInfoJson.estadosTratamientoId == undefined) &&
+          (this.tratamientoInfoJson.estadosTratamientoId =
+            this.estadoList[0].estadosTratamientoId);
       } catch (err) {
         console.log(err);
       }
@@ -685,6 +719,8 @@ export default defineComponent({
     },
     async deleteAccion(actionId?: string): Promise<void> {
       this.closeModal();
+      console.log("SelectedAccion", this.accionSelected);
+      console.log("eachAction", actionId);
       const selectedActionId = actionId ? actionId : this.accionSelected;
       try {
         const response = await fetch(
@@ -706,21 +742,23 @@ export default defineComponent({
           setTimeout(async () => {
             this.message = "";
             await this.fetchAccionesMitigacion();
-          }, 1500);
+          }, 1000);
         }
       } catch (error) {
         console.log(error);
       }
     },
     async confirmMassiveDelete(): Promise<void> {
-      this.checkedEntities.map(async (accion) => {
-        try {
-          const response = await this.deleteAccion(accion);
-          console.log(response);
-        } catch (error) {
-          console.log(error);
-        }
-      })
+      await Promise.all(
+        this.checkedEntities.map(async (accion) => {
+          try {
+            const response = await this.deleteAccion(accion);
+            console.log(response);
+          } catch (error) {
+            console.log(error);
+          }
+        })
+      );
 
       this.massiveDelete = false;
       this.showModalConfirmation = false;
@@ -732,7 +770,7 @@ export default defineComponent({
       setTimeout(async () => {
         await this.fetchAccionesMitigacion();
         this.message = null;
-      }, 2000);
+      }, 1000);
     },
   },
   mounted() {
@@ -740,8 +778,7 @@ export default defineComponent({
       this.userInfoJson = await getUsuario();
       if (this.userInfoJson.rol == rol.JEFE_DE_RIESGOS) {
         this.canEdit = true;
-      } else 
-        this.canEdit = false;
+      } else this.canEdit = false;
       await this.fetchAnalista();
 
       if (!this.$route.params.tr_codigo) {
@@ -764,7 +801,7 @@ export default defineComponent({
           } else {
             zeros = "00";
           }
-          
+
           this.tratamientoInfoJson.codigo =
             "TR" + zeros + (number + 1).toString();
         } catch (err) {
@@ -785,7 +822,7 @@ export default defineComponent({
 <style scoped>
 #main {
   margin-left: 0px;
-} 
+}
 .grid-container {
   display: grid;
   gap: 30px;

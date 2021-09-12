@@ -163,7 +163,7 @@ export default defineComponent({
     },
     async confirmMassiveDelete(): Promise<void> {
       console.log(this.entityList);
-      Promise.all(
+      await Promise.all(
         this.entityList.map(async (id: string) => {
           try {
             const response = await fetch(

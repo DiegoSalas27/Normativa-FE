@@ -257,7 +257,7 @@ export default defineComponent({
       this.showModalConfirmation = true;
     },
     async confirmMassiveDelete(): Promise<void> {
-      Promise.all(
+      await Promise.all(
         this.entityList.map(async (el) => {
           const foundTest = this.pruebas.listaRecords.find(
             (pr) => pr.id == +el
@@ -588,7 +588,7 @@ export default defineComponent({
         }
 
         try {
-          const response = await fetch(`${BASE_URL}evaluacion/count`, {
+          const response = await fetch(`${BASE_URL}evaluacion/ultimoCodigo`, {
             method: "GET",
             headers: new Headers({
               "Content-Type": "application/json",
@@ -596,24 +596,16 @@ export default defineComponent({
             }),
           });
 
-          const number: number = await response.json();
-          let zeros = "";
-
-          if (number >= 99) {
-            zeros = "";
-          } else if (number >= 9) {
-            zeros = "0";
-          } else {
-            zeros = "00";
-          }
+          const { codigo } = await response.json() as { codigo: string };
 
           this.$store.dispatch("evaluacionModule/guardarEvaluacion", {
             ...this.evaluacion,
-            codigo: "EV" + zeros + (number + 1).toString(),
+            codigo: codigo,
             fechaCreacion: new Date().toLocaleDateString(),
           });
         } catch (err) {
           console.log(err);
+          debugger
         }
       } else {
         await this.fetchEvaluacion();
