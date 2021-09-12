@@ -542,7 +542,7 @@ export default defineComponent({
         barChart.render();
       }
 
-      if (this.$refs.pieChart) {
+      if (this.$refs.pieChart2) {
         const pieChart2 = new ApexCharts(
           this.$refs.pieChart2,
           optionsPieChart2
