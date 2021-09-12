@@ -68,6 +68,13 @@ export const columnsPlanesTratamientoList: IColumnsGrid[] = [
     title: 'Código',
     type: 'text'
   },
+
+  {
+    field: 'nombre',
+    title: 'Nombre del Plan',
+    type: 'text'
+  },
+  /*
   {
     field: 'fechaInicio',
     title: 'Fecha de Inicio',
@@ -78,6 +85,8 @@ export const columnsPlanesTratamientoList: IColumnsGrid[] = [
     title: 'Fecha de fin',
     type: 'text'
   },
+
+  */
   {
     field: 'estado',
     title: 'Estado',
@@ -184,21 +193,37 @@ export const columnsEvaluacionesList: IColumnsGrid[] = [
     title: 'Obra',
     type: 'text'
   },
-  {
+ /* {
     field: 'nivelRiesgo',
     title: 'Nivel de Riesgo',
     type: 'text'
   },
+
+  */
   {
-    field: 'porcentajeCumplimiento',
+    field: 'ListaVerificacion',
+    title: 'Lista de Verificacion',
+    type: 'text'
+  },
+
+  {
+    field: 'PorcentajeDeCumplimiento',
     title: 'Porcentaje de Cumplimiento',
     type: 'text'
   },
+
+  {
+    field: 'Estado',
+    title: 'Estado',
+    type: 'text'
+  },
+  /*
   {
     field: 'duracion',
     title: 'Duración',
     type: 'text'
   },
+  */
 ]
 
 export const columnsPruebaLista: IColumnsGrid[] = [
