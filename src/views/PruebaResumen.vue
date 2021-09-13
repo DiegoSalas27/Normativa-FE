@@ -32,24 +32,20 @@
         ></abbr>
       </div>
 
-      <div></div>
-
       <div>
-        <table>
-          <tr>
-            <td><h4 style="display: inline">Nivel de riesgo</h4></td>
-            <td>
-              <span>{{ nivelDeRiesgo }}</span>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <h4 style="display: inline">Porcentaje de cumplimiento actual</h4>
-            </td>
-            <td>
-              <span>{{ porcentajeCumplimiento }} %</span>
-            </td>
-          </tr>
+        <table class="grid">
+          <thead class="header-grid">
+            <tr>
+              <th>Nivel de riesgo</th>
+              <th>Porcentaje de cumplimiento actual</th>
+            </tr>
+          </thead>
+          <tbody :class="rowBodyStyle ? rowBodyStyle : ''">
+            <tr>
+              <td>{{ nivelDeRiesgo }}</td>
+              <td>{{ porcentajeCumplimiento }} %</td>
+            </tr>
+          </tbody>
         </table>
       </div>
 
@@ -506,19 +502,15 @@ export default defineComponent({
   top: -32px;
   border-right: 1px solid white;
 }
-table,
+table {
+  margin-bottom: 3vw;
+}
+
 th,
 td {
-  border: 8px solid rgba(5, 111, 160, 0.678);
-  border-collapse: collapse;
-  position: relative;
-  margin: 5px 2px;
-  top: -2px;
+  padding: 0 !important;
 }
-td {
-  padding: 10px;
-  text-align: left;
-}
+
 .options-buttons button:nth-child(2) {
   position: relative;
   border-top-left-radius: 0px !important;
