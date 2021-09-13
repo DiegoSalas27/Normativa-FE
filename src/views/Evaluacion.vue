@@ -600,8 +600,11 @@ export default defineComponent({
           };
 
           try {
+            console.log(this.evaluacion.evaluacionId);
+            console.log("this.evaluacion.evaluacionId");
             await fetch(
-              `${BASE_URL}evaluacion/${this.evaluacion.evaluacionId}`,
+              // `${BASE_URL}evaluacion/${this.evaluacion.evaluacionId}`, //POR MIENTRAS LA URL SERA CON /REGISTRAR. SE CAMBIARA EN SEM5.
+              `${BASE_URL}evaluacion/${this.evaluacion.evaluacionId}/registrar`,
               {
                 method: "PUT",
                 headers: new Headers({
@@ -747,7 +750,7 @@ export default defineComponent({
             }),
           });
 
-          const { codigo } = await response.json() as { codigo: string };
+          const { codigo } = (await response.json()) as { codigo: string };
 
           this.$store.dispatch("evaluacionModule/guardarEvaluacion", {
             ...this.evaluacion,
@@ -756,7 +759,7 @@ export default defineComponent({
           });
         } catch (err) {
           console.log(err);
-          debugger
+          debugger;
         }
       } else {
         await this.fetchEvaluacion();
