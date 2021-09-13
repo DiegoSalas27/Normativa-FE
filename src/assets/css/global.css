@@ -114,7 +114,7 @@ input {
   border-radius  : 2px;
   border-collapse: collapse;
   /*delete inner border*/
-  box-shadow     : 0 0.1px 5px var(--accent);
+  box-shadow     : 0 0.1px 5px var(--box-shadow);
   width          : 95%;
 }
 
