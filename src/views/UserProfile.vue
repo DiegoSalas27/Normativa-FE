@@ -40,7 +40,6 @@
         <input
           v-if="update"
           type="text"
-          :placeholder="userInfoJson?.apellidos"
           v-model.trim="userInfoJson.apellidos"
         />
         <p class="error" v-if="validationForm.apellidos">
@@ -264,8 +263,12 @@ export default defineComponent({
           this.userInfoJson.rol = rol.JEFE_DE_RIESGOS;
           break;
         case urlConstants.PROFILE_ALTA_GERENCIA:
-          this.titleProfile = "REGISTRAR MIEMBRO";
+          this.titleProfile = "REGISTRAR ALTA GERENCIA";
           this.userInfoJson.rol = rol.ALTA_GERENCIA;
+          break;
+        case urlConstants.PROFILE_AUDITOR:
+          this.titleProfile = "REGISTRAR ESPECIALISTA";
+          this.userInfoJson.rol = rol.ESPECIALISTA;
           break;
         
       }
@@ -375,6 +378,7 @@ export default defineComponent({
           this.$route.name !== "Profile" &&
           !this.$route.params.id &&
           this.titleProfile != "JEFE DE RIESGOS"
+          // no se encontro razon de booleano title profile
         ) {
           try {
             const response = await fetch(
@@ -455,40 +459,40 @@ export default defineComponent({
 
       if (
         this.$route.name !== "Profile" &&
-        this.$route.path !== urlConstants.PROFILE_JEFE_DE_RIESGOS &&
+        // this.$route.path !== urlConstants.PROFILE_JEFE_DE_RIESGOS &&
         !this.$route.params.id
       ) {
         this.update = true;
       }
 
-      if (this.$route.name === urlConstants.PROFILE_JEFE_DE_RIESGOS) {
-        try {
-          const response = await fetch(
-            `${BASE_URL}usuario/listar/${rol.JEFE_DE_RIESGOS}?page=1&quantity=1`,
-            {
-              method: "GET",
-              headers: new Headers({
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + localStorage.getItem("token"),
-              }),
-            }
-          );
-          const resp = (await response.json()) as IDataSource<IUser>;
-          console.log(resp);
-          resp.listaRecords.length > 0 &&
-            ((this.userInfoJson = resp.listaRecords[0]),
-            (this.titleProfile = "JEFE DE RIESGOS"),
-            (this.skipPasswordValidation = true));
+      // if (this.$route.name === urlConstants.PROFILE_JEFE_DE_RIESGOS) {
+      //   try {
+      //     const response = await fetch(
+      //       `${BASE_URL}usuario/listar/${rol.JEFE_DE_RIESGOS}?page=1&quantity=1`,
+      //       {
+      //         method: "GET",
+      //         headers: new Headers({
+      //           "Content-Type": "application/json",
+      //           Authorization: "Bearer " + localStorage.getItem("token"),
+      //         }),
+      //       }
+      //     );
+      //     const resp = (await response.json()) as IDataSource<IUser>;
+      //     console.log(resp);
+      //     resp.listaRecords.length > 0 &&
+      //       ((this.userInfoJson = resp.listaRecords[0]),
+      //       (this.titleProfile = "JEFE DE RIESGOS"),
+      //       (this.skipPasswordValidation = true));
 
-          if (resp.listaRecords.length === 0) {
-            this.update = false;
-          } else {
-            this.update = true;
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      }
+      //     if (resp.listaRecords.length === 0) {
+      //       this.update = false;
+      //     } else {
+      //       this.update = true;
+      //     }
+      //   } catch (error) {
+      //     console.log(error);
+      //   }
+      // }
 
       if (this.$route.params.id) {
         try {
@@ -508,13 +512,18 @@ export default defineComponent({
           userInfo.rol == rol.ANALISTA &&
             (this.titleProfile = "ANALISTA " + userInfo.codigo);
           userInfo.rol == rol.ALTA_GERENCIA &&
-            (this.titleProfile = "MIEMBRO " + userInfo.codigo);
+            (this.titleProfile = "ALTA GERENCIA " + userInfo.codigo);
+          userInfo.rol == rol.JEFE_DE_RIESGOS &&
+            (this.titleProfile = "JEFE DE RIESGOS " + userInfo.codigo);
+          userInfo.rol == rol.ESPECIALISTA &&
+            (this.titleProfile = "ESPECIALISTA " + userInfo.codigo);
 
           this.userInfoJson = userInfo;
-          !this.userInfoJson.especialidad &&
-            (this.userInfoJson.especialidad =
-              this.especialidades[0].descripcion);
-          this.skipPasswordValidation = true;
+          // !this.userInfoJson.especialidad &&
+          //   (this.userInfoJson.especialidad =
+          //     this.especialidades[0].descripcion);
+          // //no se encontro razon de implementacion
+            this.skipPasswordValidation = true;
         } catch (error) {
           this.error = true;
           this.message = "Favor de llenar los campos con valores permitidos";
@@ -545,7 +554,9 @@ export default defineComponent({
       } else {
         if (
           this.userInfoJson.rol == rol.ANALISTA ||
-          this.userInfoJson.rol == rol.ALTA_GERENCIA
+          this.userInfoJson.rol == rol.ALTA_GERENCIA ||
+          this.userInfoJson.rol == rol.JEFE_DE_RIESGOS ||
+          this.userInfoJson.rol == rol.ESPECIALISTA
         ) {
           await this.fetchEspecialidades(this.userInfoJson.rol);
         }

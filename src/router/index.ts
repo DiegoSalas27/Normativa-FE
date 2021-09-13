@@ -50,6 +50,25 @@ const routes: Array<RouteRecordRaw> = [
       },
 
       {
+        path: 'jefe-de-riesgos',
+        name: 'JefeRiesgos',
+        props: true,
+        component: () => import("../views/ListUser.vue"),
+      },
+      {
+        path: 'jefe-de-riesgos',
+        name: 'JefeRiesgos',
+        props: true,
+        component: () => import("../views/ListUser.vue"),
+      },
+      {
+        path: 'auditor',
+        name: 'Auditor',
+        props: true,
+        component: () => import("../views/ListUser.vue"),
+      },
+
+      {
         path: 'especialistas',
         name: 'Especialistas',
         props: true,
@@ -72,6 +91,12 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: `profile/alta-gerencia/:id?`,
         name: 'ProfileAltaGerencia',
+        props: true,
+        component: () => import("../views/UserProfile.vue"),
+      },
+      {
+        path: `profile/especialista/:id?`,
+        name: 'ProfileEspecialista',
         props: true,
         component: () => import("../views/UserProfile.vue"),
       },
