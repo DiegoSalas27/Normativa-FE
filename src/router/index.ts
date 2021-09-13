@@ -88,23 +88,15 @@ const routes: Array<RouteRecordRaw> = [
       },
     ]
   },
-  {
-    path: '/evaluacion/:id?/registrar',
-    name: urlConstants.REALIZAR_PRUEBA_REGISTRAR,
-    props: true,
-    component: () => import("../views/Evaluacion.vue"),
-  },
+  // {
+  //   path: '/evaluacion/:id/registrar', <-- verificar como se desea ingresar a esta ruta
+  //   name: urlConstants.REALIZAR_PRUEBA_REGISTRAR,
+  //   props: true,
+  //   component: () => import("../views/Evaluacion.vue"),
+  // },
   {
     path: '/evaluacion/:id?',
-    name: urlConstants.REALIZAR_PRUEBA_VISUALIZAR,
-
-    props: true,
-    component: () => import("../views/Evaluacion.vue"),
-  },
-  {
-    path: '/evaluacion/:id/editar',
-    name: urlConstants.REALIZAR_PRUEBA_EDITAR,
-
+    name: urlConstants.REALIZAR_PRUEBA,
     props: true,
     component: () => import("../views/Evaluacion.vue"),
   },

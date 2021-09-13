@@ -12,9 +12,7 @@ export const urlConstants = {
   PROFILE_JEFE_DE_RIESGOS: 'ProfileJefeRiesgos',
 
   //funcionalidades
-  REALIZAR_PRUEBA_REGISTRAR: 'RegistrarEvaluacion',
-  REALIZAR_PRUEBA_VISUALIZAR: 'VisualizarEvaluacion',
-  REALIZAR_PRUEBA_EDITAR: 'EditarEvaluacion',
+  REALIZAR_PRUEBA: 'Evaluacion',
   REALIZAR_PRUEBA_EVALUACION: 'Prueba',
   VISUALIZAR_INFORME: 'TipoInforme',
 
@@ -288,7 +286,7 @@ export const AnalistaUserActions = [
   {
     src: require("@/assets/images/RealizarPrueba_Analista.png"),
     description: "Realizar prueba",
-    url: urlConstants.REALIZAR_PRUEBA_REGISTRAR,
+    url: urlConstants.REALIZAR_PRUEBA,
   },
 ];
 

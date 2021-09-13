@@ -647,7 +647,7 @@ export default defineComponent({
 
       if (!this.$route.params.tr_codigo) {
         try {
-          const response = await fetch(`${BASE_URL}plantratamiento/count`, {
+          const response = await fetch(`${BASE_URL}plantratamiento/ultimoCodigo`, {
             method: "GET",
             headers: new Headers({
               "Content-Type": "application/json",
@@ -655,17 +655,9 @@ export default defineComponent({
             }),
           });
 
-          const number: number = await response.json();
-          let zeros = "";
+          const { codigo } = await response.json() as { codigo: string };
 
-          if (number > 10) {
-            zeros = "0";
-          } else {
-            zeros = "00";
-          }
-
-          this.tratamientoInfoJson.codigo =
-            "TR" + zeros + (number + 1).toString();
+          this.tratamientoInfoJson.codigo = codigo
         } catch (err) {
           console.log(err);
         }

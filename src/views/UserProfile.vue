@@ -398,7 +398,7 @@ export default defineComponent({
 
             setTimeout(() => {
               this.$router.replace("/dashboard");
-            }, 2000);
+            }, 1000);
           } catch (error) {
             this.error = true;
             isValid = false;
@@ -423,7 +423,7 @@ export default defineComponent({
 
             setTimeout(() => {
               this.$router.replace("/dashboard");
-            }, 2000);
+            }, 1000);
           } catch (error) {
             this.error = true;
             this.message = "Favor de llenar los campos con valores permitidos";
