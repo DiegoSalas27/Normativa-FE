@@ -628,6 +628,13 @@ h1 {
   grid-template-columns: repeat(auto-fill, minmax(42%, 1fr));
   justify-content: center;
 }
+.gridCards.adminGrid .card {
+  margin: auto;
+}
+
+.gridCards.adminGrid img {
+  width: 100%;
+}
 
 .gridCards.especialistaGrid {
   margin-top: 11vw;

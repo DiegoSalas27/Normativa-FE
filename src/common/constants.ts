@@ -261,22 +261,22 @@ export const entity = {
 
 export const AdminUserActions = [
   {
-    src: require("@/assets/images/alta.png"),
+    src: require("@/assets/images/Icon_Alta_Gerencia.jpg"),
     description: "Alta gerencia",
     url: urlConstants.ALTA_GERENCIA,
   },
   {
-    src: require("@/assets/images/analyst.png"),
+    src: require("@/assets/images/Icon_Analista.jpg"),
     description: "Analistas",
     url: urlConstants.ANALISTAS,
   },
   {
-    src: require("@/assets/images/audit.png"),
-    description: "Auditor",
+    src: require("@/assets/images/Icon_Especialista.jpg"),
+    description: "Espacialista",
     url: urlConstants.AUTDITOR,
   },
   {
-    src: require("@/assets/images/security.png"),
+    src: require("@/assets/images/Icon_Jefe_Riesgos.jpg"),
     description: "Jefe de riesgos",
     url: urlConstants.PROFILE_JEFE_DE_RIESGOS,
   },
