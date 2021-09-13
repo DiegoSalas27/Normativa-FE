@@ -30,12 +30,11 @@
       }}
     </h1>
     <button
-      v-if="action != 'registrar'"
       :class="$route.params.id ? 'action-button' : 'action-button blocked'"
       :disabled="!$route.params.id && !verifyPruebaCompleta"
       @click="submit"
     >
-      {{ action == "editar" ? "Guardar" : "Editar" }}
+      {{ action == "registrar" ? "Guardar" : "Editar" }}
     </button>
     <div class="flex-row">
       <div class="flex-col">
@@ -719,11 +718,16 @@ export default defineComponent({
     console.log(this.comentarioLista);
 
     //action: visualizar, editar o registrar
+    
     this.action = window.location.href.split("/").slice(-1).pop()!;
     this.action =
       this.action != "editar" && this.action != "registrar"
         ? "visualizar"
         : this.action;
+
+    this.action = "registrar"; // hardcodeado por Diego Salas Noain para hcer pruebas
+
+    console.log(this.action);
 
     // console.log("this.action");
     // console.log(this.action);

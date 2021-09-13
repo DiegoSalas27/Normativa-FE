@@ -12,6 +12,15 @@
     @confirmMassive="confirmMassiveDelete"
     @cancel="closeModal"
   ></confirmation-modal>
+  <!-- modal for user validation -->
+  <modal 
+    :show="!!(loading && !userValidated)"
+    :title="message"
+    @close="() => {}"
+    :error="error"
+    :loading="loading"
+  ></modal>
+  <!-- generic modal -->
   <modal
     :show="!!message"
     :title="message"
@@ -19,7 +28,7 @@
     :error="error"
     :loading="loading"
   ></modal>
-  <section id="main">
+  <section v-if="userValidated" id="main">
     <h1>{{ displayTitlePage }}</h1>
     <button
       :class="
@@ -385,6 +394,7 @@ export default defineComponent({
       canEdit: false,
       asignadoSeleccionado: false,
       hasTouchedEstado: false,
+      userValidated: false,
     };
   },
   watch: {
@@ -672,6 +682,11 @@ export default defineComponent({
           tratamientoObtenido
         );
 
+        if (this.userInfoJson.rol == rol.ANALISTA && this.tratamientoInfoJson.usuarioId !== this.userInfoJson.id) {
+          this.loading = false;
+          this.$router.replace(`/dashboard`);
+        }
+
         this.codigoEvaluacion = tratamientoObtenido.codigoEvaluacion;
         this.pruebas = tratamientoObtenido.pruebas.filter(
           (pr) => pr.visibilidad
@@ -774,8 +789,19 @@ export default defineComponent({
     },
   },
   mounted() {
+    this.loading = true;
     (async () => {
+      
       this.userInfoJson = await getUsuario();
+
+      if (
+        this.userInfoJson.rol !== rol.JEFE_DE_RIESGOS &&
+        this.userInfoJson.rol !== rol.ANALISTA
+      ) {
+        this.loading = false;
+        this.$router.replace(`/dashboard`);
+      }
+
       if (this.userInfoJson.rol == rol.JEFE_DE_RIESGOS) {
         this.canEdit = true;
       } else this.canEdit = false;
@@ -783,27 +809,20 @@ export default defineComponent({
 
       if (!this.$route.params.tr_codigo) {
         try {
-          const response = await fetch(`${BASE_URL}plantratamiento/count`, {
-            method: "GET",
-            headers: new Headers({
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + localStorage.getItem("token"),
-            }),
-          });
+          const response = await fetch(
+            `${BASE_URL}plantratamiento/ultimoCodigo`,
+            {
+              method: "GET",
+              headers: new Headers({
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              }),
+            }
+          );
 
-          const number: number = await response.json();
-          let zeros = "";
+          const { codigo } = (await response.json()) as { codigo: string };
 
-          if (number >= 99) {
-            zeros = "";
-          } else if (number >= 9) {
-            zeros = "0";
-          } else {
-            zeros = "00";
-          }
-
-          this.tratamientoInfoJson.codigo =
-            "TR" + zeros + (number + 1).toString();
+          this.tratamientoInfoJson.codigo = codigo;
         } catch (err) {
           console.log(err);
         }
@@ -814,6 +833,8 @@ export default defineComponent({
       }
 
       await this.fetchTratamientoEstados();
+      this.loading = false;
+      this.userValidated = true;
     })();
   },
 });

@@ -3,6 +3,13 @@
     :name="userInfoJson?.nombres"
     :lastName="userInfoJson?.apellidos"
   ></nav-bar>
+  <modal 
+    :show="loading"
+    :title="message"
+    @close="() => {}"
+    :error="error"
+    :loading="loading"
+  ></modal>
   <modal
     :show="!!message"
     :title="message"
@@ -73,7 +80,7 @@
       />
       &nbsp;&nbsp;
       <button class="action-button blocked" @click="sendMessage">Enviar</button>
-       <div class="info-field">
+      <div class="info-field">
         <span>Estado</span>&nbsp;&nbsp;
         <select
           class="select"
@@ -86,6 +93,7 @@
           </option>
         </select>
       </div>
+      <button class="action-button blocked" style="margin-left: 140px;" @click="refreshComments">Refrescar</button>
       <div
         class="comentario-lista"
         v-for="(
@@ -242,12 +250,11 @@ export default defineComponent({
         console.log(error);
       }
     },
-  },
-  mounted() {
-    (async () => {
+
+    async refreshComments(): Promise<void> {
+      this.loading = true;
       try {
-        this.userInfoJson = await getUsuario();
-        const response = await fetch(
+         const response = await fetch(
           `${BASE_URL}evidenciarequerimiento/accion-mitigacion/${this.$route.params.acm_id}`,
           {
             method: "GET",
@@ -263,8 +270,23 @@ export default defineComponent({
         this.evidenciaRequerimientoAccionMitigacion =
           (await response.json()) as IEvidenciaRequerimientoAccionMitigacion;
 
+        this.loading = false;
         console.log(this.evidenciaRequerimientoAccionMitigacion);
       } catch (error) {
+        this.loading = false;
+        console.log(error);
+      }
+    }
+  },
+  mounted() {
+    this.loading = true;
+    (async () => {
+      try {
+        this.userInfoJson = await getUsuario();
+        await this.refreshComments();
+        this.loading = false;
+      } catch (error) {
+        this.loading = false;
         console.log(error);
       }
     })();

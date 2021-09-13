@@ -13,6 +13,7 @@ export const urlConstants = {
 
   //funcionalidades
   REALIZAR_PRUEBA: 'Evaluacion',
+  REALIZAR_PRUEBA_REGISTRAR: 'EvaluacionRegistrar',
   REALIZAR_PRUEBA_EVALUACION: 'Prueba',
   VISUALIZAR_INFORME: 'TipoInforme',
 
