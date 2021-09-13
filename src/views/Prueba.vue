@@ -322,9 +322,9 @@
               >
                 Visualizar resumen
               </button>
-              <button class="action-button main-form final" @click="submit">
+              <!-- <button class="action-button main-form final" @click="submit">
                 Guardar prueba
-              </button>
+              </button> -->
             </table>
           </div>
         </div>
@@ -659,17 +659,23 @@ export default defineComponent({
     },
     async evidenciasCount(): Promise<void> {
       try {
-        const response = await fetch(`${BASE_URL}evidencia/ultimoCodigo`, {
+        const response = await fetch(`${BASE_URL}evidencia/count`, {
           method: "GET",
           headers: new Headers({
             "Content-Type": "application/json",
             Authorization: "Bearer " + localStorage.getItem("token"),
           }),
         });
-
-        const { codigo } = await response.json() as { codigo: string };
-
-        this.lastEvidenciaCodigo = codigo;
+        const number: number = await response.json();
+        let zeros = "";
+        if (number >= 99) {
+          zeros = "";
+        } else if (number >= 9) {
+          zeros = "0";
+        } else {
+          zeros = "00";
+        }
+        this.lastEvidenciaCodigo = "ED" + zeros + (number + 1).toString();
       } catch (err) {
         console.log(err);
       }
@@ -756,19 +762,27 @@ export default defineComponent({
       }
       if (this.$route.params.pr_codigo == undefined) {
         try {
-          const response = await fetch(`${BASE_URL}prueba/ultimoCodigo`, {
+          const response = await fetch(`${BASE_URL}prueba/count`, {
             method: "GET",
             headers: new Headers({
               "Content-Type": "application/json",
               Authorization: "Bearer " + localStorage.getItem("token"),
             }),
           });
-          
-          const { codigo } = await response.json() as { codigo: string };
+          const number: number = await response.json();
+          let zeros = "";
+
+          if (number >= 99) {
+            zeros = "";
+          } else if (number >= 9) {
+            zeros = "0";
+          } else {
+            zeros = "00";
+          }
 
           this.$store.dispatch("pruebaModule/guardarPrueba", {
             ...this.prueba,
-            codigo: codigo
+            codigo: "PR" + zeros + (number + 1).toString(),
           });
         } catch (err) {
           console.log(err);
@@ -833,11 +847,27 @@ export default defineComponent({
           if (this.requerimientos.length == evidenciasRequerimientos.length) {
             this.end = true;
           }
+          // if (this.$route.query.req == "end") {
+          //   this.end = true;
+          //   this.loading = true;
+          //   this.stepIndex = 0;
+          //   this.obtenerPruebaResults();
+          //   this.showResultado = true;
+          //   this.loading = false;
+          //   this.$router.push(
+          //     `/evaluacion/${this.evaluacion.codigo}/prueba/${this.$route.params.pr_codigo}/resumen`
+          //   );
+          //   this.files = new FormData();
+          //   this.loading = false;
+          //   this.hasSelectedEvidencia = false;
+          //   this.nuevaEvidencia = false;
+          // } else {
           this.$router.replace({
             path: `/evaluacion/${this.evaluacion.codigo}/prueba/${this.$route.params.pr_codigo}`,
             query: { req: this.questionNumber + 1 },
           });
           this.start = true;
+          // }
         } catch (err) {
           console.log(err);
         }

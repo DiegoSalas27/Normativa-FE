@@ -236,7 +236,7 @@
               </div>
             </div>
             <div v-else>
-              <h4>xd</h4>
+              <h4>No hay registros</h4>
             </div>
           </div>
         </div>
@@ -430,7 +430,8 @@ export default defineComponent({
         );
       } else {
         this.$router.push(
-          `/lista-verificacion/${this.selectedListaVerificacion.codigo}/prueba/${selectedPrueba?.codigo}/resumen`
+          // `/lista-verificacion/${this.selectedListaVerificacion.codigo}/prueba/${selectedPrueba?.codigo}/resumen`
+          `/evaluacion/${this.evaluacion.codigo}/prueba/${selectedPrueba?.codigo}?req=end`
         );
       }
     },
@@ -721,7 +722,7 @@ export default defineComponent({
     console.log(this.comentarioLista);
 
     //action: visualizar, editar o registrar
-    
+
     this.action = window.location.href.split("/").slice(-1).pop()!;
     this.action =
       this.action != "editar" && this.action != "registrar"
