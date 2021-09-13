@@ -270,6 +270,9 @@ export default defineComponent({
         this.evidenciaRequerimientoAccionMitigacion =
           (await response.json()) as IEvidenciaRequerimientoAccionMitigacion;
 
+        this.evidenciaRequerimientoAccionMitigacion.comentarioLista =
+          this.evidenciaRequerimientoAccionMitigacion.comentarioLista.filter(cml => cml.nombreUsuario != null);
+
         this.loading = false;
         console.log(this.evidenciaRequerimientoAccionMitigacion);
       } catch (error) {
