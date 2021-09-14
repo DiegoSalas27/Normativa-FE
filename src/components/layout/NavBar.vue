@@ -1,7 +1,14 @@
 <template>
   <div class="header">
-    <p @click="goToDashboard()" class="dashboardText">Sistema Experto de Monitoreo</p>
-    <p>Bienvenido: {{ name + ' ' + lastName }}</p>
+    <img
+      id="logo"
+      @click="goToDashboard()"
+      alt="logo_banner"
+      src="@/assets/images/Logo_aplicación.png"
+      width="120"
+      height="50"
+    />
+    <p>Bienvenido: {{ name + " " + lastName }}</p>
   </div>
 </template>
 
@@ -12,14 +19,20 @@ export default defineComponent({
   props: ["name", "lastName"],
   methods: {
     goToDashboard() {
-      this.$router.push('/dashboard');
-    }
-  }
+      this.$router.push("/dashboard");
+    },
+  },
 });
-
 </script>
 
 <style scoped>
+#logo {
+  margin: auto 6px;
+}
+#logo:hover {
+  cursor: pointer;
+}
+
 .header {
   z-index: 3;
   position: fixed;
@@ -47,5 +60,4 @@ export default defineComponent({
 .dashboardText {
   cursor: pointer;
 }
-
 </style>
