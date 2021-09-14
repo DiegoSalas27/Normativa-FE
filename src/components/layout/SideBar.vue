@@ -7,7 +7,13 @@ import SideBar from '@/components/layout/SideBar.vue';
           
         </li>
       </ul> -->
-      <img :src="userImage" :alt="userImage" class="userImage" />
+      <!-- <img :src="userImage" :alt="userImage" class="userImage" /> -->
+      <div class="iconHolder">
+        <p>
+          {{ userInfoJson.nombres[0] }}
+          {{ userInfoJson.apellidos[0] }}
+        </p>
+      </div>
       <p>Bienvenido</p>
       <div @click="goProfile()" class="link">
         <i :class="expand ? 'fas fa-user' : 'fas fa-user fa-lg show'"></i
@@ -48,6 +54,9 @@ import SideBar from '@/components/layout/SideBar.vue';
 </template>
 
 <script lang="ts">
+import { IUser } from "@/interfaces/user.interface";
+import { getUsuario } from "@/services/authService";
+import { emptyUser } from "@/utils/initializer";
 import { defineComponent } from "@vue/runtime-core";
 
 export default defineComponent({
@@ -55,6 +64,7 @@ export default defineComponent({
   emits: ["minimized"],
   data() {
     return {
+      userInfoJson: emptyUser() as IUser,
       userImage:
         this.user && this.user.imagen
           ? this.user.imagen
@@ -72,6 +82,16 @@ export default defineComponent({
       this.expand = !this.expand;
       this.$emit("minimized", this.expand);
     },
+  },
+  mounted() {
+    (async () => {
+      try {
+        this.userInfoJson = await getUsuario();
+        console.log(this.userInfoJson);
+      } catch (err) {
+        console.log(err);
+      }
+    })();
   },
 });
 </script>
@@ -230,5 +250,27 @@ export default defineComponent({
   height: 100px;
   width: 100px;
   border-radius: 50%;
+}
+
+.iconHolder {
+  margin: 20px 0 !important;
+  height: 100px !important;
+  width: 100px !important;
+  border-radius: 50%;
+  background-color: #fff;
+}
+
+.iconHolder p {
+  margin-top: 5px;
+  text-transform: uppercase;
+  color: #d6bd8f !important;
+  letter-spacing: -4px;
+  font-family: "Merriweather", serif;
+  font-weight: 900;
+  font-size: 55px;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 90px;
+  color: black;
 }
 </style>
