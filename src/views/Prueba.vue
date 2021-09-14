@@ -762,27 +762,18 @@ export default defineComponent({
       }
       if (this.$route.params.pr_codigo == undefined) {
         try {
-          const response = await fetch(`${BASE_URL}prueba/count`, {
+          const response = await fetch(`${BASE_URL}prueba/ultimoCodigo`, {
             method: "GET",
             headers: new Headers({
               "Content-Type": "application/json",
               Authorization: "Bearer " + localStorage.getItem("token"),
             }),
           });
-          const number: number = await response.json();
-          let zeros = "";
 
-          if (number >= 99) {
-            zeros = "";
-          } else if (number >= 9) {
-            zeros = "0";
-          } else {
-            zeros = "00";
-          }
-
+          const { codigo } = (await response.json()) as { codigo: string };
           this.$store.dispatch("pruebaModule/guardarPrueba", {
             ...this.prueba,
-            codigo: "PR" + zeros + (number + 1).toString(),
+            codigo: codigo,
           });
         } catch (err) {
           console.log(err);
