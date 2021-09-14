@@ -322,9 +322,9 @@
               >
                 Visualizar resumen
               </button>
-              <!-- <button class="action-button main-form final" @click="submit">
+              <button class="action-button main-form final" @click="submit">
                 Guardar prueba
-              </button> -->
+              </button>
             </table>
           </div>
         </div>

@@ -430,8 +430,8 @@ export default defineComponent({
         );
       } else {
         this.$router.push(
-          // `/lista-verificacion/${this.selectedListaVerificacion.codigo}/prueba/${selectedPrueba?.codigo}/resumen`
-          `/evaluacion/${this.evaluacion.codigo}/prueba/${selectedPrueba?.codigo}?req=end`
+          `/lista-verificacion/${this.selectedListaVerificacion.codigo}/prueba/${selectedPrueba?.codigo}/resumen`
+          // `/evaluacion/${this.evaluacion.codigo}/prueba/${selectedPrueba?.codigo}?req=end`
         );
       }
     },
@@ -603,8 +603,7 @@ export default defineComponent({
             console.log(this.evaluacion.evaluacionId);
             console.log("this.evaluacion.evaluacionId");
             await fetch(
-              // `${BASE_URL}evaluacion/${this.evaluacion.evaluacionId}`, //POR MIENTRAS LA URL SERA CON /REGISTRAR. SE CAMBIARA EN SEM5.
-              `${BASE_URL}evaluacion/${this.evaluacion.evaluacionId}/registrar`,
+              `${BASE_URL}evaluacion/${this.evaluacion.evaluacionId}`,
               {
                 method: "PUT",
                 headers: new Headers({
