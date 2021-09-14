@@ -8,8 +8,10 @@ export const urlConstants = {
   PROFILE_ALTA_GERENCIA: 'ProfileAltaGerencia',
   PROFILE_ANALISTA: 'ProfileAnalista',
   ANALISTAS: 'Analistas',
-  AUTDITOR: 'auditor',
+  ESPECIALISTAS: 'ListaEspecialistas',
   PROFILE_JEFE_DE_RIESGOS: 'ProfileJefeRiesgos',
+  PROFILE_AUDITOR: 'ProfileEspecialista',
+  JEFE_DE_RIESGOS: 'JefeRiesgos',
 
   //funcionalidades
   REALIZAR_PRUEBA: 'Evaluacion',
@@ -44,6 +46,33 @@ export const columnsRolList: IColumnsGrid[] = [
   {
     field: 'especialidad',
     title: 'Especialidad',
+    type: 'text'
+  },
+  {
+    field: 'email',
+    title: 'Correo electrónico',
+    type: 'text'
+  },
+  {
+    field: 'phoneNumber',
+    title: 'Número de teléfono',
+    type: 'text'
+  },
+  {
+    field: 'fechaNacimiento',
+    title: 'Edad',
+    type: 'text'
+  }
+]
+export const columnsRolList2: IColumnsGrid[] = [
+  {
+    field: 'codigo',
+    title: 'Código',
+    type: 'text'
+  },
+  {
+    field: 'nombre',
+    title: 'Nombre',
     type: 'text'
   },
   {
@@ -274,12 +303,12 @@ export const AdminUserActions = [
   {
     src: require("@/assets/images/audit.png"),
     description: "Auditor",
-    url: urlConstants.AUTDITOR,
+    url: urlConstants.ESPECIALISTAS,
   },
   {
     src: require("@/assets/images/security.png"),
     description: "Jefe de riesgos",
-    url: urlConstants.PROFILE_JEFE_DE_RIESGOS,
+    url: urlConstants.JEFE_DE_RIESGOS,
   },
 ];
 
@@ -316,7 +345,7 @@ export const estadoAccionMitigacion = [
 ]
 
 
-// export const BASE_URL = "https://sistemaexperto.azurewebsites.net/api/";
+export const BASE_URL = "https://sistemaexperto.azurewebsites.net/api/";
 // export const BASE_URL = "http://localhost:55016/api/";
-export const BASE_URL = "http://localhost:5000/api/";
+//export const BASE_URL = "http://localhost:5000/api/";
 //export const BASE_URL = "https://localhost:44357/api/";
