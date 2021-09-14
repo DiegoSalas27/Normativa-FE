@@ -603,14 +603,16 @@ export default defineComponent({
       }
     })();
   },
+  beforeCreate() {
+    document.querySelector("body")!.setAttribute("style", "background:#d2d2d2");
+  },
+  beforeUnmount() {
+    document.querySelector("body")!.setAttribute("style", "");
+  },
 });
 </script>
 
 <style>
-body {
-  background-color: #d2d2d2;
-}
-
 h1 {
   font-weight: 900;
   font-size: xx-large;
