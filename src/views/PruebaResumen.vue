@@ -27,9 +27,7 @@
           @change="setValue"
           :value="porcentajeCumplimientoDeseado"
         />
-        <abbr
-          title="El valor debe ser mayor o igual a {{ this.porcentajeCumplimientoDeseado }}"
-        >
+        <abbr title="El valor debe ser mayor o igual a 0">
           <i class="fas fa-info-circle"></i
         ></abbr>
       </div>
@@ -228,6 +226,13 @@ export default defineComponent({
         event.target.value = this.porcentajeCumplimiento.toString();
       }
       this.porcentajeCumplimientoDeseado = +event.target.value;
+      document
+        .querySelector("abbr")!
+        .setAttribute(
+          "title",
+          "El valor debe ser mayor o igual a " +
+            this.porcentajeCumplimientoDeseado
+        );
     },
     back(): void {
       this.$router.back();
