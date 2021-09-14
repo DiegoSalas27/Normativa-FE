@@ -8,7 +8,7 @@ export const urlConstants = {
   PROFILE_ALTA_GERENCIA: 'ProfileAltaGerencia',
   PROFILE_ANALISTA: 'ProfileAnalista',
   ANALISTAS: 'Analistas',
-  AUTDITOR: 'Auditor',
+  ESPECIALISTAS: 'ListaEspecialistas',
   PROFILE_JEFE_DE_RIESGOS: 'ProfileJefeRiesgos',
   PROFILE_AUDITOR: 'ProfileEspecialista',
   JEFE_DE_RIESGOS: 'JefeRiesgos',
@@ -302,7 +302,7 @@ export const AdminUserActions = [
   {
     src: require("@/assets/images/audit.png"),
     description: "Auditor",
-    url: urlConstants.AUTDITOR,
+    url: urlConstants.ESPECIALISTAS,
   },
   {
     src: require("@/assets/images/security.png"),

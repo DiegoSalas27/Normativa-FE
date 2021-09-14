@@ -56,14 +56,8 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("../views/ListUser.vue"),
       },
       {
-        path: 'jefe-de-riesgos',
-        name: 'JefeRiesgos',
-        props: true,
-        component: () => import("../views/ListUser.vue"),
-      },
-      {
-        path: 'auditor',
-        name: 'Auditor',
+        path: 'lista-especialistas',
+        name: 'ListaEspecialistas',
         props: true,
         component: () => import("../views/ListUser.vue"),
       },

@@ -114,7 +114,7 @@ export default defineComponent({
           this.profileUrl = "/dashboard/profile/jefe-de-riesgos/";
           this.columns = columnsRolList2;
           break;
-        case "/dashboard/auditor":
+        case "/dashboard/lista-especialistas":
           this.userRol = "ESPECIALISTAS";
           this.profileUrl = "/dashboard/profile/especialista/";
           this.columns = columnsRolList2;
