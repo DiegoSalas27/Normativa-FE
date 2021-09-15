@@ -317,6 +317,39 @@ export const configureLineChartOptions = (
   };
 };
 
+export const configureAreaChartOptions =  (
+  series:any[],
+  name: string,
+  XAxisLista: string[] | number[],
+  )=> {
+    return{
+      series: [{
+        data: series,name
+      }],
+      chart: {
+        height: 300,
+        type: 'area'
+      },
+      dataLabels: {
+        enabled: false
+      },
+      stroke: {
+        curve: 'smooth'
+      },
+        xaxis: {
+          type: 'datetime',
+          categories:  XAxisLista,
+        },
+        tooltip: {
+          x: {
+            format: 'dd/MM/yy HH:mm'
+          },
+        },
+    };
+  };
+      
+
+
 export const configureTreeMapChartOptions = (
   series: any[],
 ) => {
