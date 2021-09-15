@@ -18,10 +18,10 @@
   <section id="main" :class="{ expand: expand }">
     <div>
       <h2>ADMINISTRACIÓN DE {{ calculateUser() }}</h2>
-      <button class="action-button massive" @click="deleteMassive()">
-        Eliminación masiva
-      </button>
-      <button class="action-button" @click="register()">Registrar</button>
+      <div class="buttons">
+        <button class="action-button" @click="deleteMassive()"> Eliminación masiva </button>
+        <button class="action-button" @click="register()">Registrar</button>
+      </div>
     </div>
     <grid
       :dataSource="dataSource"
@@ -41,7 +41,7 @@ import ConfirmationModal from "@/components/ui/ConfirmationModal.vue";
 import Modal from "../components/ui/Modal.vue";
 import { actions, BASE_URL, entity } from "@/common/constants";
 import { IUser } from "../interfaces/user.interface";
-import { columnsRolList } from "../common/constants";
+import { columnsRolList, columnsRolList2 } from "../common/constants";
 import { defineComponent } from "@vue/runtime-core";
 import { IDataSource } from "../interfaces/dataSource";
 import { emptyDataSource } from "../utils/initializer";
@@ -108,6 +108,16 @@ export default defineComponent({
         case "/dashboard/analistas":
           this.userRol = "ANALISTAS";
           this.profileUrl = "/dashboard/profile/analista/";
+          break;
+        case "/dashboard/jefe-de-riesgos":
+          this.userRol = "JEFE DE RIESGOS";
+          this.profileUrl = "/dashboard/profile/jefe-de-riesgos/";
+          this.columns = columnsRolList2;
+          break;
+        case "/dashboard/lista-especialistas":
+          this.userRol = "ESPECIALISTAS";
+          this.profileUrl = "/dashboard/profile/especialista/";
+          this.columns = columnsRolList2;
           break;
       }
 
@@ -241,15 +251,20 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.buttons {
+  margin-top: 15px;
+  margin-bottom: 5px;
+  text-align: right;
+}
 .action-button {
-  position: absolute;
-  top: 95px;
-  right: 30px;
+  position: relative;
+  width: 220px;
+  margin-right: 15px;
+}
+@media (max-width : 1250px){
+  .buttons {
+  text-align: center;
+}
 }
 
-.massive {
-  top: 95px;
-  right: 200px;
-  width: 220px;
-}
 </style>
