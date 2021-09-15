@@ -20,33 +20,46 @@
 
       <div v-show="userInfoJson?.rol === 'Analistas'">
         <div
-          v-for="rol_action in rolUserActions"
-          :key="rol_action.description"
-          @click="goToList(rol_action.url)"
-          class="cardanalista"
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 2vw;
+            margin: 2vw 0;
+          "
         >
-          <img :src="rol_action.src" :alt="rol_action.src" class="image" />
-          <p>{{ rol_action.description }}</p>
-        </div>
-
-        <div class="stats">
-          <div class="card statanalista">
-            <button
-              class="btn-table"
-              @click="goTo('TableUser', { type: 'Evaluacion' })"
-            >
-              RESULTADOS DE EVALUACIONES
-            </button>
-            <div ref="barChart" id="chart"></div>
+          <div
+            v-for="rol_action in rolUserActions"
+            :key="rol_action.description"
+            @click="goToList(rol_action.url)"
+            class="cardanalista"
+          >
+            <img :src="rol_action.src" :alt="rol_action.src" class="image" />
+            <p>{{ rol_action.description }}</p>
           </div>
-          <div class="card statanalista">
-            <button
-              class="btn-table"
-              @click="goTo('TableUser', { type: 'PlanesTratamiento' })"
-            >
-              PLANES DE TRATAMIENTO
-            </button>
-            <div ref="pieChart" id="chart"></div>
+
+          <div class="stats">
+            <div class="card statanalista">
+              <button
+                class="btn-table"
+                @click="goTo('TableUser', { type: 'Evaluacion' })"
+              >
+                RESULTADOS DE EVALUACIONES
+              </button>
+              <div ref="barChart" id="chart"></div>
+            </div>
+          </div>
+          <div class="stats">
+            <div class="card statanalista">
+              <button
+                class="btn-table"
+                @click="goTo('TableUser', { type: 'PlanesTratamiento' })"
+              >
+                PLANES DE TRATAMIENTO
+              </button>
+              <div ref="pieChart" id="chart"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -76,7 +89,6 @@
 
             <div>
               <div class="card stat donut" style="height: 218.5px">
-                
                 <div><strong>EVALUACIONES REALIZADAS</strong></div>
                 <br />
                 <h1 style="fontsize: 45px">{{ numberEvaluaciones }}</h1>
@@ -494,7 +506,7 @@ export default defineComponent({
 
       // Hasta aca es lo que le pertenece al jefe de riesgos
 
-       // esto le pertence a alta gerencia
+      // esto le pertence a alta gerencia
 
       const { gaugeSeries2 } =
         (await this.devolverCumplimientoEvaluacionesPruebas()) as IStatisticsEvaluacionCumplimientoPrueba;
@@ -591,14 +603,16 @@ export default defineComponent({
       }
     })();
   },
+  beforeCreate() {
+    document.querySelector("body")!.setAttribute("style", "background:#d2d2d2");
+  },
+  beforeUnmount() {
+    document.querySelector("body")!.setAttribute("style", "");
+  },
 });
 </script>
 
 <style>
-body {
-  background-color: #d2d2d2;
-}
-
 h1 {
   font-weight: 900;
   font-size: xx-large;
@@ -615,6 +629,13 @@ h1 {
 .gridCards.adminGrid {
   grid-template-columns: repeat(auto-fill, minmax(42%, 1fr));
   justify-content: center;
+}
+.gridCards.adminGrid .card {
+  margin: auto;
+}
+
+.gridCards.adminGrid img {
+  width: 100%;
 }
 
 .gridCards.especialistaGrid {

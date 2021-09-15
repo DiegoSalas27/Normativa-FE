@@ -243,9 +243,9 @@ textarea:focus {
   width: 100%;
   /* font-family: 'Segoe UI', sans-serif; */
   border-radius: 15px;
-  border: 0.5px solid var(--placeholder);
+  border: 1px solid var(--placeholder);
   outline: none;
-  border: 1px solid var(--accent);
+  /* border: 1px solid var(--accent); */
   padding: 15px 35px;
 }
 </style>

@@ -15,7 +15,6 @@ export const urlConstants = {
 
   //funcionalidades
   REALIZAR_PRUEBA: 'Evaluacion',
-  REALIZAR_PRUEBA_REGISTRAR: 'EvaluacionRegistrar',
   REALIZAR_PRUEBA_EVALUACION: 'Prueba',
   VISUALIZAR_INFORME: 'TipoInforme',
 
@@ -223,13 +222,13 @@ export const columnsEvaluacionesList: IColumnsGrid[] = [
     title: 'Obra',
     type: 'text'
   },
- /* {
-    field: 'nivelRiesgo',
-    title: 'Nivel de Riesgo',
-    type: 'text'
-  },
-
-  */
+  /* {
+     field: 'nivelRiesgo',
+     title: 'Nivel de Riesgo',
+     type: 'text'
+   },
+ 
+   */
   {
     field: 'ListaVerificacion',
     title: 'Lista de Verificacion',
@@ -291,22 +290,22 @@ export const entity = {
 
 export const AdminUserActions = [
   {
-    src: require("@/assets/images/alta.png"),
+    src: require("@/assets/images/Icon_Alta_Gerencia.jpg"),
     description: "Alta gerencia",
     url: urlConstants.ALTA_GERENCIA,
   },
   {
-    src: require("@/assets/images/analyst.png"),
+    src: require("@/assets/images/Icon_Analista.jpg"),
     description: "Analistas",
     url: urlConstants.ANALISTAS,
   },
   {
-    src: require("@/assets/images/audit.png"),
-    description: "Auditor",
-    url: urlConstants.ESPECIALISTAS,
+    src: require("@/assets/images/Icon_Especialista.jpg"),
+    description: "Espacialista",
+    url: urlConstants.AUTDITOR,
   },
   {
-    src: require("@/assets/images/security.png"),
+    src: require("@/assets/images/Icon_Jefe_Riesgos.jpg"),
     description: "Jefe de riesgos",
     url: urlConstants.JEFE_DE_RIESGOS,
   },

@@ -120,11 +120,6 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/Evaluacion.vue"),
   },
   {
-    path: '/evaluacion/:id/editar',
-    props: true,
-    component: () => import("../views/Evaluacion.vue"),
-  },
-  {
     path: '/evaluacion/:ev_codigo/prueba/nuevo',
     name: 'PruebaNuevo',
     component: () => import("../views/Prueba.vue"),

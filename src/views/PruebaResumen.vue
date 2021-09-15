@@ -19,41 +19,36 @@
       <div>
         <h4 style="display: inline">
           Ingrese el porcentaje de cumplimiento deseado:
-
         </h4>
         <input
           class="percentage"
           type="number"
           :min="porcentajeCumplimiento"
-
-          
           @change="setValue"
           :value="porcentajeCumplimientoDeseado"
         />
-               <abbr title= "El valor debe ser mayor o igual ">
-                   
-                  <i class="fas fa-info-circle"></i></abbr>
-    
+        <abbr
+          :title="'El valor debe ser mayor o igual a ' + porcentajeCumplimiento"
+        >
+          <i class="fas fa-info-circle"></i
+        ></abbr>
       </div>
-      
-
 
       <div>
-
- 
-      </div>
-      
-<div>
-      <table>
-        <tr>
-          <td><h4 style="display: inline">Nivel de riesgo</h4></td>
-          <td><span>{{ nivelDeRiesgo }}</span></td>
-        </tr>
-        <tr>
-          <td><h4 style="display: inline">Porcentaje de cumplimiento actual  </h4></td>
-            <td><span>{{porcentajeCumplimiento}} %</span></td>
-        </tr>
-      </table>
+        <table class="grid">
+          <thead class="header-grid">
+            <tr>
+              <th>Nivel de riesgo</th>
+              <th>Porcentaje de cumplimiento actual</th>
+            </tr>
+          </thead>
+          <tbody :class="rowBodyStyle ? rowBodyStyle : ''">
+            <tr>
+              <td>{{ nivelDeRiesgo }}</td>
+              <td>{{ porcentajeCumplimiento }} %</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <!-- <div>
@@ -62,15 +57,10 @@
         <span>{{ porcentajeCumplimiento }}%</span>
       </div> -->
 
-    
-  
       <div class="options-buttons">
-
-   
         <button class="action-button" @click="summary">Resumen</button>
-   
+
         <button
-        
           class="action-button"
           :class="
             porcentajeCumplimientoDeseado < porcentajeCumplimiento
@@ -81,11 +71,10 @@
           :disabled="porcentajeCumplimientoDeseado < porcentajeCumplimiento"
         >
           Escenario deseado
-          
         </button>
-      </div>  
+      </div>
     </div>
-    
+
     <div class="summary">
       <div class="header-summary">
         <h1>{{ headingTitle }}</h1>
@@ -104,8 +93,6 @@
             <span style="width: 70%">{{ req.descripcion }}</span>
             <span style="marginleft: 5px">{{ respuestaItem(index) }}</span>
           </div>
-
-          
 
           <div class="body-item-content" style="paddingbottom: 20px">
             <div class="flex-row">
@@ -183,15 +170,11 @@ import Modal from "../components/ui/Modal.vue";
 import { BASE_URL, rol } from "../common/constants";
 import { IPrueba, IPruebaResultados } from "../interfaces/prueba.interface";
 
-
 export default defineComponent({
   components: {
     NavBar,
     Modal,
   },
-
-
-
 
   data() {
     return {
@@ -203,11 +186,11 @@ export default defineComponent({
       criterios: [] as ICriterio[],
       porcentajeCumplimiento: 0,
       porcentajeCumplimientoDeseado: 0,
-      nivelDeRiesgo:"",
+      nivelDeRiesgo: "",
       accionesMitigacionCreadas: 0,
       message: null as string | null,
       loading: false,
-      pruebaResultados:{ }as IPruebaResultados,
+      pruebaResultados: {} as IPruebaResultados,
       error: false,
       canEdit: false,
     };
@@ -233,7 +216,6 @@ export default defineComponent({
             a.remove(); //afterwards we remove the element again
             this.message = null;
           });
-      
       } catch (err) {
         console.log(err);
       }
@@ -322,8 +304,6 @@ export default defineComponent({
       }
     },
 
-
-    
     async realScenario(): Promise<void> {
       this.message = "Cargando...";
       try {
@@ -356,9 +336,7 @@ export default defineComponent({
         console.log(err);
       }
 
-
-
-//////////////////////////////////////////////////////      
+      //////////////////////////////////////////////////////
       try {
         const response = await fetch(
           `${BASE_URL}evidenciarequerimiento/${this.$route.params.pr_codigo}`,
@@ -413,15 +391,11 @@ export default defineComponent({
         this.message = "";
       } catch (err) {
         console.log(err);
-
       }
-
-
     },
 
-////////    //////////
+    ////////    //////////
     async obtenerPruebaResults(): Promise<void> {
-      
       try {
         const response = await fetch(
           `${BASE_URL}prueba/${this.$route.params.pr_codigo}`,
@@ -435,7 +409,7 @@ export default defineComponent({
         );
         await handleErrors(response);
         this.pruebaResultados = await response.json();
-        this.nivelDeRiesgo=this.pruebaResultados.nivelDeRiesgo;
+        this.nivelDeRiesgo = this.pruebaResultados.nivelDeRiesgo;
       } catch (error) {
         this.error = true;
         const errorObj = JSON.parse(error.message);
@@ -443,7 +417,7 @@ export default defineComponent({
       }
     },
 
-////////////
+    ////////////
 
     respuestaItem(index: number): string {
       let respuesta = "No implementado";
@@ -523,18 +497,15 @@ export default defineComponent({
   top: -32px;
   border-right: 1px solid white;
 }
-table, th, td {
-  border: 8px solid rgba(5, 111, 160, 0.678);
-  border-collapse: collapse;
-  position:relative;
-    margin: 5px 2px;
-      top: -2px;
-      
+table {
+  margin-bottom: 3vw;
 }
+
+th,
 td {
-  padding: 10px;
-  text-align: left;
+  padding: 0 !important;
 }
+
 .options-buttons button:nth-child(2) {
   position: relative;
   border-top-left-radius: 0px !important;

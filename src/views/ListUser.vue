@@ -148,9 +148,9 @@ export default defineComponent({
         this.massiveDelete = true;
         this.showModalConfirmation = true;
         this.modalTitle =
-          "Está seguro que desea eliminar los " +
+          "¿Está seguro que desea eliminar los " +
           "usuario" +
-          "s seleccionados ?";
+          "s seleccionados?";
       } else {
         this.message = "Debe seleccionar al menos un usuario";
         this.error = true;
@@ -168,7 +168,7 @@ export default defineComponent({
     delete(id: string, entity: string): void {
       this.id = id;
       this.entity = entity;
-      this.modalTitle = "Está seguro que desea eliminar " + entity + "?";
+      this.modalTitle = "¿Está seguro que desea eliminar " + entity + "?";
       this.showModalConfirmation = true;
       this.page = 1;
     },

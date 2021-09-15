@@ -666,9 +666,8 @@ export default defineComponent({
             Authorization: "Bearer " + localStorage.getItem("token"),
           }),
         });
-
+        
         const { codigo } = await response.json() as { codigo: string };
-
         this.lastEvidenciaCodigo = codigo;
       } catch (err) {
         console.log(err);
@@ -763,12 +762,11 @@ export default defineComponent({
               Authorization: "Bearer " + localStorage.getItem("token"),
             }),
           });
-          
-          const { codigo } = await response.json() as { codigo: string };
 
+          const { codigo } = (await response.json()) as { codigo: string };
           this.$store.dispatch("pruebaModule/guardarPrueba", {
             ...this.prueba,
-            codigo: codigo
+            codigo: codigo,
           });
         } catch (err) {
           console.log(err);
@@ -833,11 +831,27 @@ export default defineComponent({
           if (this.requerimientos.length == evidenciasRequerimientos.length) {
             this.end = true;
           }
+          // if (this.$route.query.req == "end") {
+          //   this.end = true;
+          //   this.loading = true;
+          //   this.stepIndex = 0;
+          //   this.obtenerPruebaResults();
+          //   this.showResultado = true;
+          //   this.loading = false;
+          //   this.$router.push(
+          //     `/evaluacion/${this.evaluacion.codigo}/prueba/${this.$route.params.pr_codigo}/resumen`
+          //   );
+          //   this.files = new FormData();
+          //   this.loading = false;
+          //   this.hasSelectedEvidencia = false;
+          //   this.nuevaEvidencia = false;
+          // } else {
           this.$router.replace({
             path: `/evaluacion/${this.evaluacion.codigo}/prueba/${this.$route.params.pr_codigo}`,
             query: { req: this.questionNumber + 1 },
           });
           this.start = true;
+          // }
         } catch (err) {
           console.log(err);
         }

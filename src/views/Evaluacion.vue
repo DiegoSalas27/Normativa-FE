@@ -236,7 +236,7 @@
               </div>
             </div>
             <div v-else>
-              <h4>xd</h4>
+              <h4>No hay registros</h4>
             </div>
           </div>
         </div>
@@ -599,6 +599,8 @@ export default defineComponent({
           };
 
           try {
+            console.log(this.evaluacion.evaluacionId);
+            console.log("this.evaluacion.evaluacionId");
             await fetch(
               `${BASE_URL}evaluacion/${this.evaluacion.evaluacionId}`,
               {
@@ -718,7 +720,7 @@ export default defineComponent({
     console.log(this.comentarioLista);
 
     //action: visualizar, editar o registrar
-    
+
     this.action = window.location.href.split("/").slice(-1).pop()!;
     this.action =
       this.action != "editar" && this.action != "registrar"
@@ -751,7 +753,7 @@ export default defineComponent({
             }),
           });
 
-          const { codigo } = await response.json() as { codigo: string };
+          const { codigo } = (await response.json()) as { codigo: string };
 
           this.$store.dispatch("evaluacionModule/guardarEvaluacion", {
             ...this.evaluacion,
@@ -760,7 +762,7 @@ export default defineComponent({
           });
         } catch (err) {
           console.log(err);
-          debugger
+          debugger;
         }
       } else {
         await this.fetchEvaluacion();
