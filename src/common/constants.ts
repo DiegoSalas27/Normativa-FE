@@ -184,31 +184,51 @@ export const columnsVerificacionList2: IColumnsGrid[] = [
 
 
 export const columnsRiesgoNormativaList: IColumnsGrid[] = [
+
   {
-    field: 'normativa',
-    title: 'Normativa',
+    field: 'ListaVerificacion',
+    title: 'Lista de Verificacion',
     type: 'text'
   },
+
   {
-    field: 'codigoEvaluacion',
-    title: 'Código de Evaluación',
+    field: 'codigo',
+    title: 'Cod. de evaluacion',
     type: 'text'
   },
+
   {
-    field: 'evaluacion',
-    title: 'Nombre de Evaluación',
+    field: 'nombre',
+    title: 'Nombre de evaluacion',
     type: 'text'
   },
-  {
+ /* {
     field: 'nivelRiesgo',
     title: 'Nivel de Riesgo',
     type: 'text'
   },
+
+  */
+
+
   {
-    field: 'fechaCreacion',
-    title: 'Fecha de Creación',
+    field: 'PorcentajeDeCumplimiento',
+    title: 'Porcentaje de Cumplimiento',
     type: 'text'
   },
+
+  {
+    field: 'fecha',
+    title: 'fecha de creación',
+    type: 'text'
+  },
+  /*
+  {
+    field: 'duracion',
+    title: 'Duración',
+    type: 'text'
+  },
+  */
 ]
 
 export const columnsEvaluacionesList: IColumnsGrid[] = [

@@ -129,12 +129,13 @@
             <div class="col">
               <div class="mycard count">
                 <div style="margin-bottom: 10px"></div>
-                <button
+                <!--<button
                   class="btn-table"
                   @click="goTo('TableUser', { type: 'Evaluacion' })"
                 >
                   EVALUACIONES REALIZADAS
-                </button>
+                </button> -->
+                <div><strong>EVALUACIONES REALIZADAS</strong></div>
                 <p style="font-size: 35px; font-weight: bold">
                   {{ numberEvaluaciones }}
                 </p>
@@ -148,7 +149,13 @@
             <div class="col">
               <div class="mycard pie">
                 <div style="margin-bottom: 10px">
-                  <strong>PORCENTAJE DE CUMPLIMIENTO POR OBRAS</strong>
+                 <!-- <strong>PORCENTAJE DE CUMPLIMIENTO POR OBRAS</strong>-->
+                 <button
+                  class="btn-table"
+                  @click="goTo('TableUser', { type: 'Evaluacion' })"
+                >
+                  PORCENTAJE DE CUMPLIMIENTO POR OBRAS
+                </button>                
                 </div>
                 <div ref="StackedBarPrueba" id="chart"></div>
               </div>
@@ -164,7 +171,7 @@
                 >
                   NIVEL DE RIESGO POR NORMATIVA
                 </button>
-                <div ref="lineChart" id="chart"></div>
+                <div ref="StackedBarListaVerificacion" id="chart"></div>
               </div>
             </div>
 
@@ -202,6 +209,7 @@
 </template>
 
 <script lang="ts">
+import { IStatisticsListaVerificacion } from "@/interfaces/listaVerificacion.interface";
 import { defineComponent } from "@vue/runtime-core";
 import ApexCharts from "apexcharts";
 import {
@@ -218,6 +226,7 @@ import {
   configurePieChartOptions,
   configureGaugeOptions2,
   configureBarListOptions,
+  configureAreaChartOptions,
   configurePieChartOptions2,
   configureStackBarChartOptions,
   configureTreeMapChartOptions,
@@ -406,6 +415,28 @@ export default defineComponent({
       }
     },
 
+      async devolverListaVerificacion(): Promise<
+      IStatisticsListaVerificacion| undefined
+    > {
+      try {
+        const response = await fetch(
+          `${BASE_URL}listaverificaciones/statistics/lista`,
+          {
+            method: "GET",
+            headers: new Headers({
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+          }
+        );
+
+        await handleErrors(response);
+        return (await response.json()) as IStatisticsListaVerificacion;
+      } catch (err) {
+        console.log(err);
+      }
+    },  
+
     async devolverPlanesTratamientoPorAnalista(): Promise<
       IStatisticsTratamientoResultAnalistasDto | undefined
     > {
@@ -528,6 +559,16 @@ export default defineComponent({
         xAxisPruebaStacked
       );
 
+      const { stackedBarSeriesListaVerificacion, xAxisListaVerificacionStacked } =
+        (await this.devolverListaVerificacion()) as IStatisticsListaVerificacion;
+
+      const optionsStackedBarListaVerificacion = configureAreaChartOptions(
+        stackedBarSeriesListaVerificacion,
+        "ISO 45001",
+        xAxisListaVerificacionStacked
+      );
+
+
       const optionsPieChart2 = configurePieChartOptions2(
         pieChartSeriesLista,
         "70%",
@@ -545,6 +586,16 @@ export default defineComponent({
         );
         StackedBarPrueba.render();
       }
+
+
+      if (this.$refs.StackedBarListaVerificacion) {
+        const StackedBarListaVerificacion = new ApexCharts(
+          this.$refs.StackedBarListaVerificacion,
+          optionsStackedBarListaVerificacion
+        );
+        StackedBarListaVerificacion.render();
+      }
+      
 
       if (this.$refs.barChartJefe) {
         const barChart = new ApexCharts(
@@ -811,4 +862,4 @@ h1 {
   background-repeat: no-repeat;
   background-size: cover;
 }
-</style>
+</style>    

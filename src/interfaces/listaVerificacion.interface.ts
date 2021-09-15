@@ -7,4 +7,17 @@ export interface IListaVerificacion {
 	fechaCreacion?: any;
   requerimientosCount?: number;
 	requerimientos: IRequerimiento[];
+
 }
+
+export interface IStatisticsListaVerificacion{
+  
+	stackedBarSeriesListaVerificacion: StackedBarSeriesListaVerificacion[];
+	xAxisListaVerificacionStacked: any;
+  
+  }
+  
+  interface StackedBarSeriesListaVerificacion {
+	name: string;
+	data: number[];
+  }
