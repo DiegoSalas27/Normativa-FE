@@ -217,7 +217,7 @@ export const columnsRiesgoNormativaList: IColumnsGrid[] = [
 
   {
     field: 'fecha',
-    title: 'fecha de creación',
+    title: 'Fecha de Creación',
     type: 'text'
   },
   /*
@@ -246,7 +246,7 @@ export const columnsEvaluacionesList: IColumnsGrid[] = [
     title: 'Nivel de Riesgo',
     type: 'text'
   },
-  
+
   {
     field: 'ListaVerificacion',
     title: 'Lista de Verificacion',
