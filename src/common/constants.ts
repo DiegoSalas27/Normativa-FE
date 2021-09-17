@@ -202,14 +202,12 @@ export const columnsRiesgoNormativaList: IColumnsGrid[] = [
     title: 'Nombre de evaluacion',
     type: 'text'
   },
- /* {
-    field: 'nivelRiesgo',
+
+  {
+    field: 'NivelDeRiesgo',
     title: 'Nivel de Riesgo',
     type: 'text'
   },
-
-  */
-
 
   {
     field: 'PorcentajeDeCumplimiento',
@@ -219,7 +217,7 @@ export const columnsRiesgoNormativaList: IColumnsGrid[] = [
 
   {
     field: 'fecha',
-    title: 'fecha de creación',
+    title: 'Fecha de Creación',
     type: 'text'
   },
   /*
@@ -242,13 +240,13 @@ export const columnsEvaluacionesList: IColumnsGrid[] = [
     title: 'Obra',
     type: 'text'
   },
-  /* {
-     field: 'nivelRiesgo',
-     title: 'Nivel de Riesgo',
-     type: 'text'
-   },
- 
-   */
+
+ {
+    field: 'NivelDeRiesgo',
+    title: 'Nivel de Riesgo',
+    type: 'text'
+  },
+
   {
     field: 'ListaVerificacion',
     title: 'Lista de Verificacion',
