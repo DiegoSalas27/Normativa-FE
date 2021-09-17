@@ -31,7 +31,7 @@
     </button>
           -->
     <button
-      v-if="tratamientoInfoJson.porcentajeAvance == 100"
+      v-if="tratamientoInfoJson.porcentajeAvance == 100 && !esAltaGerencia"
       class="action-button"
       style="top: 140px"
       @click="register()"
@@ -318,6 +318,7 @@ export default defineComponent({
       checkedEntities: [] as string[],
       accionesMitigacion: [] as IAccionMitigacion[],
       accionSelected: "",
+      esAltaGerencia: false,
       message: null as string | null,
       loading: false,
       error: false,
@@ -643,6 +644,9 @@ export default defineComponent({
         this.canEdit = true;
       } else 
         this.canEdit = false;
+      if (this.userInfoJson.rol == rol.ALTA_GERENCIA) {
+        this.esAltaGerencia = true;
+      }
       await this.fetchAnalista();
 
       if (!this.$route.params.tr_codigo) {

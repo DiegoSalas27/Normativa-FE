@@ -404,6 +404,7 @@ export default defineComponent({
       checkedEntities: [] as string[],
       accionesMitigacion: [] as IAccionMitigacion[],
       accionSelected: "",
+      esAltaGerencia: false,
       message: null as string | null,
       loading: false,
       error: false,
@@ -854,7 +855,8 @@ export default defineComponent({
       this.userInfoJson = await getUsuario();
       if (
         this.userInfoJson.rol !== rol.JEFE_DE_RIESGOS &&
-        this.userInfoJson.rol !== rol.ANALISTA
+        this.userInfoJson.rol !== rol.ANALISTA &&
+        this.userInfoJson.rol !== rol.ALTA_GERENCIA
       ) {
         this.loading = false;
         this.$router.replace(`/dashboard`);
@@ -864,6 +866,9 @@ export default defineComponent({
         await this.fetchEvaluaciones();
         this.canEdit = true;
       } else this.canEdit = false;
+      if (this.userInfoJson.rol == rol.ALTA_GERENCIA) {
+        this.esAltaGerencia = true;
+      }
       await this.fetchAnalista();
 
       if (!this.$route.params.tr_codigo) {

@@ -6,6 +6,7 @@
       </h1>
       <div v-if="userInfoJson?.rol === 'Administrador'">
         <div class="gridCards adminGrid">
+          <!-- <button @click="downloadPDF"></button> -->
           <div
             v-for="rol_action in rolUserActions"
             :key="rol_action.description"
@@ -149,13 +150,13 @@
             <div class="col">
               <div class="mycard pie">
                 <div style="margin-bottom: 10px">
-                 <!-- <strong>PORCENTAJE DE CUMPLIMIENTO POR OBRAS</strong>-->
-                 <button
-                  class="btn-table"
-                  @click="goTo('TableUser', { type: 'Evaluacion' })"
-                >
-                  PORCENTAJE DE CUMPLIMIENTO POR OBRAS
-                </button>                
+                  <!-- <strong>PORCENTAJE DE CUMPLIMIENTO POR OBRAS</strong>-->
+                  <button
+                    class="btn-table"
+                    @click="goTo('TableUser', { type: 'Evaluacion' })"
+                  >
+                    PORCENTAJE DE CUMPLIMIENTO POR OBRAS
+                  </button>
                 </div>
                 <div ref="StackedBarPrueba" id="chart"></div>
               </div>
@@ -262,6 +263,25 @@ export default defineComponent({
     };
   },
   methods: {
+    async downloadPDF(): Promise<void> { // works in local, but not in prod
+      try {
+        fetch(`${BASE_URL}evaluacion/informe/EV002`, {
+          method: "GET",
+          headers: new Headers({
+            "Content-Type": "arraybuffer",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          }),
+        })
+          .then((response) => response.blob())
+          .then((blob) => {
+            var file = new Blob([blob], { type: "application/pdf" });
+            var fileURL = URL.createObjectURL(file);
+            window.open(fileURL);
+          });
+      } catch (err) {
+        console.log(err);
+      }
+    },
     goToList(url: string): void {
       this.$router.push({ name: url });
     },
@@ -415,8 +435,8 @@ export default defineComponent({
       }
     },
 
-      async devolverListaVerificacion(): Promise<
-      IStatisticsListaVerificacion| undefined
+    async devolverListaVerificacion(): Promise<
+      IStatisticsListaVerificacion | undefined
     > {
       try {
         const response = await fetch(
@@ -435,7 +455,7 @@ export default defineComponent({
       } catch (err) {
         console.log(err);
       }
-    },  
+    },
 
     async devolverPlanesTratamientoPorAnalista(): Promise<
       IStatisticsTratamientoResultAnalistasDto | undefined
@@ -559,15 +579,16 @@ export default defineComponent({
         xAxisPruebaStacked
       );
 
-      const { stackedBarSeriesListaVerificacion, xAxisListaVerificacionStacked } =
-        (await this.devolverListaVerificacion()) as IStatisticsListaVerificacion;
+      const {
+        stackedBarSeriesListaVerificacion,
+        xAxisListaVerificacionStacked,
+      } = (await this.devolverListaVerificacion()) as IStatisticsListaVerificacion;
 
       const optionsStackedBarListaVerificacion = configureAreaChartOptions(
         stackedBarSeriesListaVerificacion,
         "ISO 45001",
         xAxisListaVerificacionStacked
       );
-
 
       const optionsPieChart2 = configurePieChartOptions2(
         pieChartSeriesLista,
@@ -587,7 +608,6 @@ export default defineComponent({
         StackedBarPrueba.render();
       }
 
-
       if (this.$refs.StackedBarListaVerificacion) {
         const StackedBarListaVerificacion = new ApexCharts(
           this.$refs.StackedBarListaVerificacion,
@@ -595,7 +615,6 @@ export default defineComponent({
         );
         StackedBarListaVerificacion.render();
       }
-      
 
       if (this.$refs.barChartJefe) {
         const barChart = new ApexCharts(
