@@ -796,7 +796,8 @@ export default defineComponent({
 
       if (
         this.userInfoJson.rol !== rol.JEFE_DE_RIESGOS &&
-        this.userInfoJson.rol !== rol.ANALISTA
+        this.userInfoJson.rol !== rol.ANALISTA &&
+        this.userInfoJson.rol !== rol.ALTA_GERENCIA
       ) {
         this.loading = false;
         this.$router.replace(`/dashboard`);
