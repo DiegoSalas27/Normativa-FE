@@ -13,7 +13,7 @@
     @cancel="closeModal"
   ></confirmation-modal>
   <!-- modal for user validation -->
-  <modal 
+  <modal
     :show="!!(loading && !userValidated)"
     :title="message"
     @close="() => {}"
@@ -384,6 +384,7 @@ export default defineComponent({
       checkedEntities: [] as string[],
       accionesMitigacion: [] as IAccionMitigacion[],
       accionSelected: "",
+      esAltaGerencia: false,
       message: null as string | null,
       loading: false,
       error: false,
@@ -682,7 +683,10 @@ export default defineComponent({
           tratamientoObtenido
         );
 
-        if (this.userInfoJson.rol == rol.ANALISTA && this.tratamientoInfoJson.usuarioId !== this.userInfoJson.id) {
+        if (
+          this.userInfoJson.rol == rol.ANALISTA &&
+          this.tratamientoInfoJson.usuarioId !== this.userInfoJson.id
+        ) {
           this.loading = false;
           this.$router.replace(`/dashboard`);
         }
@@ -791,7 +795,6 @@ export default defineComponent({
   mounted() {
     this.loading = true;
     (async () => {
-      
       this.userInfoJson = await getUsuario();
 
       if (
@@ -806,6 +809,9 @@ export default defineComponent({
       if (this.userInfoJson.rol == rol.JEFE_DE_RIESGOS) {
         this.canEdit = true;
       } else this.canEdit = false;
+      if (this.userInfoJson.rol == rol.ALTA_GERENCIA) {
+        this.esAltaGerencia = true;
+      }
       await this.fetchAnalista();
 
       if (!this.$route.params.tr_codigo) {
