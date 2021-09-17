@@ -83,6 +83,7 @@ export default defineComponent({
                   numeroPaginas: 0,
                   totalRecords: 0,
                 };
+                this.url="/evaluacion/";
                 this.actions = [
                     { icon: "fas fa-eye", type: actions.EDIT, method: this.editRiesgoNormativa },
                 ]
@@ -120,14 +121,27 @@ export default defineComponent({
     selectedList(entityList: string[]): void {
       this.entityList = entityList;
     },
+    calculateReport(): any{
+    let type = this.$route.params.type;
+      switch (type) {
+        case 'PlanesTratamiento':
+          return "PLANES DE TRATAMIENTO"
+        case 'RiesgoNormativa':
+          return "CUMPLIMIENTO POR LISTA DE VERIFICACIÓN"
+        case 'Evaluacion':
+          return "RESULTADOS DE EVALUACIONES"
+      }
+    },
     editPlanTratamiento(id: string,codigo:string, entidad: string): void {
         this.$router.push(this.url + codigo);
     },
     deleteRiesgoNormativa(): void {
         console.log('deleteRiesgoNormativa')
     },
-    editRiesgoNormativa(): void {
+    editRiesgoNormativa(id: string,codigo:string, entidad: string): void {
         console.log('editRiesgoNormativa')
+        this.$router.push(this.url + codigo);
+        //TODO: corregir
     },
     deleteEvaluaciones(): void {
         console.log('deleteEvaluaciones')

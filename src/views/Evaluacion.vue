@@ -189,7 +189,7 @@
             @selectedList="selectedList"
           ></grid>
         </div>
-        <div v-if="action != 'registrar'">
+        <div v-if="action != 'registrar' && !esAltaGerencia">
           <div id="comentarios">
             <br />
             <h3>Comentarios</h3>
