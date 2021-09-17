@@ -13,7 +13,7 @@
     @cancel="closeModal"
   ></confirmation-modal>
   <!-- modal for user validation -->
-  <modal 
+  <modal
     :show="!!(loading && !userValidated)"
     :title="message"
     @close="() => {}"
@@ -74,14 +74,33 @@
           "
           >{{ codigoEvaluacion }}</span
         >
-        <input
+        <a-select
+          v-model:value="value"
+          show-search
+          placeholder="Buscar por código"
+          style="
+            border: 1px solid var(--placeholder);
+            border-radius: 4px;
+            outline: none;
+          "
+          :default-active-first-option="false"
+          :show-arrow="false"
+          :filter-option="false"
+          :not-found-content="null"
+          :options="selectEvaluacionList"
+          @search="handleSearch"
+          @change="handleChange"
+        ></a-select>
+
+        <!-- <input
           v-if="(update || !$route.params.tr_codigo) && canEdit"
           type="text"
           placeholder="Buscar por código"
           @keyup="searchCodigoEvaluacion"
           v-model.trim="codigoEvaluacion"
-        />
-        <div style="position: absolute">
+        /> -->
+
+        <!-- <div style="position: absolute">
           <p
             class="dropdownSelect"
             v-for="evaluacion in evaluacionList"
@@ -90,7 +109,7 @@
           >
             {{ evaluacion.codigo + "-" + evaluacion.nombre }}
           </p>
-        </div>
+        </div> -->
         <p class="error" v-if="validationForm.evaluacionId">
           {{ validationForm.evaluacionId }}
         </p>
@@ -368,6 +387,7 @@ export default defineComponent({
   },
   data() {
     return {
+      selectEvaluacionList: [] as any,
       userInfoJson: emptyUser() as IUser,
       codigoEvaluacion: "",
       codigoPrueba: "",
@@ -479,6 +499,38 @@ export default defineComponent({
         console.log(err);
       }
     },
+    async fetchEvaluaciones() {
+      try {
+        const response = await fetch(
+          `${BASE_URL}evaluacion/lista?page=1&quantity=200`,
+          {
+            method: "GET",
+            headers: new Headers({
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+          }
+        );
+
+        this.evaluacionList = (await response.json()) as IEvaluacionListado[];
+        console.log("this.evaluacionList");
+        console.log(this.evaluacionList);
+        console.log("this.evaluacionList[0].codigo");
+        console.log(this.evaluacionList[0].codigo);
+
+        this.evaluacionList.forEach((eva) => {
+          this.selectEvaluacionList.push({
+            value: eva.codigo,
+          });
+          console.log(eva.codigo);
+        });
+
+        console.log("this.selectEvaluacionList");
+        console.log(this.selectEvaluacionList);
+      } catch (err) {
+        console.log(err);
+      }
+    },
     async fetchAnalista() {
       try {
         const response = await fetch(`${BASE_URL}usuario/lista/Analistas`, {
@@ -490,6 +542,11 @@ export default defineComponent({
         });
 
         this.analistaList = (await response.json()) as IUsuarioLista[];
+
+        console.log("this.analistaList");
+        console.log(this.analistaList);
+        console.log("this.analistaList[0].usuarioId");
+        console.log(this.analistaList[0].usuarioId);
 
         this.tratamientoInfoJson.usuarioId == null &&
           (this.tratamientoInfoJson.usuarioId = this.analistaList[0].usuarioId);
@@ -682,7 +739,10 @@ export default defineComponent({
           tratamientoObtenido
         );
 
-        if (this.userInfoJson.rol == rol.ANALISTA && this.tratamientoInfoJson.usuarioId !== this.userInfoJson.id) {
+        if (
+          this.userInfoJson.rol == rol.ANALISTA &&
+          this.tratamientoInfoJson.usuarioId !== this.userInfoJson.id
+        ) {
           this.loading = false;
           this.$router.replace(`/dashboard`);
         }
@@ -791,9 +851,7 @@ export default defineComponent({
   mounted() {
     this.loading = true;
     (async () => {
-      
       this.userInfoJson = await getUsuario();
-
       if (
         this.userInfoJson.rol !== rol.JEFE_DE_RIESGOS &&
         this.userInfoJson.rol !== rol.ANALISTA
@@ -803,6 +861,7 @@ export default defineComponent({
       }
 
       if (this.userInfoJson.rol == rol.JEFE_DE_RIESGOS) {
+        await this.fetchEvaluaciones();
         this.canEdit = true;
       } else this.canEdit = false;
       await this.fetchAnalista();
