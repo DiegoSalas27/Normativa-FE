@@ -14,7 +14,7 @@
     :loading="loading"
   ></modal>
   <section id="main" :class="{ expand: expand }">
-    <h1>REPORTE DE EVALUACIONES</h1>
+    <h1>REPORTE DE EVALUACIONES </h1> 
     <grid
       :dataSource="dataSource"
       :columns="columns"
