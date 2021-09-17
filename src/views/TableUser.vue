@@ -69,7 +69,7 @@ export default defineComponent({
                 this.url="/plan-tratamiento/";
                 this.userInfoJson = await getUsuario();
                 if (this.userInfoJson.rol == rol.ALTA_GERENCIA) {
-                  this.url="/plan-tratamiento2/";
+                  this.url="/plan-tratamiento/";
                 }
                 this.actions = [
                     { icon: "fas fa-eye", type: actions.EDIT, method: this.editPlanTratamiento },
