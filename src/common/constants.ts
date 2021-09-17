@@ -322,7 +322,7 @@ export const AdminUserActions = [
   {
     src: require("@/assets/images/Icon_Especialista.jpg"),
     description: "Espacialista",
-    url: urlConstants.AUTDITOR,
+    url: urlConstants.ESPECIALISTAS,
   },
   {
     src: require("@/assets/images/Icon_Jefe_Riesgos.jpg"),

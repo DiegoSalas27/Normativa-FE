@@ -45,6 +45,7 @@
               @click="
                 action.method(
                   dataSource.listaRecords[index].id,
+                  dataSource.listaRecords[index].codigo,
                   dataSource.listaRecords[index].entity
                 )
               "

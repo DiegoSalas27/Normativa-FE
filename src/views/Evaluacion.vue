@@ -30,6 +30,7 @@
       }}
     </h1>
     <button
+      v-if="!esAltaGerencia"
       :class="$route.params.id ? 'action-button' : 'action-button blocked'"
       :disabled="!$route.params.id && !verifyPruebaCompleta"
       @click="submit"
@@ -258,6 +259,7 @@ import {
   BASE_URL,
   columnsPruebaLista,
   entity,
+  rol,
 } from "../common/constants";
 import { fechaCreacionPruebaVacia } from "../common/mockdata";
 import { IDataSource } from "../interfaces/dataSource";
@@ -347,6 +349,7 @@ export default defineComponent({
         codigo: string;
       }>,
       columns: columnsPruebaLista,
+      esAltaGerencia: false,
       config: {
         deleteEntity: "",
         entity: entity.PRUEBA,
@@ -726,7 +729,6 @@ export default defineComponent({
       this.action != "editar" && this.action != "registrar"
         ? "visualizar"
         : this.action;
-
     this.action = "registrar"; // hardcodeado por Diego Salas Noain para hcer pruebas
 
     console.log(this.action);
@@ -736,7 +738,13 @@ export default defineComponent({
 
     (async () => {
       this.userInfoJson = await getUsuario();
-
+      if (this.userInfoJson.rol == rol.ALTA_GERENCIA){
+        this.esAltaGerencia = true
+        this.actions = [
+          { icon: "fas fa-eye", type: actions.EDIT, method: this.edit },
+        ];
+        this.action = "visualizar";
+      }
       if (!this.$route.params.id) {
         this.pruebas = {
           listaRecords: [],
