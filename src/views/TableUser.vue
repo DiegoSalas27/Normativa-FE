@@ -20,12 +20,14 @@
 <script lang="ts">
 import Grid from "@/components/ui/Grid.vue";
 import { defineComponent } from "@vue/runtime-core"; 
+import { getUsuario } from "@/services/authService";
 import { columnsPlanesTratamientoList, columnsRiesgoNormativaList, columnsEvaluacionesList } from "../common/constants";
 import { ITratamiento } from "../interfaces/tratamiento.interface";
 import { IDataSource } from "../interfaces/dataSource";
-import { emptyDataSource } from "../utils/initializer";
-import { actions, BASE_URL, entity } from "@/common/constants";
+import { emptyDataSource, emptyUser } from "../utils/initializer";
+import { actions, BASE_URL, entity, rol } from "@/common/constants";
 import moment from "moment";
+import { IUser } from "../interfaces/user.interface";
 import { IEvaluacion } from "@/interfaces/evaluacion.interface";
 import { IColumnsGrid } from "@/interfaces/grid.interface";
 import {DataSourcetratamiento} from '../common/mockdata';
@@ -38,6 +40,7 @@ export default defineComponent({
   },
   data() {
     return {
+      userInfoJson: emptyUser() as IUser,
       columns: {} as any,
       dataSource: emptyDataSource() as IDataSource<any>,
       config: {
@@ -46,6 +49,7 @@ export default defineComponent({
       },
       actions: [] as any,
       page: 1,
+      url: "",
       quantity: 5,
       entityList: [] as string[],
     };
@@ -53,6 +57,7 @@ export default defineComponent({
   mounted() {
     let type = this.$route.params.type;
     (async () => {
+      this.userInfoJson = await getUsuario();
         switch (type) {
             case 'PlanesTratamiento':
                 this.columns = columnsPlanesTratamientoList;
@@ -61,6 +66,11 @@ export default defineComponent({
                   numeroPaginas: 0,
                   totalRecords: 0,
                 };
+                this.url="/plan-tratamiento/";
+                this.userInfoJson = await getUsuario();
+                if (this.userInfoJson.rol == rol.ALTA_GERENCIA) {
+                  this.url="/plan-tratamiento2/";
+                }
                 this.actions = [
                     { icon: "fas fa-eye", type: actions.EDIT, method: this.editPlanTratamiento },
                 ]
@@ -72,7 +82,7 @@ export default defineComponent({
                   listaRecords:DataSourceRiesgo,
                   numeroPaginas: 0,
                   totalRecords: 0,
-                };                                  
+                };
                 this.actions = [
                     { icon: "fas fa-eye", type: actions.EDIT, method: this.editRiesgoNormativa },
                 ]
@@ -84,7 +94,8 @@ export default defineComponent({
                   listaRecords:DataSourceEvaluaciones,
                   numeroPaginas: 0,
                   totalRecords: 0,
-                };                                
+                };
+                this.url="/evaluacion/";
                 this.actions = [
                     { icon: "fas fa-eye", type: actions.EDIT, method: this.editEvaluaciones },
                 ]
@@ -121,8 +132,8 @@ export default defineComponent({
         return "RESULTADOS DE EVALUACIONES"
 }
  },  
-    editPlanTratamiento(): void {
-        console.log('edit plan tratmiento')
+    editPlanTratamiento(id: string,codigo:string, entidad: string): void {
+        this.$router.push(this.url + codigo);
     },
     deleteRiesgoNormativa(): void {
         console.log('deleteRiesgoNormativa')
@@ -133,8 +144,9 @@ export default defineComponent({
     deleteEvaluaciones(): void {
         console.log('deleteEvaluaciones')
     },
-     editEvaluaciones(): void {
+     editEvaluaciones(id: string,codigo:string, entidad: string): void {
         console.log('editEvaluaciones')
+        this.$router.push(this.url + codigo);
     },
     async listPlanTratamiento(): Promise<void> {
       try {
