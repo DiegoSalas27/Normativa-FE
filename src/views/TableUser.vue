@@ -2,13 +2,15 @@
   <div>
     
       <section id="main" :class="{expand: expand}">
+        <h2>REPORTE DE {{ calculateReport() }}</h2>
         <grid
         :dataSource="dataSource"
         :columns="columns"
         :config="config"
         :actions="actions"
+        @movePage="movePage"
+        @selectedList="selectedList"        
         :rows="5" 
-
         ></grid>
       </section>
     <!--  <button class="btn-table" @click="goTo('TableUser', { type: 'RiesgoNormativa' })">NIVEL DE RIESGO POR NORMATIVA</button>-->
@@ -102,11 +104,22 @@ export default defineComponent({
   methods: {
     movePage(pageNumber: number) {
       this.page = pageNumber;
-      console.log("move");
+      this.listEvaluacion();
     },
     selectedList(entityList: string[]): void {
       this.entityList = entityList;
     },
+   calculateReport(): any{
+    let type = this.$route.params.type;
+    switch (type) {
+      case 'PlanesTratamiento':
+        return "PLANES DE TRATAMIENTO"
+      case 'RiesgoNormativa':
+        return "CUMPLIMIENTO POR LISTA DE VERIFICACIÓN"
+      case 'Evaluacion':
+        return "RESULTADOS DE EVALUACIONES"
+}
+ },  
     editPlanTratamiento(): void {
         console.log('edit plan tratmiento')
     },
