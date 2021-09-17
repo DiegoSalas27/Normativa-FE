@@ -160,12 +160,12 @@ export default defineComponent({
     register(): void {
       this.$router.push(this.profileUrl);
     },
-    edit(id: string, entidad: string): void {
+    edit(id: string,codigo:string, entidad: string): void {
       if (entidad === entity.USER) {
         this.$router.push(this.profileUrl + id);
       }
     },
-    delete(id: string, entity: string): void {
+    delete(id: string,codigo:string, entity: string): void {
       this.id = id;
       this.entity = entity;
       this.modalTitle = "¿Está seguro que desea eliminar " + entity + "?";
