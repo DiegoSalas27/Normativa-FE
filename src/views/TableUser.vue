@@ -112,6 +112,7 @@ export default defineComponent({
    calculateReport(): any{
     let type = this.$route.params.type;
     switch (type) {
+      
       case 'PlanesTratamiento':
         return "PLANES DE TRATAMIENTO"
       case 'RiesgoNormativa':
