@@ -42,7 +42,8 @@
         <div class="">
           <h3>Código de evaluación</h3>
           <img src="../assets/images/llave.png" alt="codeva" class="imgIcon" />
-          <div class="non-editable">{{ evaluacion.codigo }}</div>
+          <div v-if="!esAltaGerencia" class="non-editable">{{ evaluacion.codigo }}</div>
+          <span v-if="esAltaGerencia">{{ evaluacion.codigo }}</span>
         </div>
         <div v-if="action == 'registrar'">
           <br /><br />
@@ -88,6 +89,7 @@
           <h3>Código de obra</h3>
           <img src="../assets/images/llave.png" alt="codobra" class="imgIcon" />
           <input
+            v-if="!esAltaGerencia"
             type="text"
             placeholder="Ingrese código o nombre de obra"
             :disabled="$route.params.id != '' && $route.params.id != undefined"
@@ -102,6 +104,7 @@
           >
             {{ obra.codigo + "-" + obra.nombre }}
           </p>
+          <span v-if="esAltaGerencia">{{codigoObra}}</span>
         </div>
         <div>
           <br /><br />
@@ -112,22 +115,25 @@
             class="imgIcon"
           />
           <input
+            v-if="!esAltaGerencia"
             type="text"
             :placeholder="evaluacion.nombre"
             :disabled="action == 'visualizar'"
             v-model.trim="evaluacion.nombre"
           />
+          <span v-if="esAltaGerencia">{{evaluacion.nombre}}</span>
         </div>
         <div>
           <br />
           <br />
           <h3>Fecha de creación</h3>
           <img src="../assets/images/date.png" alt="fecha" class="imgIcon" />
-          <div class="non-editable">{{ evaluacion.fechaCreacion }}</div>
+          <div v-if="!esAltaGerencia" class="non-editable">{{ evaluacion.fechaCreacion }}</div>
+          <span v-if="esAltaGerencia">{{ evaluacion.fechaCreacion }}</span>
         </div>
       </div>
       <div class="flex-col">
-        <div>
+        <div v-if="!esAltaGerencia">
           <h3>Estado</h3>
 
           <img src="../assets/images/check.png" alt="estado" class="imgIcon" />
@@ -147,6 +153,15 @@
               </option>
             </select>
           </div>
+          <br />
+          <br />
+        </div>
+        <div v-if="esAltaGerencia">
+          <h3>Estado</h3>
+          <img src="../assets/images/check.png" alt="estado" class="imgIcon" />
+            <span>
+              {{ evaluacion.estado }}
+            </span>
           <br />
           <br />
         </div>
@@ -824,7 +839,13 @@ select,
   width: 165px;
   height: 30px;
 }
-
+span{
+  display: block;
+  margin-top: -30px;
+  margin-left: 41px;
+  width: 165px;
+  height: 30px;
+}
 button.link {
   width: 100px;
 }
