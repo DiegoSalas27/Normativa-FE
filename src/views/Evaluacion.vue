@@ -848,7 +848,7 @@ export default defineComponent({
           listaRecords: [],
           numeroPaginas: 1,
           totalRecords: 0,
-        };
+        }
 
         try {
           const response = await fetch(`${BASE_URL}evaluacion/ultimoCodigo`, {
