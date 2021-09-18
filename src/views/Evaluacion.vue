@@ -42,7 +42,9 @@
         <div class="">
           <h3>Código de evaluación</h3>
           <img src="../assets/images/llave.png" alt="codeva" class="imgIcon" />
-          <div v-if="!esAltaGerencia" class="non-editable">{{ evaluacion.codigo }}</div>
+          <div v-if="!esAltaGerencia" class="non-editable">
+            {{ evaluacion.codigo }}
+          </div>
           <span v-if="esAltaGerencia">{{ evaluacion.codigo }}</span>
         </div>
         <div v-if="action == 'registrar'">
@@ -53,7 +55,27 @@
             alt="listave"
             class="imgIcon"
           />
-          <input
+          <a-select
+            :disabled="$route.params.id != '' && $route.params.id != undefined"
+            v-model.trim="codigoListaVerificacion"
+            v-model:value="value"
+            show-search
+            placeholder="Ingrese lista de verificacion"
+            style="
+              border: 1px solid var(--placeholder);
+              border-radius: 4px;
+              outline: none;
+            "
+            :default-active-first-option="false"
+            :show-arrow="false"
+            :filter-option="false"
+            :not-found-content="null"
+            :options="selectListListaVerificacion"
+            @search="handleSearch"
+            @change="handleChange"
+          ></a-select>
+
+          <!-- <input
             type="text"
             placeholder="Ingrese lista de verificación"
             :disabled="$route.params.id != '' && $route.params.id != undefined"
@@ -67,7 +89,7 @@
             @click="selectListaVerificacion(listaVerificacion)"
           >
             {{ listaVerificacion.codigo + "-" + listaVerificacion.nombre }}
-          </p>
+          </p> -->
           <div v-if="selectedListaVerificacion.fechaCreacion">
             <br />
             <span style="font-weight: bold">Fecha de creación: </span>
@@ -104,7 +126,7 @@
           >
             {{ obra.codigo + "-" + obra.nombre }}
           </p>
-          <span v-if="esAltaGerencia">{{codigoObra}}</span>
+          <span v-if="esAltaGerencia">{{ codigoObra }}</span>
         </div>
         <div>
           <br /><br />
@@ -121,14 +143,16 @@
             :disabled="action == 'visualizar'"
             v-model.trim="evaluacion.nombre"
           />
-          <span v-if="esAltaGerencia">{{evaluacion.nombre}}</span>
+          <span v-if="esAltaGerencia">{{ evaluacion.nombre }}</span>
         </div>
         <div>
           <br />
           <br />
           <h3>Fecha de creación</h3>
           <img src="../assets/images/date.png" alt="fecha" class="imgIcon" />
-          <div v-if="!esAltaGerencia" class="non-editable">{{ evaluacion.fechaCreacion }}</div>
+          <div v-if="!esAltaGerencia" class="non-editable">
+            {{ evaluacion.fechaCreacion }}
+          </div>
           <span v-if="esAltaGerencia">{{ evaluacion.fechaCreacion }}</span>
         </div>
       </div>
@@ -159,9 +183,9 @@
         <div v-if="esAltaGerencia">
           <h3>Estado</h3>
           <img src="../assets/images/check.png" alt="estado" class="imgIcon" />
-            <span>
-              {{ evaluacion.estado }}
-            </span>
+          <span>
+            {{ evaluacion.estado }}
+          </span>
           <br />
           <br />
         </div>
@@ -324,6 +348,7 @@ export default defineComponent({
   },
   data() {
     return {
+      selectListListaVerificacion: [] as any,
       estados: [
         {
           estado: "Pendiente",
@@ -523,7 +548,7 @@ export default defineComponent({
         }
       }, 1000);
     },
-    async fetchListListaVerificacion() {
+    async fetchListaVerificacionPorCodigo() {
       try {
         const response = await fetch(
           `${BASE_URL}listaverificaciones/lista?filter=${this.codigoListaVerificacion}`,
@@ -542,10 +567,33 @@ export default defineComponent({
         console.log(err);
       }
     },
+    async fetchListListaVerificacion() {
+      try {
+        const response = await fetch(`${BASE_URL}listaverificaciones/lista`, {
+          method: "GET",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          }),
+        });
+        this.listasVerificacion =
+          (await response.json()) as IListaVerificacion[];
+
+        this.listasVerificacion.forEach((lv) => {
+          this.selectListListaVerificacion.push({
+            value: lv.codigo,
+            label: lv.codigo + "-" + lv.nombre,
+          });
+          console.log(lv.codigo);
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
     searchListaVerificacion() {
       clearTimeout(this.timeout);
       this.timeout = setTimeout(async () => {
-        await this.fetchListListaVerificacion();
+        await this.fetchListaVerificacionPorCodigo();
       }, 1000);
     },
     SelectObra(obra: IObra) {
@@ -734,8 +782,9 @@ export default defineComponent({
     this.$store.dispatch("pruebaModule/guardarPrueba", emptyPrueba());
   },
   mounted() {
-    console.log("comentarioLista");
-    console.log(this.comentarioLista);
+    this.fetchListListaVerificacion();
+    console.log("listasVerificacion");
+    console.log(this.listasVerificacion);
 
     //action: visualizar, editar o registrar
 
@@ -753,8 +802,8 @@ export default defineComponent({
 
     (async () => {
       this.userInfoJson = await getUsuario();
-      if (this.userInfoJson.rol == rol.ALTA_GERENCIA){
-        this.esAltaGerencia = true
+      if (this.userInfoJson.rol == rol.ALTA_GERENCIA) {
+        this.esAltaGerencia = true;
         this.actions = [
           { icon: "fas fa-eye", type: actions.EDIT, method: this.edit },
         ];
@@ -839,7 +888,7 @@ select,
   width: 165px;
   height: 30px;
 }
-span{
+span {
   display: block;
   margin-top: -30px;
   margin-left: 41px;

@@ -75,6 +75,8 @@
           >{{ codigoEvaluacion }}</span
         >
         <a-select
+          v-if="(update || !$route.params.tr_codigo) && canEdit"
+          v-model.trim="codigoEvaluacion"
           v-model:value="value"
           show-search
           placeholder="Buscar por código"
@@ -515,7 +517,7 @@ export default defineComponent({
 
         this.evaluacionList = (await response.json()) as IEvaluacionListado[];
         console.log("this.evaluacionList");
-        console.log(this.evaluacionList);
+        console.log(this.evaluacionList[0]);
         console.log("this.evaluacionList[0].codigo");
         console.log(this.evaluacionList[0].codigo);
 
