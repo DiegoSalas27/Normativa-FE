@@ -1,8 +1,24 @@
 <template>
   <div>
-    
+  <confirmation-modal
+    :error="null"
+    :show="showModalConfirmation"
+    :title="modalTitle"
+    :massiveDelete="massiveDelete"
+    @confirm="confirmDelete"
+    @confirmMassive="confirmMassiveDelete"
+    @cancel="closeModal"
+  ></confirmation-modal>
+  <modal
+    :show="!!message"
+    :title="message"
+    @close="handleError"
+    :error="error"
+    :loading="loading"
+  ></modal>    
       <section id="main" :class="{expand: expand}">
         <h2>REPORTE DE {{ calculateReport() }}</h2>
+        <button v-if="isAnalista || isJefeRiesgos" class="action-button" @click="deleteMassive()"> Eliminación masiva </button>        
         <grid
         :dataSource="dataSource"
         :columns="columns"
@@ -24,6 +40,8 @@ import { getUsuario } from "@/services/authService";
 import { columnsPlanesTratamientoList, columnsRiesgoNormativaList, columnsEvaluacionesList } from "../common/constants";
 import { ITratamiento } from "../interfaces/tratamiento.interface";
 import { IDataSource } from "../interfaces/dataSource";
+import ConfirmationModal from "@/components/ui/ConfirmationModal.vue";
+import Modal from "../components/ui/Modal.vue";
 import { emptyDataSource, emptyUser } from "../utils/initializer";
 import { actions, BASE_URL, entity, rol } from "@/common/constants";
 import moment from "moment";
@@ -37,18 +55,34 @@ import {DataSourceRiesgo} from '../common/mockdata';
 export default defineComponent({
   components: {
     Grid,
+    ConfirmationModal,
+    Modal,    
   },
   data() {
     return {
       userInfoJson: emptyUser() as IUser,
       columns: {} as any,
       dataSource: emptyDataSource() as IDataSource<any>,
+      isAnalista: false,
+      isJefeRiesgos: false,      
       config: {
         deleteEntity: "",
         entity: entity.USER,
       },
-      actions: [] as any,
+       actions: [
+        { icon: "fas fa-trash-alt", type: actions.DELETE, method: this.delete },
+        { icon: "fas fa-eye", type: actions.EDIT, method: this.edit },
+      ],
+      modalTitle: "",
+      showModalConfirmation: false,
+      id: "",
+      entity: "",
       page: 1,
+      message: null as unknown as string | null,
+      loading: false,
+      error: false,
+      massiveDelete: false,
+      expand: false,  
       url: "",
       quantity: 5,
       entityList: [] as string[],
@@ -68,12 +102,18 @@ export default defineComponent({
                 };
                 this.url="/plan-tratamiento/";
                 this.userInfoJson = await getUsuario();
-                if (this.userInfoJson.rol == rol.ALTA_GERENCIA) {
-                  this.url="/plan-tratamiento/";
-                }
+                if (this.userInfoJson.rol == rol.JEFE_DE_RIESGOS) {
+                  this.isJefeRiesgos=true;
+                  this.actions = [
+                  { icon: "fas fa-trash-alt", type: actions.DELETE, method: this.delete },
+                   { icon: "fas fa-eye", type: actions.EDIT, method: this.editEvaluaciones }
+                  ]
+                }else{
                 this.actions = [
-                    { icon: "fas fa-eye", type: actions.EDIT, method: this.editPlanTratamiento },
+                //  { icon: "fas fa-trash-alt", type: actions.DELETE, method: this.deleteEvaluaciones },
+                    { icon: "fas fa-eye", type: actions.EDIT, method: this.editEvaluaciones },
                 ]
+                }
                 await this.listPlanTratamiento();
                 break;
             case 'RiesgoNormativa':
@@ -97,9 +137,19 @@ export default defineComponent({
                   totalRecords: 0,
                 };
                 this.url="/evaluacion/";
+                this.userInfoJson = await getUsuario();
+                if (this.userInfoJson.rol == rol.ANALISTA) {
+                  this.isAnalista=true;
+                  this.actions = [
+                  { icon: "fas fa-trash-alt", type: actions.DELETE, method: this.delete },
+                   { icon: "fas fa-eye", type: actions.EDIT, method: this.editEvaluaciones }
+                  ]
+                }else{
                 this.actions = [
+                //  { icon: "fas fa-trash-alt", type: actions.DELETE, method: this.deleteEvaluaciones },
                     { icon: "fas fa-eye", type: actions.EDIT, method: this.editEvaluaciones },
                 ]
+                }
                 await this.listEvaluacion();
                 break;
             default:
@@ -116,11 +166,30 @@ export default defineComponent({
   methods: {
     movePage(pageNumber: number) {
       this.page = pageNumber;
-      this.listEvaluacion();
+       let type = this.$route.params.type;
+      switch (type) {
+        case 'PlanesTratamiento':
+          this.listPlanTratamiento
+          break;
+        case 'Evaluacion':
+          this.listEvaluacion();
+      }
+
     },
     selectedList(entityList: string[]): void {
       this.entityList = entityList;
     },
+    
+    expandMain(value: boolean): void {
+      this.expand = !value;
+    },    
+    handleError(): void {
+      this.message = null;
+    },
+    closeModal(): void {
+      this.showModalConfirmation = false;
+    },
+
     calculateReport(): any{
     let type = this.$route.params.type;
       switch (type) {
@@ -132,6 +201,7 @@ export default defineComponent({
           return "RESULTADOS DE EVALUACIONES"
       }
     },
+    
     editPlanTratamiento(id: string,codigo:string, entidad: string): void {
         this.$router.push(this.url + codigo);
     },
@@ -146,10 +216,71 @@ export default defineComponent({
     deleteEvaluaciones(): void {
         console.log('deleteEvaluaciones')
     },
+    deleteMassive(): void {
+      if (this.entityList.length > 0) {
+        this.massiveDelete = true;
+        this.showModalConfirmation = true;
+        this.modalTitle =
+          "¿Está seguro que desea eliminar las " +
+          "evaluaciones" +
+          " seleccionadas?";
+      } else {
+        this.message = "Debe seleccionar al menos una evaluacion";
+        this.error = true;
+      }
+      this.page = 1;
+    },    
+    delete(id: string,codigo:string, entity: string): void {
+      this.id = id;
+      this.entity = entity;
+      this.modalTitle = "¿Está seguro que desea eliminar " + entity + "?";
+      this.showModalConfirmation = true;
+      this.page = 1;
+    },
+
      editEvaluaciones(id: string,codigo:string, entidad: string): void {
         console.log('editEvaluaciones')
         this.$router.push(this.url + codigo);
     },
+    async confirmMassiveDelete(): Promise<void> {
+      console.log(this.entityList);
+      await Promise.all(
+        this.entityList.map(async (id: any) => {
+          try {
+            const response = await fetch(`${BASE_URL}evaluacion/${id}`, {
+              method: "DELETE",
+              headers: new Headers({
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              }),
+            });
+          } catch (error) {
+            console.log(error);
+          }
+        })
+      );
+
+      this.massiveDelete = false;
+      this.showModalConfirmation = false;
+      this.modalTitle = "";
+
+      this.message = `Las evaluaciones  fueron eliminados`;
+
+      setTimeout(async () => {
+        let type = this.$route.params.type;
+      switch (type) {
+        case 'PlanesTratamiento':
+          await this.listPlanTratamiento();
+          break;
+        case 'Evaluacion':
+          await this.listEvaluacion();
+          break;
+      }
+        this.message = null;
+      }, 2000);
+    },
+
+
     async listPlanTratamiento(): Promise<void> {
       try {
         const response = await fetch(
@@ -191,7 +322,39 @@ export default defineComponent({
      
     },
 
+    async confirmDelete(): Promise<void> {
+      this.closeModal();
+      try {
+        const response = await fetch(`${BASE_URL}${this.entity}/${this.id}`, {
+          method: "DELETE",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          }),
+        });
 
+        this.message = `El ${this.entity} fue eliminado`;
+        this.id = "";
+        this.entity = "";
+
+        // const result = await response.json();
+
+        setTimeout(async () => {
+          let type = this.$route.params.type;
+      switch (type) {
+        case 'PlanesTratamiento':
+          await this.listPlanTratamiento();
+          break;
+        case 'Evaluacion':
+          await this.listEvaluacion();
+          break;
+      }
+          this.message = null;
+        }, 2000);
+      } catch (error) {
+        console.log(error);
+      }
+    },
 
     async listEvaluacion(): Promise<void> {
       try {
@@ -212,8 +375,31 @@ export default defineComponent({
         console.log(error);
       }
      
+
+     
     },
+
+
 
   },
 });
 </script>
+
+<style scoped>
+.buttons {
+  margin-top: 15px;
+  margin-bottom: 5px;
+  text-align: right;
+}
+.action-button {
+  position: relative;
+  width: 220px;
+  margin-right: 15px;
+}
+@media (max-width : 1250px){
+  .buttons {
+  text-align: center;
+}
+}
+
+</style>

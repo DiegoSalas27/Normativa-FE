@@ -148,7 +148,7 @@
             </div>
 
             <div class="col">
-              <div class="mycard pie" style="background-color: ghostwhite">
+              <div class="mycard pie" style="height: 450px; background-color: ghostwhite" >
                 <div style="margin-bottom: 10px">
                   <!-- <strong>PORCENTAJE DE CUMPLIMIENTO POR OBRAS</strong>-->
                   <button
