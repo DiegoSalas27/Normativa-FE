@@ -832,7 +832,7 @@ export default defineComponent({
       }
 
       if (this.userInfoJson.rol == rol.ESPECIALISTA) {
-        this.isEspecialista = true;
+        this.isEspecialista = true; 
       }
 
       if (this.userInfoJson.rol !== rol.ANALISTA) {
