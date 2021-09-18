@@ -128,7 +128,7 @@
           <!-- TODO: Mycard -->
           <div class="row">
             <div class="col">
-              <div class="mycard count">
+              <div class="mycard count" style="background-color: ghostwhite">
                 <div style="margin-bottom: 10px"></div>
                 <!--<button
                   class="btn-table"
@@ -141,14 +141,14 @@
                   {{ numberEvaluaciones }}
                 </p>
               </div>
-              <div class="mycard mydonut" style="height: 350px">
+              <div class="mycard mydonut" style="height: 350px; background-color: ghostwhite">
                 <div><strong>PORCENTAJE DE CUMPLIMIENTO</strong></div>
                 <div ref="gauge2" id="chart"></div>
               </div>
             </div>
 
             <div class="col">
-              <div class="mycard pie">
+              <div class="mycard pie" style="background-color: ghostwhite">
                 <div style="margin-bottom: 10px">
                   <!-- <strong>PORCENTAJE DE CUMPLIMIENTO POR OBRAS</strong>-->
                   <button
@@ -165,7 +165,7 @@
 
           <div class="row">
             <div class="col">
-              <div class="mycard line">
+              <div class="mycard line" style="background-color: ghostwhite">
                 <button
                   class="btn-table"
                   @click="goTo('TableUser', { type: 'RiesgoNormativa' })"
@@ -177,7 +177,7 @@
             </div>
 
             <div class="col">
-              <div class="mycard pie">
+              <div class="mycard pie" style="background-color: ghostwhite">
                 <button
                   class="btn-table"
                   @click="goTo('TableUser', { type: 'PlanesTratamiento' })"
@@ -482,8 +482,6 @@ export default defineComponent({
         this.calculateDashBoard();
       } catch (err) {
         console.log(err);
-        //console.log("Impresion del rol sin api" + this.userInfoJson.rol);
-        //this.rolUserActions = EspecialistaUserActions;
       }
 
       // Esto pertenece al analista
