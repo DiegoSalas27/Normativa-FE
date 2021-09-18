@@ -76,6 +76,7 @@
         >
         <a-select
           v-if="(update || !$route.params.tr_codigo) && canEdit"
+          v-model:value="value"
           v-model.trim="codigoEvaluacion"
           show-search
           placeholder="Buscar por código"
@@ -84,15 +85,9 @@
             border-radius: 4px;
             outline: none;
           "
-          :default-active-first-option="false"
-          :show-arrow="false"
-          :filter-option="false"
-          :not-found-content="null"
           :options="selectEvaluacionList"
-          @keyup="searchCodigoEvaluacion"
-          
         ></a-select>
-<!-- @change="selectEvaluacion(evaluacion)" -->
+        <!-- @change="selectEvaluacion(evaluacion)" -->
 
         <!-- <input
           v-if="(update || !$route.params.tr_codigo) && canEdit"
@@ -340,7 +335,7 @@ import {
   emptyTratamiento,
   emptyUser,
 } from "@/utils/initializer";
-import { defineComponent } from "@vue/runtime-core";
+import { defineComponent, ref } from "@vue/runtime-core";
 import { BASE_URL, rol } from "../common/constants";
 import {
   handleErrors,

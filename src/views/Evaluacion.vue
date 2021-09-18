@@ -862,7 +862,6 @@ export default defineComponent({
     (async () => {
       this.userInfoJson = await getUsuario();
       // se actualiza la evaluacion en vuex desde la vista anterior y se pasa este nuevo estado al action
-      this.evaluacion.action && (this.action = this.evaluacion.action);
 
       if (this.userInfoJson.rol == rol.ALTA_GERENCIA) {
         this.esAltaGerencia = true;
@@ -870,6 +869,7 @@ export default defineComponent({
 
       if (this.userInfoJson.rol == rol.ANALISTA) {
         this.isAnalista = true;
+        this.evaluacion.action = "registrar";
       }
 
       if (this.userInfoJson.rol == rol.JEFE_DE_RIESGOS) {
@@ -891,6 +891,7 @@ export default defineComponent({
         console.log("listasVerificacion");
         console.log(this.listasVerificacion);
       }
+      this.evaluacion.action && (this.action = this.evaluacion.action);
 
       if (!this.$route.params.id) {
         this.pruebas = {
