@@ -30,20 +30,16 @@
 import {
   actions,
   BASE_URL,
-  columnsEvaluacionesList,
-  columnsRolList,
-  entity,
+  columnsEvaluacionesList, entity
 } from "@/common/constants";
 import ConfirmationModal from "@/components/ui/ConfirmationModal.vue";
 import Grid from "@/components/ui/Grid.vue";
 import {
-  IEvaluacion,
-  IEvaluacionListado,
+  IEvaluacion
 } from "@/interfaces/evaluacion.interface";
 import { defineComponent } from "@vue/runtime-core";
 import Modal from "../components/ui/Modal.vue";
 import { IDataSource } from "../interfaces/dataSource";
-import { IUser } from "../interfaces/user.interface";
 import { emptyDataSource } from "../utils/initializer";
 
 export default defineComponent({
@@ -51,6 +47,11 @@ export default defineComponent({
     Grid,
     ConfirmationModal,
     Modal,
+  },
+  computed: {
+    evaluacion(): IEvaluacion {
+      return this.$store.getters["evaluacionModule/obtenerEvaluacion"];
+    },
   },
   data() {
     return {
@@ -116,10 +117,9 @@ export default defineComponent({
         console.log(error);
       }
     },
-    edit(id: string, entidad: string): void {
-      if (entidad === entity.USER) {
-        // this.$router.push(this.profileUrl + id);
-      }
+    edit(_: number, codigo: string, _2: string): void {
+      this.evaluacion.action = 'visualizar';
+      this.$router.push(`/evaluacion/${codigo}`);
     },
   },
   mounted() {

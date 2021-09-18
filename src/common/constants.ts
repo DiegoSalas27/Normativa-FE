@@ -334,6 +334,7 @@ export const AnalistaUserActions = [
     src: require("@/assets/images/RealizarPrueba_Analista.png"),
     description: "Realizar prueba",
     url: urlConstants.REALIZAR_PRUEBA,
+    props: 'registrar'
   },
 ];
 

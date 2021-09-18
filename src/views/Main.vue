@@ -33,7 +33,7 @@
           <div
             v-for="rol_action in rolUserActions"
             :key="rol_action.description"
-            @click="goToList(rol_action.url)"
+            @click="goToList(rol_action.url, rol_action.props)"
             class="cardanalista"
           >
             <img :src="rol_action.src" :alt="rol_action.src" class="image" />
@@ -218,43 +218,37 @@ import {
   AnalistaUserActions,
   BASE_URL,
   EspecialistaUserActions,
-  rol,
+  rol
 } from "../common/constants";
 import {
-  configureBarChartOptions,
-  configureGaugeOptions,
-  configureLineChartOptions,
-  configurePieChartOptions,
-  configureGaugeOptions2,
-  configureBarListOptions,
-  configureAreaChartOptions,
-  configurePieChartOptions2,
+  configureAreaChartOptions, configureBarChartOptions, configureBarListOptions, configureGaugeOptions, configureGaugeOptions2, configureLineChartOptions,
+  configurePieChartOptions, configurePieChartOptions2,
   configureStackBarChartOptions,
-  configureTreeMapChartOptions,
+  configureTreeMapChartOptions
 } from "../common/graphics";
 import {
-  lineChartSeries,
-  pieChartLabels2,
-  pieChartSeries2,
-  treeMapChartSeries,
+  lineChartSeries, treeMapChartSeries
 } from "../common/mockdata";
 import { handleErrors } from "../common/utils";
 import {
-  IStatisticsEvaluacionCumplimiento,
-  IStatisticsEvaluacionResult,
-  IStatisticsEvaluacionCumplimientoPrueba,
-  IStatisticsEvaluacionCumplimientoPruebaLista,
+  IEvaluacion, IStatisticsEvaluacionCumplimiento, IStatisticsEvaluacionCumplimientoPrueba,
+  IStatisticsEvaluacionCumplimientoPruebaLista, IStatisticsEvaluacionResult
 } from "../interfaces/evaluacion.interface";
 import {
   IStatisticsTratamientoResultAnalistasDto,
   IStatisticsTratamientoResultDto,
-  IStatisticsTratamientoResultListaDto,
+  IStatisticsTratamientoResultListaDto
 } from "../interfaces/tratamiento.interface";
 import { IUser } from "../interfaces/user.interface";
 import { getUsuario } from "../services/authService";
 import { emptyUser } from "../utils/initializer";
 
 export default defineComponent({
+  computed: {
+    evaluacion(): IEvaluacion {
+      return this.$store.getters["evaluacionModule/obtenerEvaluacion"];
+    },
+  },
   data() {
     return {
       rolUserActions: [] as any,
@@ -282,7 +276,8 @@ export default defineComponent({
         console.log(err);
       }
     },
-    goToList(url: string): void {
+    goToList(url: string, props?: string): void {
+      props && (this.evaluacion.action = props as any);
       this.$router.push({ name: url });
     },
     goTo(url: string, params: any): void {
