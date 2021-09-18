@@ -44,6 +44,7 @@
         evaluacion.estado == 'Aprobado'
       "
       :class="$route.params.id ? 'action-button' : 'action-button blocked'"
+      @click="downloadPDF"
     >
       Generar Informe
     </button>
@@ -396,6 +397,25 @@ export default defineComponent({
     };
   },
   methods: {
+    async downloadPDF(): Promise<void> { // works in local, but not in prod
+      try {
+        fetch(`${BASE_URL}evaluacion/informe/${this.evaluacion.codigo}`, {
+          method: "GET",
+          headers: new Headers({
+            "Content-Type": "arraybuffer",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          }),
+        })
+          .then((response) => response.blob())
+          .then((blob) => {
+            var file = new Blob([blob], { type: "application/pdf" });
+            var fileURL = URL.createObjectURL(file);
+            window.open(fileURL);
+          });
+      } catch (err) {
+        console.log(err);
+      }
+    },
     async sendMessage(): Promise<void> {
       const body = {
         Descripcion: this.comentarioInput,
@@ -671,7 +691,7 @@ export default defineComponent({
             nombre: this.evaluacion.nombre,
             estado: this.estadoSelected,
             codigoEspecialista: this.isEspecialista
-              ? this.userInfoJson.codigo
+              ? this.userInfoJson.id
               : null,
           };
           try {

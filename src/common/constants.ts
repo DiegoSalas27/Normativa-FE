@@ -363,7 +363,7 @@ export const estadoAccionMitigacion = [
 ]
 
 
-// export const BASE_URL = "https://sistemaexperto.azurewebsites.net/api/";
+export const BASE_URL = "https://sistemaexperto.azurewebsites.net/api/";
 // export const BASE_URL = "http://localhost:55016/api/";
-export const BASE_URL = "http://localhost:5000/api/";
+// export const BASE_URL = "http://localhost:5000/api/";
 //export const BASE_URL = "https://localhost:44357/api/";
