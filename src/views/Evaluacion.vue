@@ -30,22 +30,33 @@
       }}
     </h1>
     <button
-      v-if="!esAltaGerencia"
+      v-if="!esAltaGerencia && !isJefeRiesgos"
       :class="$route.params.id ? 'action-button' : 'action-button blocked'"
       :disabled="!$route.params.id && !verifyPruebaCompleta"
       @click="submit"
     >
-      {{ action == "registrar" ? "Guardar" : "Editar" }}
+      {{ displayButtonAction }}
+    </button>
+    <button
+      v-if="
+        isJefeRiesgos &&
+        evaluacion.visibilidad == true &&
+        evaluacion.estado == 'Aprobado'
+      "
+      :class="$route.params.id ? 'action-button' : 'action-button blocked'"
+      @click="downloadPDF"
+    >
+      Generar Informe
     </button>
     <div class="flex-row">
       <div class="flex-col">
         <div class="">
           <h3>Código de evaluación</h3>
           <img src="../assets/images/llave.png" alt="codeva" class="imgIcon" />
-          <div v-if="!esAltaGerencia" class="non-editable">
+          <div v-if="action != 'visualizar'" class="non-editable">
             {{ evaluacion.codigo }}
           </div>
-          <span v-if="esAltaGerencia">{{ evaluacion.codigo }}</span>
+          <span v-if="action == 'visualizar'">{{ evaluacion.codigo }}</span>
         </div>
         <div v-if="action == 'registrar'">
           <br /><br />
@@ -111,7 +122,7 @@
           <h3>Código de obra</h3>
           <img src="../assets/images/llave.png" alt="codobra" class="imgIcon" />
           <input
-            v-if="!esAltaGerencia"
+            v-if="action != 'visualizar'"
             type="text"
             placeholder="Ingrese código o nombre de obra"
             :disabled="$route.params.id != '' && $route.params.id != undefined"
@@ -126,7 +137,7 @@
           >
             {{ obra.codigo + "-" + obra.nombre }}
           </p>
-          <span v-if="esAltaGerencia">{{ codigoObra }}</span>
+          <span v-if="action == 'visualizar'">{{ codigoObra }}</span>
         </div>
         <div>
           <br /><br />
@@ -137,50 +148,51 @@
             class="imgIcon"
           />
           <input
-            v-if="!esAltaGerencia"
+            v-if="action != 'visualizar'"
             type="text"
             :placeholder="evaluacion.nombre"
-            :disabled="action == 'visualizar'"
             v-model.trim="evaluacion.nombre"
           />
-          <span v-if="esAltaGerencia">{{ evaluacion.nombre }}</span>
+          <span v-if="action == 'visualizar'">{{ evaluacion.nombre }}</span>
         </div>
         <div>
           <br />
           <br />
           <h3>Fecha de creación</h3>
           <img src="../assets/images/date.png" alt="fecha" class="imgIcon" />
-          <div v-if="!esAltaGerencia" class="non-editable">
+          <div v-if="action != 'visualizar'" class="non-editable">
             {{ evaluacion.fechaCreacion }}
           </div>
-          <span v-if="esAltaGerencia">{{ evaluacion.fechaCreacion }}</span>
+          <span v-if="action == 'visualizar'">{{
+            evaluacion.fechaCreacion
+          }}</span>
         </div>
       </div>
       <div class="flex-col">
-        <div v-if="!esAltaGerencia">
+        <div v-if="action != 'visualizar'">
           <h3>Estado</h3>
 
           <img src="../assets/images/check.png" alt="estado" class="imgIcon" />
-          <div v-if="action != 'editar'">
+          <div v-if="action != 'editar' || isAnalista">
             <div class="non-editable transformacion">
-              {{ evaluacion.estado }}
+              {{ evaluacion.estado ? evaluacion.estado : "Pendiente" }}
             </div>
           </div>
           <div v-else>
             <select class="select" v-model="estadoSelected" name="prueba">
               <option
-                v-for="estado in estados"
-                :key="estado.estadoId"
-                :value="estado.estado"
+                v-for="estado in estadoList"
+                :key="estado.estadosEvaluacionId"
+                :value="estado.estadosEvaluacionId"
               >
-                {{ estado.estado }}
+                {{ estado.nombre }}
               </option>
             </select>
           </div>
           <br />
           <br />
         </div>
-        <div v-if="esAltaGerencia">
+        <div v-if="action == 'visualizar'">
           <h3>Estado</h3>
           <img src="../assets/images/check.png" alt="estado" class="imgIcon" />
           <span>
@@ -190,7 +202,7 @@
           <br />
         </div>
         <div>
-          <div v-if="action != 'visualizar'">
+          <div v-if="action != 'visualizar' && isAnalista">
             <img
               src="../assets/images/prueba.png"
               alt="prueba"
@@ -209,7 +221,7 @@
               Realizar prueba
             </button>
             <button
-              v-if="pruebas.listaRecords.length > 0"
+              v-if="pruebas.listaRecords.length > 0 && isAnalista"
               class="action-button massive evaluacion"
               @click="deleteMassive()"
             >
@@ -228,11 +240,11 @@
             @selectedList="selectedList"
           ></grid>
         </div>
-        <div v-if="action != 'registrar' && !esAltaGerencia">
+        <div v-if="action != 'registrar' && !esAltaGerencia && !isJefeRiesgos">
           <div id="comentarios">
             <br />
-            <h3>Comentarios</h3>
-            <div v-if="action == 'editar'">
+            <h3>Observaciones</h3>
+            <div v-if="action == 'editar' && isEspecialista">
               <br />
               <div style="display: flex; gap: 1vw">
                 <input
@@ -250,11 +262,11 @@
               </div>
               <br />
             </div>
-            <div v-if="comentarioLista.length != 0">
+            <div v-if="observaciones.length != 0">
               <div
                 class="comentario-lista"
-                v-for="(comentario, index) in comentarioLista"
-                :key="comentario.descripcion"
+                v-for="(observacion, index) in observaciones"
+                :key="observacion.descripcion"
               >
                 <div class="card" style="display: flex; gap: 1vw">
                   <img
@@ -264,19 +276,19 @@
                   />
                   <div>
                     <h4>
-                      {{ comentario.nombreUsuario }}
-                      {{ "(" + comentario.usuarioRol + ")" }}
+                      {{ observacion.nombreUsuario }}
+                      {{ "(" + observacion.usuarioRol + ")" }}
                     </h4>
-                    <p>{{ comentario.descripcion }}</p>
+                    <p>{{ observacion.descripcion }}</p>
                   </div>
-                  <!-- <p>{{ calculateTimeFromNow(comentario.fechaCreacion) }}</p> -->
-                  <p>{{ comentario.fechaCreacion }}</p>
+                  <!-- <p>{{ calculateTimeFromNow(observacion.fechaCreacion) }}</p> -->
+                  <p>{{ observacion.fechaCreacion }}</p>
                   <p v-if="index == 0" style="color: #7aadff">Último mensaje</p>
                 </div>
               </div>
             </div>
             <div v-else>
-              <h4>No hay registros</h4>
+              <h4>No hay observaciones</h4>
             </div>
           </div>
         </div>
@@ -290,9 +302,11 @@
 
 <script lang="ts">
 import NavBar from "@/components/layout/NavBar.vue";
+import ConfirmationModal from "@/components/ui/ConfirmationModal.vue";
 import Grid from "@/components/ui/Grid.vue";
 import { emptyUser } from "@/utils/initializer";
 import { defineComponent } from "@vue/runtime-core";
+import moment from "moment";
 import {
   actions,
   BASE_URL,
@@ -301,6 +315,7 @@ import {
   rol,
 } from "../common/constants";
 import { fechaCreacionPruebaVacia } from "../common/mockdata";
+import Modal from "../components/ui/Modal.vue";
 import { IDataSource } from "../interfaces/dataSource";
 import {
   IEvaluacion,
@@ -310,17 +325,15 @@ import { IListaVerificacion } from "../interfaces/listaVerificacion.interface";
 import { IObra } from "../interfaces/obra.interface";
 import { IUser } from "../interfaces/user.interface";
 import { getUsuario } from "../services/authService";
-import ConfirmationModal from "@/components/ui/ConfirmationModal.vue";
-import Modal from "../components/ui/Modal.vue";
+import { IEstadoEvaluacion } from "../interfaces/estadoEvaluacion.interface";
 import {
-  emptyObra,
-  emptyVerificationList,
   emptyEvaluacion,
+  emptyObra,
   emptyPrueba,
+  emptyVerificationList,
 } from "../utils/initializer";
-import { IEvidenciaRequerimientoAccionMitigacion } from "@/interfaces/accionMitigacion";
-import { IComentarioLista } from "@/interfaces/comentario.interface";
-import moment from "moment";
+import { IComentarioLista } from "../interfaces/comentario.interface";
+import { handleErrors } from "../common/utils";
 
 export default defineComponent({
   components: {
@@ -345,42 +358,28 @@ export default defineComponent({
     evaluacion(): IEvaluacion {
       return this.$store.getters["evaluacionModule/obtenerEvaluacion"];
     },
+    displayButtonAction(): string {
+      switch (this.action) {
+        case "visualizar":
+          return "Editar";
+        case "registrar":
+          return "Guardar";
+        case "editar":
+          return "Guardar";
+        default:
+          return "Editar";
+      }
+    },
   },
   data() {
     return {
       selectListListaVerificacion: [] as any,
-      estados: [
-        {
-          estado: "Pendiente",
-          estadoId: 1,
-        },
-        {
-          estado: "Aprobado",
-          estadoId: 2,
-        },
-        {
-          estado: "Rechazado",
-          estadoId: 3,
-        },
-      ],
-      comentarioLista: [
-        {
-          nombreUsuario: "nombre",
-          fechaCreacion: new Date().toISOString().slice(0, 10),
-          descripcion: "asdasdasdasdasdasd",
-          usuarioRol: "rol",
-        },
-        {
-          nombreUsuario: "nombre",
-          fechaCreacion: new Date().toISOString().slice(0, 10),
-          descripcion: "asdasdasdasdasdasd",
-          usuarioRol: "rol",
-        },
-      ],
+      estadoList: [] as IEstadoEvaluacion[],
+      observaciones: [] as IComentarioLista[],
       estadoSelected: "",
       comentarioInput: "",
       userInfoJson: emptyUser() as IUser,
-      action: "",
+      action: "visualizar" as "visualizar" | "registrar" | "editar",
       pruebas: fechaCreacionPruebaVacia as IDataSource<{
         id: number;
         fechaCreacion: string;
@@ -390,6 +389,9 @@ export default defineComponent({
       }>,
       columns: columnsPruebaLista,
       esAltaGerencia: false,
+      isAnalista: false,
+      isJefeRiesgos: false,
+      isEspecialista: false,
       config: {
         deleteEntity: "",
         entity: entity.PRUEBA,
@@ -413,10 +415,60 @@ export default defineComponent({
       loading: false,
       error: false,
       blockRealizarPrueba: false,
-      sendMessage: null,
     };
   },
   methods: {
+    async downloadPDF(): Promise<void> {
+      // works in local, but not in prod
+      try {
+        fetch(`${BASE_URL}evaluacion/informe/${this.evaluacion.codigo}`, {
+          method: "GET",
+          headers: new Headers({
+            "Content-Type": "arraybuffer",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          }),
+        })
+          .then((response) => response.blob())
+          .then((blob) => {
+            var file = new Blob([blob], { type: "application/pdf" });
+            var fileURL = URL.createObjectURL(file);
+            window.open(fileURL);
+          });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async sendMessage(): Promise<void> {
+      const body = {
+        Descripcion: this.comentarioInput,
+        UsuarioId: this.userInfoJson.id,
+        EvaluacionId: this.evaluacion.evaluacionId,
+      };
+      try {
+        const response = await fetch(`${BASE_URL}observaciones`, {
+          method: "POST",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          }),
+          body: JSON.stringify(body),
+        });
+
+        await handleErrors(response);
+
+        this.observaciones.unshift({
+          nombreUsuario:
+            this.userInfoJson.nombres + " " + this.userInfoJson.apellidos,
+          fechaCreacion: new Date(),
+          descripcion: this.comentarioInput,
+          usuarioRol: this.userInfoJson.rol as string,
+        });
+
+        this.comentarioInput = "";
+      } catch (error) {
+        console.log(error);
+      }
+    },
     calculateTimeFromNow(date: Date) {
       moment.tz.setDefault("America/Lima");
       return moment(date).locale("es").fromNow();
@@ -654,37 +706,8 @@ export default defineComponent({
       }
     },
     submit(): void {
-      //this.action == visualizar significa que esta en http://localhost:8080/evaluacion/EV007
-      //else significa que esta en http://localhost:8080/evaluacion/EV007/editar
-
-      // if (this.action == visualizar) {
-      if (this.evaluacion.visibilidad) {
-        (async () => {
-          const body: Partial<IEvaluacion> = {
-            nombre: this.evaluacion.nombre,
-          };
-
-          try {
-            console.log(this.evaluacion.evaluacionId);
-            console.log("this.evaluacion.evaluacionId");
-            await fetch(
-              `${BASE_URL}evaluacion/${this.evaluacion.evaluacionId}`,
-              {
-                method: "PUT",
-                headers: new Headers({
-                  "Content-Type": "application/json",
-                  Authorization: "Bearer " + localStorage.getItem("token"),
-                }),
-                body: JSON.stringify(body),
-              }
-            );
-          } catch (err) {
-            console.log(err);
-          }
-          // this.$router.push(`/evaluacion/${this.evaluacion.codigo}/editar`);
-          this.$router.push("/dashboard");
-        })();
-      } else {
+      // la evaluacion se crea automaticamente, aqui solo la activamos al guardar
+      if (this.action === "registrar") {
         (async () => {
           try {
             await fetch(
@@ -700,7 +723,37 @@ export default defineComponent({
           } catch (err) {
             console.log(err);
           }
-          // this.$router.push(`/evaluacion/${this.evaluacion.codigo}`);
+          this.$router.push("/dashboard");
+        })();
+      } else if (this.action === "visualizar") {
+        // se modifica la interfaz a modo edificion
+        this.action = "editar";
+      } else {
+        // estamos en modo edicion: aqui se actualiza la tabla evaluacion
+
+        (async () => {
+          const body = {
+            nombre: this.evaluacion.nombre,
+            estado: this.estadoSelected,
+            codigoEspecialista: this.isEspecialista
+              ? this.userInfoJson.id
+              : null,
+          };
+          try {
+            await fetch(
+              `${BASE_URL}evaluacion/${this.evaluacion.evaluacionId}`,
+              {
+                method: "PUT",
+                headers: new Headers({
+                  "Content-Type": "application/json",
+                  Authorization: "Bearer " + localStorage.getItem("token"),
+                }),
+                body: JSON.stringify(body),
+              }
+            );
+          } catch (err) {
+            console.log(err);
+          }
           this.$router.push("/dashboard");
         })();
       }
@@ -719,6 +772,15 @@ export default defineComponent({
         );
 
         const evaluacionDetalle = (await response.json()) as IEvaluacionDetalle;
+        this.estadoSelected = evaluacionDetalle.estadoEvaluacionId;
+
+        if (evaluacionDetalle.observacionLista) {
+          this.observaciones = evaluacionDetalle.observacionLista.filter(
+            (cml) => cml.nombreUsuario != null
+          );
+        } else {
+          this.observaciones = [];
+        }
 
         this.codigoListaVerificacion =
           evaluacionDetalle.codigoConcatenadoListaVerificacion;
@@ -768,6 +830,21 @@ export default defineComponent({
         console.log(err);
       }
     },
+    async fetchEvaluacionEstados(): Promise<void> {
+      try {
+        const response = await fetch(`${BASE_URL}estadoevaluacion/lista`, {
+          method: "GET",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          }),
+        });
+
+        this.estadoList = (await response.json()) as IEstadoEvaluacion[];
+      } catch (err) {
+        console.log(err);
+      }
+    },
   },
   unmounted() {
     this.$store.dispatch("obraModule/guardarObra", emptyObra());
@@ -782,33 +859,39 @@ export default defineComponent({
     this.$store.dispatch("pruebaModule/guardarPrueba", emptyPrueba());
   },
   mounted() {
-    this.fetchListListaVerificacion();
-    console.log("listasVerificacion");
-    console.log(this.listasVerificacion);
-
-    //action: visualizar, editar o registrar
-
-    this.action = window.location.href.split("/").slice(-1).pop()!;
-    this.action =
-      this.action != "editar" && this.action != "registrar"
-        ? "visualizar"
-        : this.action;
-    this.action = "registrar"; // hardcodeado por Diego Salas Noain para hcer pruebas
-
-    console.log(this.action);
-
-    // console.log("this.action");
-    // console.log(this.action);
-
     (async () => {
       this.userInfoJson = await getUsuario();
+      // se actualiza la evaluacion en vuex desde la vista anterior y se pasa este nuevo estado al action
+      this.evaluacion.action && (this.action = this.evaluacion.action);
+
       if (this.userInfoJson.rol == rol.ALTA_GERENCIA) {
         this.esAltaGerencia = true;
+      }
+
+      if (this.userInfoJson.rol == rol.ANALISTA) {
+        this.isAnalista = true;
+      }
+
+      if (this.userInfoJson.rol == rol.JEFE_DE_RIESGOS) {
+        this.isJefeRiesgos = true;
+      }
+
+      if (this.userInfoJson.rol == rol.ESPECIALISTA) {
+        this.isEspecialista = true;
+      }
+
+      if (this.userInfoJson.rol !== rol.ANALISTA) {
         this.actions = [
           { icon: "fas fa-eye", type: actions.EDIT, method: this.edit },
         ];
-        this.action = "visualizar";
       }
+
+      if (this.action == "registrar") {
+        this.fetchListListaVerificacion();
+        console.log("listasVerificacion");
+        console.log(this.listasVerificacion);
+      }
+
       if (!this.$route.params.id) {
         this.pruebas = {
           listaRecords: [],
@@ -834,9 +917,9 @@ export default defineComponent({
           });
         } catch (err) {
           console.log(err);
-          debugger;
         }
       } else {
+        await this.fetchEvaluacionEstados();
         await this.fetchEvaluacion();
       }
     })();

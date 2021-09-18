@@ -2,6 +2,7 @@ import { IObra } from './obra.interface';
 import { IListaVerificacion } from './listaVerificacion.interface';
 import { IPruebaDetalleLista } from './prueba.interface';
 import { INivelRiesgo } from './nivelesRiesgo.interface';
+import { IComentarioLista } from './comentario.interface';
 
 export interface IEvaluacion {
   evaluacionId?: string;
@@ -11,15 +12,18 @@ export interface IEvaluacion {
   codigo?: string;
   nombre?: string;
   porcentajeFinal?: number;
-  estado?: 'pendiente' | 'tratada';
+  estado?: 'Pendiente' | 'Aprobado' | 'Rechazado' | '';
   visibilidad?: boolean;
   fechaCreacion?: any;
+  observacionLista?: IComentarioLista[],
   pruebaList?: any;
+  action?: "registrar" | "editar" | "visualizar";
 }
 
 export interface IEvaluacionDetalle {
   evaluacionId: string;
   codigo: string;
+  estadoEvaluacionId: string;
   estado: string;
   nombre: string;
   visibilidad: boolean;
@@ -32,6 +36,7 @@ export interface IEvaluacionDetalle {
   codigoConcatenadoListaVerificacion: string;
   listaVerificacionFechaCreacion: any;
   requerimientosCount: number;
+  observacionLista?: IComentarioLista[],
   pruebaList: IPruebaDetalleLista[];
 }
 

@@ -77,7 +77,6 @@
         <a-select
           v-if="(update || !$route.params.tr_codigo) && canEdit"
           v-model.trim="codigoEvaluacion"
-          v-model:value="value"
           show-search
           placeholder="Buscar por código"
           style="
@@ -90,9 +89,10 @@
           :filter-option="false"
           :not-found-content="null"
           :options="selectEvaluacionList"
-          @search="handleSearch"
-          @change="handleChange"
+          @keyup="searchCodigoEvaluacion"
+          
         ></a-select>
+<!-- @change="selectEvaluacion(evaluacion)" -->
 
         <!-- <input
           v-if="(update || !$route.params.tr_codigo) && canEdit"
@@ -333,8 +333,13 @@
 <script lang="ts">
 import NavBar from "@/components/layout/NavBar.vue";
 import ConfirmationModal from "@/components/ui/ConfirmationModal.vue";
+import { IDataSource } from "@/interfaces/dataSource";
 import { getUsuario } from "@/services/authService";
-import { emptyTratamiento, emptyUser } from "@/utils/initializer";
+import {
+  emptyDataSource,
+  emptyTratamiento,
+  emptyUser,
+} from "@/utils/initializer";
 import { defineComponent } from "@vue/runtime-core";
 import { BASE_URL, rol } from "../common/constants";
 import {
@@ -395,7 +400,7 @@ export default defineComponent({
       codigoPrueba: "",
       codigoListaVerificacion: "",
       timeout: undefined as number | undefined,
-      evaluacionList: [] as IEvaluacionListado[],
+      evaluacionList: [] as IEvaluacion[],
       analistaList: [] as IUsuarioLista[],
       estadoList: [] as IEstadoTratamiento[],
       pruebas: [] as PruebaList[],
@@ -514,8 +519,11 @@ export default defineComponent({
             }),
           }
         );
+        // this.responseEvaluacion = (await response.json()) as IDataSource<IEvaluacion>;
+        let responseObject: IDataSource<IEvaluacion> =
+          (await response.json()) as IDataSource<IEvaluacion>;
+        this.evaluacionList = responseObject.listaRecords;
 
-        this.evaluacionList = (await response.json()) as IEvaluacionListado[];
         console.log("this.evaluacionList");
         console.log(this.evaluacionList[0]);
         console.log("this.evaluacionList[0].codigo");
@@ -524,8 +532,8 @@ export default defineComponent({
         this.evaluacionList.forEach((eva) => {
           this.selectEvaluacionList.push({
             value: eva.codigo,
+            label: eva.codigo,
           });
-          console.log(eva.codigo);
         });
 
         console.log("this.selectEvaluacionList");

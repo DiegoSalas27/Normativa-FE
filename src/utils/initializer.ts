@@ -64,7 +64,7 @@ export const emptyEvaluacion = (): IEvaluacion => ({
 	codigo: '',
   nombre: '',
   porcentajeFinal: 0,
-  estado: 'pendiente',
+  estado: '',
 	fechaCreacion: null,
   pruebaList: null,
 	visibilidad: false,
