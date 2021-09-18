@@ -867,7 +867,7 @@ export default defineComponent({
             fechaCreacion: new Date().toLocaleDateString(),
           });
         } catch (err) {
-          console.log(err);
+          console.log(err)
         }
       } else {
         await this.fetchEvaluacionEstados();
