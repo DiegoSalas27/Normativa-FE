@@ -877,7 +877,7 @@ export default defineComponent({
       }
 
       if (this.userInfoJson.rol == rol.ESPECIALISTA) {
-        this.isEspecialista = true;
+        this.isEspecialista = true; 
       }
 
       if (this.userInfoJson.rol !== rol.ANALISTA) {
@@ -898,7 +898,7 @@ export default defineComponent({
           listaRecords: [],
           numeroPaginas: 1,
           totalRecords: 0,
-        };
+        }
 
         try {
           const response = await fetch(`${BASE_URL}evaluacion/ultimoCodigo`, {
