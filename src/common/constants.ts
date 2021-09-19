@@ -319,7 +319,7 @@ export const AdminUserActions = [
   },
   {
     src: require("@/assets/images/Icon_Especialista.jpg"),
-    description: "Espacialista",
+    description: "Especialista",
     url: urlConstants.ESPECIALISTAS,
   },
   {

@@ -320,7 +320,7 @@ export default defineComponent({
         (age = calculateAge(jsonToValidate.fechaNacimiento as string));
 
       if (age !== null && age <= 18) {
-        this.validationForm.fechaNacimiento = "La edad míninma es de 18 años";
+        this.validationForm.fechaNacimiento = "La edad mínima es de 18 años";
         isValid = false;
       }
 
@@ -423,7 +423,7 @@ export default defineComponent({
             this.loading = false;
 
             this.error = false;
-            this.message = "¡Los datos se modificaron éxito!";
+            this.message = "¡Los datos se modificaron con éxito!";
 
             setTimeout(() => {
               this.$router.replace("/dashboard");
