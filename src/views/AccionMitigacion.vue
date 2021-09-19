@@ -101,11 +101,16 @@
         ) in evidenciaRequerimientoAccionMitigacion.comentarioLista"
         :key="comentario.descripcion"
       >
-        <img
+        <!--<img
           :src="require('@/assets/images/adminImg.png')"
           alt="userImage"
           class="userImage"
-        />
+        /> -->
+        <div class="iconHolder">
+                    <p>
+                    {{ comentario.nombreUsuario[0] }}
+                    </p>
+                  </div>
         <div class="flex-row" style="display: inline-flex">
           <div>
             <h4>
@@ -377,13 +382,37 @@ textarea {
   align-items: center;
   width: 600px;
   padding: 10px;
-  margin-top: 10px;
+  margin-top: -15px;
   border-radius: 5px;
-  margin-left: 10px;
+  margin-left: 55px;
 }
 .info-field {
   display: inline-block; 
   position: relative;
   left: 100px;
+}
+.iconHolder {
+  position: relative;
+  top: 38px;
+  margin: 0px 0px !important;
+  height: 50px !important;
+  width: 50px !important;
+  border-radius: 50%;
+  background-color: black;
+  padding: 10px;
+}
+
+.iconHolder p {
+  margin-top: 0px;
+  text-transform: uppercase;
+  color: #d6bd8f !important;
+  letter-spacing: 0px;
+  font-family: "Merriweather", serif;
+  font-weight: 900;
+  font-size: 35px;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 40px;
+  color: black;
 }
 </style>

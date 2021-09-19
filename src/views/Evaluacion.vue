@@ -997,9 +997,9 @@ input.comentario-box {
 .iconHolder {
   margin: 10px 1px !important;
   height: 40px !important;
-  width: 50px !important;
+  width: 60px !important;
   border-radius: 100%;
-  background-color: white;
+  background-color: black;
 }
 
 .iconHolder p {
