@@ -67,7 +67,7 @@ export default defineComponent({
       isJefeRiesgos: false,      
       config: {
         deleteEntity: "",
-        entity: entity.USER,
+        entity: entity.EVALUACION,
       },
        actions: [
         { icon: "fas fa-trash-alt", type: actions.DELETE, method: this.delete },
@@ -85,7 +85,7 @@ export default defineComponent({
       expand: false,  
       url: "",
       quantity: 5,
-      entityList: [] as string[],
+      entityList: [] as any //string[],
     };
   },
   mounted() {
@@ -176,7 +176,7 @@ export default defineComponent({
       }
 
     },
-    selectedList(entityList: string[]): void {
+    selectedList(entityList: any /*string[]*/): void {
       this.entityList = entityList;
     },
     
@@ -230,7 +230,7 @@ export default defineComponent({
       }
       this.page = 1;
     },    
-    delete(id: string,codigo:string, entity: string): void {
+    delete(id: any/*string*/,codigo:string, entity:any /*string*/): void {
       this.id = id;
       this.entity = entity;
       this.modalTitle = "¿Está seguro que desea eliminar " + entity + "?";
@@ -304,7 +304,7 @@ export default defineComponent({
     async listRiesgoNormativa(): Promise<void> {
       try {
         const response = await fetch(
-          `${BASE_URL}evaluacion/lista?page=${this.page}&quantity=${this.quantity}`,
+          `${BASE_URL}evaluacion/listado?page=${this.page}&quantity=${this.quantity}`,
           {
             method: "GET",
             headers: new Headers({
@@ -359,7 +359,7 @@ export default defineComponent({
     async listEvaluacion(): Promise<void> {
       try {
         const response = await fetch(
-          `${BASE_URL}evaluacion/lista?page=${this.page}&quantity=${this.quantity}`,
+          `${BASE_URL}evaluacion/listado?page=${this.page}&quantity=${this.quantity}`,
           {
             method: "GET",
             headers: new Headers({
