@@ -249,11 +249,16 @@
                 :key="observacion.descripcion"
               >
                 <div class="card" style="display: flex; gap: 1vw">
-                  <img
+                 <!-- <img
                     :src="require('@/assets/images/adminImg.png')"
                     alt="userImage"
                     class="userImage"
-                  />
+                  /> -->
+                  <div class="iconHolder">
+                    <p>
+                    {{ observacion.nombreUsuario[0] }}
+                    </p>
+                  </div>
                   <div>
                     <h4>
                       {{ observacion.nombreUsuario }}
@@ -988,5 +993,26 @@ input.comentario-box {
 
 .tamaño {
   font-size: 10pt;
+}
+.iconHolder {
+  margin: 10px 1px !important;
+  height: 40px !important;
+  width: 50px !important;
+  border-radius: 100%;
+  background-color: white;
+}
+
+.iconHolder p {
+  margin-top: 0px;
+  text-transform: uppercase;
+  color: #d6bd8f !important;
+  letter-spacing: -4px;
+  font-family: "Merriweather", serif;
+  font-weight: 900;
+  font-size: 25px;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 45px;
+  color: black;
 }
 </style>
