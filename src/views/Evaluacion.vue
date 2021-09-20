@@ -56,7 +56,7 @@
           <div v-if="action != 'visualizar'" class="non-editable">
             {{ evaluacion.codigo }}
           </div>
-          <span v-if="action == 'visualizar'">{{ evaluacion.codigo }}</span>
+          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{ evaluacion.codigo }}</span>
         </div>
         <div v-if="action == 'registrar'">
           <br /><br />
@@ -117,7 +117,7 @@
           >
             {{ obra.codigo + "-" + obra.nombre }}
           </p>
-          <span v-if="action == 'visualizar'">{{ codigoObra }}</span>
+          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{ codigoObra }}</span>
         </div>
         <div>
           <br /><br />
@@ -133,7 +133,7 @@
             :placeholder="evaluacion.nombre"
             v-model.trim="evaluacion.nombre"
           />
-          <span v-if="action == 'visualizar'">{{ evaluacion.nombre }}</span>
+          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{ evaluacion.nombre }}</span>
         </div>
         <div>
           <br />
@@ -143,7 +143,7 @@
           <div v-if="action != 'visualizar'" class="non-editable">
             {{ evaluacion.fechaCreacion }}
           </div>
-          <span v-if="action == 'visualizar'">{{
+          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{
             evaluacion.fechaCreacion
           }}</span>
         </div>
@@ -175,7 +175,7 @@
         <div v-if="action == 'visualizar'">
           <h3>Estado</h3>
           <img src="../assets/images/check.png" alt="estado" class="imgIcon" />
-          <span>
+          <span class="Spanvisualizar">
             {{ evaluacion.estado }}
           </span>
           <br />
@@ -249,11 +249,16 @@
                 :key="observacion.descripcion"
               >
                 <div class="card" style="display: flex; gap: 1vw">
-                  <img
+                 <!-- <img
                     :src="require('@/assets/images/adminImg.png')"
                     alt="userImage"
                     class="userImage"
-                  />
+                  /> -->
+                  <div class="iconHolder">
+                    <p>
+                    {{ observacion.nombreUsuario[0] }}
+                    </p>
+                  </div>
                   <div>
                     <h4>
                       {{ observacion.nombreUsuario }}
@@ -922,7 +927,7 @@ select,
   width: 165px;
   height: 30px;
 }
-span {
+.Spanvisualizar {
   display: block;
   margin-top: -30px;
   margin-left: 41px;
@@ -988,5 +993,26 @@ input.comentario-box {
 
 .tamaño {
   font-size: 10pt;
+}
+.iconHolder {
+  margin: 10px 1px !important;
+  height: 40px !important;
+  width: 60px !important;
+  border-radius: 100%;
+  background-color: black;
+}
+
+.iconHolder p {
+  margin-top: 0px;
+  text-transform: uppercase;
+  color: #d6bd8f !important;
+  letter-spacing: -4px;
+  font-family: "Merriweather", serif;
+  font-weight: 900;
+  font-size: 25px;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 45px;
+  color: black;
 }
 </style>
