@@ -98,7 +98,7 @@ export default defineComponent({
     async listEvaluaciones(): Promise<void> {
       try {
         const response = await fetch(
-          `${BASE_URL}evaluacion/lista?page=${this.page}&quantity=${this.quantity}`,
+          `${BASE_URL}evaluacion/listado?page=${this.page}&quantity=${this.quantity}`,
           // `${BASE_URL}usuario/listar/ANALISTAS?page=${this.page}&quantity=${this.quantity}`,
           {
             method: "GET",
