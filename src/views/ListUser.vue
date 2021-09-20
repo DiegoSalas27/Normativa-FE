@@ -168,7 +168,7 @@ export default defineComponent({
     delete(id: string,codigo:string, entity: string): void {
       this.id = id;
       this.entity = entity;
-      this.modalTitle = "¿Está seguro que desea eliminar " + entity + "?";
+      this.modalTitle = "¿Está seguro que desea eliminar el " + entity + "?";
       this.showModalConfirmation = true;
       this.page = 1;
     },

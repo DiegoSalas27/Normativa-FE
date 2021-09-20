@@ -9,7 +9,13 @@
   <section id="main">
     <section id="left-side">
       <h1>Perfil de usuario</h1>
-      <img :src="getUserImage" :alt="getUserImage" class="userImage" />
+      <!--<img :src="getUserImage" :alt="getUserImage" class="userImage" /> -->
+      <div class="iconHolder">
+        <p>
+          {{ userInfoJson.nombres[0] }}
+          {{ userInfoJson.apellidos[0] }}
+        </p>
+      </div>
       <h1 v-if="userInfoJson.codigo">Código</h1>
       <p v-if="userInfoJson.codigo">{{ userInfoJson.codigo }}</p>
     </section>
@@ -320,7 +326,7 @@ export default defineComponent({
         (age = calculateAge(jsonToValidate.fechaNacimiento as string));
 
       if (age !== null && age <= 18) {
-        this.validationForm.fechaNacimiento = "La edad míninma es de 18 años";
+        this.validationForm.fechaNacimiento = "La edad mínima es de 18 años";
         isValid = false;
       }
 
@@ -423,7 +429,7 @@ export default defineComponent({
             this.loading = false;
 
             this.error = false;
-            this.message = "¡Los datos se modificaron éxito!";
+            this.message = "¡Los datos se modificaron con éxito!";
 
             setTimeout(() => {
               this.$router.replace("/dashboard");
@@ -607,7 +613,27 @@ export default defineComponent({
   margin-top: 30px;
   border-radius: 50%;
 }
+.iconHolder {
+  margin: 20px 0 !important;
+  height: 100px !important;
+  width: 100px !important;
+  border-radius: 50%;
+  background-color: black;
+}
 
+.iconHolder p {
+  margin-top: 5px;
+  text-transform: uppercase;
+  color: #d6bd8f !important;
+  letter-spacing: -4px;
+  font-family: "Merriweather", serif;
+  font-weight: 900;
+  font-size: 55px;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 90px;
+  color: black;
+}
 .flex-items {
   display: flex;
   margin-top: 40px;
