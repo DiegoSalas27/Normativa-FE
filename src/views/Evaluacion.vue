@@ -70,22 +70,16 @@
           />
           <a-select
             :disabled="$route.params.id != '' && $route.params.id != undefined"
-            v-model.trim="codigoListaVerificacion"
-            v-model:value="value"
+            v-model:value="selectedListaVerificacionId"
             show-search
+            optionFilterProp="label"
             placeholder="Ingrese lista de verificacion"
             style="
               border: 1px solid var(--placeholder);
               border-radius: 4px;
               outline: none;
             "
-            :default-active-first-option="false"
-            :show-arrow="false"
-            :filter-option="false"
-            :not-found-content="null"
             :options="selectListListaVerificacion"
-            @search="handleSearch"
-            @change="handleChange"
           ></a-select>
 
           <!-- <input
@@ -123,22 +117,36 @@
           <br /><br />
           <h3>Código de obra</h3>
           <img src="../assets/images/llave.png" alt="codobra" class="imgIcon" />
-          <input
+          <a-select
+            v-if="action != 'visualizar'"
+            :disabled="$route.params.id != '' && $route.params.id != undefined"
+            v-model:value="selectedObraId"
+            optionFilterProp="label"
+            show-search
+            placeholder="Ingrese código o nombre de obra"
+            style="
+              border: 1px solid var(--placeholder);
+              border-radius: 4px;
+              outline: none;
+            "
+            :options="selectListCodigoObra"
+          ></a-select>
+          <!-- <input
             v-if="action != 'visualizar'"
             type="text"
             placeholder="Ingrese código o nombre de obra"
             :disabled="$route.params.id != '' && $route.params.id != undefined"
             @keyup="searchObra"
             v-model.trim="codigoObra"
-          />
-          <p
+          /> -->
+          <!-- <p
             class="dropdownSelectobras tamaño"
             v-for="obra in obras"
             :key="obra.obraId"
             @click="SelectObra(obra)"
           >
             {{ obra.codigo + "-" + obra.nombre }}
-          </p>
+          </p> -->
           <span class="Spanvisualizar" v-if="action == 'visualizar'">{{
             codigoObra
           }}</span>
@@ -218,8 +226,7 @@
               class="link"
               @click="startQuiz()"
               :disabled="
-                ((!selectedObra.obraId ||
-                  !selectedListaVerificacion.listaVerificacionId) &&
+                ((!selectedObraId || !selectedListaVerificacionId) &&
                   !$route.params.id) ||
                 blockRealizarPrueba
               "
@@ -387,7 +394,10 @@ export default defineComponent({
   },
   data() {
     return {
+      selectListCodigoObra: [] as any,
       selectListListaVerificacion: [] as any,
+      selectedListaVerificacionId: "",
+      selectedObraId: "",
       estadoList: [] as IEstadoEvaluacion[],
       observaciones: [] as IComentarioLista[],
       estadoSelected: "",
@@ -647,10 +657,31 @@ export default defineComponent({
 
         this.listasVerificacion.forEach((lv) => {
           this.selectListListaVerificacion.push({
-            value: lv.codigo,
+            value: lv.listaVerificacionId,
             label: lv.codigo + "-" + lv.nombre,
           });
           console.log(lv.codigo);
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async fetchListObras() {
+      try {
+        const response = await fetch(`${BASE_URL}obras/lista`, {
+          method: "GET",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          }),
+        });
+        this.obras = (await response.json()) as IObra[];
+
+        this.obras.forEach((o) => {
+          this.selectListCodigoObra.push({
+            value: o.obraId,
+            label: o.codigo + "-" + o.nombre,
+          });
         });
       } catch (err) {
         console.log(err);
@@ -683,8 +714,8 @@ export default defineComponent({
         EvaluacionCodigo: this.evaluacion.codigo,
         EstadoEvaluacion: this.evaluacion.estado,
         EvaluacionNombre: this.evaluacion.nombre,
-        ObraId: this.selectedObra.obraId,
-        ListaVerificacionId: this.selectedListaVerificacion.listaVerificacionId,
+        ObraId: this.selectedObraId,
+        ListaVerificacionId: this.selectedListaVerificacionId,
         UsuarioId: this.userInfoJson.id,
       };
 
@@ -884,6 +915,8 @@ export default defineComponent({
       if (this.userInfoJson.rol == rol.ANALISTA) {
         this.isAnalista = true;
         this.evaluacion.action = "registrar";
+        this.fetchListObras();
+        this.fetchListListaVerificacion();
       }
 
       if (this.userInfoJson.rol == rol.JEFE_DE_RIESGOS) {
@@ -900,11 +933,6 @@ export default defineComponent({
         ];
       }
 
-      if (this.action == "registrar") {
-        this.fetchListListaVerificacion();
-        console.log("listasVerificacion");
-        console.log(this.listasVerificacion);
-      }
       this.evaluacion.action && (this.action = this.evaluacion.action);
 
       if (!this.$route.params.id) {
@@ -951,6 +979,7 @@ export default defineComponent({
   margin-top: 10px;
   margin-bottom: 10px;
   padding: 5px;
+  width: 100%;
   /* height: 120px; */
   box-shadow: 0 2px 8px var(--box-shadow);
   transition: all 0.2s linear;
@@ -990,12 +1019,13 @@ export default defineComponent({
 }
 input,
 select,
+.ant-select,
 .link {
   display: block;
   margin-top: -34px;
   margin-left: 41px;
-  width: 165px;
-  height: 30px;
+  width: 230px;
+  height: 35px;
 }
 .Spanvisualizar {
   display: block;
