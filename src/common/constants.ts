@@ -127,7 +127,7 @@ export const columnsPlanesTratamientoList: IColumnsGrid[] = [
     type: 'text'
   },
   {
-    field: 'responsable',
+    field: 'nuevoresponsable',
     title: 'Responsable',
     type: 'text'
   },
