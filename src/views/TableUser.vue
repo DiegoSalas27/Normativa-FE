@@ -221,11 +221,11 @@ export default defineComponent({
         this.massiveDelete = true;
         this.showModalConfirmation = true;
         this.modalTitle =
-          "¿Está seguro que desea eliminar las " +
-          "evaluaciones" +
-          " seleccionadas?";
+          "Esta acción eliminara las dependencias " +
+          "de los items seleccionados," +
+          "¿continuar?";
       } else {
-        this.message = "Debe seleccionar al menos una evaluacion";
+        this.message = "Debe seleccionar al menos un item";
         this.error = true;
       }
       this.page = 1;
