@@ -76,8 +76,8 @@
         >
         <a-select
           v-if="(update || !$route.params.tr_codigo) && canEdit"
-          v-model:value="value"
-          v-model.trim="codigoEvaluacion"
+          v-model:value="tratamientoInfoJson.evaluacionId"
+          optionFilterProp="label"
           show-search
           placeholder="Buscar por código"
           style="
@@ -85,7 +85,7 @@
             border-radius: 4px;
             outline: none;
           "
-          :options="selectEvaluacionList"
+          :options="selectCodigoEvaluacionList"
         ></a-select>
         <!-- @change="selectEvaluacion(evaluacion)" -->
 
@@ -389,7 +389,7 @@ export default defineComponent({
   },
   data() {
     return {
-      selectEvaluacionList: [] as any,
+      selectCodigoEvaluacionList: [] as any,
       userInfoJson: emptyUser() as IUser,
       codigoEvaluacion: "",
       codigoPrueba: "",
@@ -514,25 +514,18 @@ export default defineComponent({
             }),
           }
         );
-        // this.responseEvaluacion = (await response.json()) as IDataSource<IEvaluacion>;
-        let responseObject: IDataSource<IEvaluacion> =
-          (await response.json()) as IDataSource<IEvaluacion>;
-        this.evaluacionList = responseObject.listaRecords;
 
-        console.log("this.evaluacionList");
-        console.log(this.evaluacionList[0]);
-        console.log("this.evaluacionList[0].codigo");
-        console.log(this.evaluacionList[0].codigo);
+        this.evaluacionList = (await response.json()) as IEvaluacion[];
 
         this.evaluacionList.forEach((eva) => {
-          this.selectEvaluacionList.push({
-            value: eva.codigo,
-            label: eva.codigo,
+          this.selectCodigoEvaluacionList.push({
+            value: eva.evaluacionId,
+            label: eva.codigo + "-" + eva.nombre,
           });
         });
 
         console.log("this.selectEvaluacionList");
-        console.log(this.selectEvaluacionList);
+        console.log(this.selectCodigoEvaluacionList);
       } catch (err) {
         console.log(err);
       }
@@ -548,11 +541,6 @@ export default defineComponent({
         });
 
         this.analistaList = (await response.json()) as IUsuarioLista[];
-
-        console.log("this.analistaList");
-        console.log(this.analistaList);
-        console.log("this.analistaList[0].usuarioId");
-        console.log(this.analistaList[0].usuarioId);
 
         this.tratamientoInfoJson.usuarioId == null &&
           (this.tratamientoInfoJson.usuarioId = this.analistaList[0].usuarioId);
