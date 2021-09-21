@@ -74,14 +74,30 @@
           "
           >{{ codigoEvaluacion }}</span
         >
-        <input
+        <a-select
+          v-if="(update || !$route.params.tr_codigo) && canEdit"
+          v-model:value="tratamientoInfoJson.evaluacionId"
+          optionFilterProp="label"
+          show-search
+          placeholder="Buscar por código"
+          style="
+            border: 1px solid var(--placeholder);
+            border-radius: 4px;
+            outline: none;
+          "
+          :options="selectCodigoEvaluacionList"
+        ></a-select>
+        <!-- @change="selectEvaluacion(evaluacion)" -->
+
+        <!-- <input
           v-if="(update || !$route.params.tr_codigo) && canEdit"
           type="text"
           placeholder="Buscar por código"
           @keyup="searchCodigoEvaluacion"
           v-model.trim="codigoEvaluacion"
-        />
-        <div style="position: absolute">
+        /> -->
+
+        <!-- <div style="position: absolute">
           <p
             class="dropdownSelect"
             v-for="evaluacion in evaluacionList"
@@ -90,7 +106,7 @@
           >
             {{ evaluacion.codigo + "-" + evaluacion.nombre }}
           </p>
-        </div>
+        </div> -->
         <p class="error" v-if="validationForm.evaluacionId">
           {{ validationForm.evaluacionId }}
         </p>
@@ -312,9 +328,14 @@
 <script lang="ts">
 import NavBar from "@/components/layout/NavBar.vue";
 import ConfirmationModal from "@/components/ui/ConfirmationModal.vue";
+import { IDataSource } from "@/interfaces/dataSource";
 import { getUsuario } from "@/services/authService";
-import { emptyTratamiento, emptyUser } from "@/utils/initializer";
-import { defineComponent } from "@vue/runtime-core";
+import {
+  emptyDataSource,
+  emptyTratamiento,
+  emptyUser,
+} from "@/utils/initializer";
+import { defineComponent, ref } from "@vue/runtime-core";
 import { BASE_URL, rol } from "../common/constants";
 import {
   handleErrors,
@@ -368,12 +389,13 @@ export default defineComponent({
   },
   data() {
     return {
+      selectCodigoEvaluacionList: [] as any,
       userInfoJson: emptyUser() as IUser,
       codigoEvaluacion: "",
       codigoPrueba: "",
       codigoListaVerificacion: "",
       timeout: undefined as number | undefined,
-      evaluacionList: [] as IEvaluacionListado[],
+      evaluacionList: [] as IEvaluacion[],
       analistaList: [] as IUsuarioLista[],
       estadoList: [] as IEstadoTratamiento[],
       pruebas: [] as PruebaList[],
@@ -476,6 +498,34 @@ export default defineComponent({
         );
 
         this.evaluacionList = (await response.json()) as IEvaluacionListado[];
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async fetchEvaluaciones() {
+      try {
+        const response = await fetch(
+          `${BASE_URL}evaluacion/lista?page=1&quantity=200`,
+          {
+            method: "GET",
+            headers: new Headers({
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+          }
+        );
+
+        this.evaluacionList = (await response.json()) as IEvaluacion[];
+
+        this.evaluacionList.forEach((eva) => {
+          this.selectCodigoEvaluacionList.push({
+            value: eva.evaluacionId,
+            label: eva.codigo + "-" + eva.nombre,
+          });
+        });
+
+        console.log("this.selectEvaluacionList");
+        console.log(this.selectCodigoEvaluacionList);
       } catch (err) {
         console.log(err);
       }
@@ -796,7 +846,6 @@ export default defineComponent({
     this.loading = true;
     (async () => {
       this.userInfoJson = await getUsuario();
-
       if (
         this.userInfoJson.rol !== rol.JEFE_DE_RIESGOS &&
         this.userInfoJson.rol !== rol.ANALISTA &&
@@ -807,6 +856,7 @@ export default defineComponent({
       }
 
       if (this.userInfoJson.rol == rol.JEFE_DE_RIESGOS) {
+        await this.fetchEvaluaciones();
         this.canEdit = true;
       } else this.canEdit = false;
       if (this.userInfoJson.rol == rol.ALTA_GERENCIA) {

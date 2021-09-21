@@ -56,7 +56,9 @@
           <div v-if="action != 'visualizar'" class="non-editable">
             {{ evaluacion.codigo }}
           </div>
-          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{ evaluacion.codigo }}</span>
+          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{
+            evaluacion.codigo
+          }}</span>
         </div>
         <div v-if="action == 'registrar'">
           <br /><br />
@@ -66,7 +68,21 @@
             alt="listave"
             class="imgIcon"
           />
-          <input
+          <a-select
+            :disabled="$route.params.id != '' && $route.params.id != undefined"
+            v-model:value="selectedListaVerificacionId"
+            show-search
+            optionFilterProp="label"
+            placeholder="Ingrese lista de verificacion"
+            style="
+              border: 1px solid var(--placeholder);
+              border-radius: 4px;
+              outline: none;
+            "
+            :options="selectListListaVerificacion"
+          ></a-select>
+
+          <!-- <input
             type="text"
             placeholder="Ingrese lista de verificación"
             :disabled="$route.params.id != '' && $route.params.id != undefined"
@@ -80,7 +96,7 @@
             @click="selectListaVerificacion(listaVerificacion)"
           >
             {{ listaVerificacion.codigo + "-" + listaVerificacion.nombre }}
-          </p>
+          </p> -->
           <div v-if="selectedListaVerificacion.fechaCreacion">
             <br />
             <span style="font-weight: bold">Fecha de creación: </span>
@@ -101,23 +117,39 @@
           <br /><br />
           <h3>Código de obra</h3>
           <img src="../assets/images/llave.png" alt="codobra" class="imgIcon" />
-          <input
+          <a-select
+            v-if="action != 'visualizar'"
+            :disabled="$route.params.id != '' && $route.params.id != undefined"
+            v-model:value="selectedObraId"
+            optionFilterProp="label"
+            show-search
+            placeholder="Ingrese código o nombre de obra"
+            style="
+              border: 1px solid var(--placeholder);
+              border-radius: 4px;
+              outline: none;
+            "
+            :options="selectListCodigoObra"
+          ></a-select>
+          <!-- <input
             v-if="action != 'visualizar'"
             type="text"
             placeholder="Ingrese código o nombre de obra"
             :disabled="$route.params.id != '' && $route.params.id != undefined"
             @keyup="searchObra"
             v-model.trim="codigoObra"
-          />
-          <p
+          /> -->
+          <!-- <p
             class="dropdownSelectobras tamaño"
             v-for="obra in obras"
             :key="obra.obraId"
             @click="SelectObra(obra)"
           >
             {{ obra.codigo + "-" + obra.nombre }}
-          </p>
-          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{ codigoObra }}</span>
+          </p> -->
+          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{
+            codigoObra
+          }}</span>
         </div>
         <div>
           <br /><br />
@@ -133,7 +165,9 @@
             :placeholder="evaluacion.nombre"
             v-model.trim="evaluacion.nombre"
           />
-          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{ evaluacion.nombre }}</span>
+          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{
+            evaluacion.nombre
+          }}</span>
         </div>
         <div>
           <br />
@@ -192,8 +226,7 @@
               class="link"
               @click="startQuiz()"
               :disabled="
-                ((!selectedObra.obraId ||
-                  !selectedListaVerificacion.listaVerificacionId) &&
+                ((!selectedObraId || !selectedListaVerificacionId) &&
                   !$route.params.id) ||
                 blockRealizarPrueba
               "
@@ -242,33 +275,36 @@
               </div>
               <br />
             </div>
-            <div v-if="observaciones.length != 0">
+            <div v-if="observaciones.length != 0" class="comentario-lista">
               <div
-                class="comentario-lista"
                 v-for="(observacion, index) in observaciones"
                 :key="observacion.descripcion"
               >
-                <div class="card" style="display: flex; gap: 1vw">
-                 <!-- <img
-                    :src="require('@/assets/images/adminImg.png')"
-                    alt="userImage"
-                    class="userImage"
-                  /> -->
-                  <div class="iconHolder">
-                    <p>
-                    {{ observacion.nombreUsuario[0] }}
+                <div class="card">
+                  <div style="display: flex; gap: 1vw">
+                    <!-- <img
+                      :src="require('@/assets/images/adminImg.png')"
+                      alt="userImage"
+                      class="userImage"
+                    /> -->
+                    <div class="iconHolder">
+                      <p>
+                        {{ observacion.nombreUsuario[0] }}
+                      </p>
+                    </div>
+                    <div>
+                      <h4>
+                        {{ observacion.nombreUsuario }}
+                        {{ "(" + observacion.usuarioRol + ")" }}
+                      </h4>
+                    </div>
+                    <!-- <p>{{ calculateTimeFromNow(observacion.fechaCreacion) }}</p> -->
+                    <p>{{ observacion.fechaCreacion }}</p>
+                    <p v-if="index == 0" style="color: #7aadff">
+                      Último mensaje
                     </p>
                   </div>
-                  <div>
-                    <h4>
-                      {{ observacion.nombreUsuario }}
-                      {{ "(" + observacion.usuarioRol + ")" }}
-                    </h4>
-                    <p>{{ observacion.descripcion }}</p>
-                  </div>
-                  <!-- <p>{{ calculateTimeFromNow(observacion.fechaCreacion) }}</p> -->
-                  <p>{{ observacion.fechaCreacion }}</p>
-                  <p v-if="index == 0" style="color: #7aadff">Último mensaje</p>
+                  <p class="comentario">{{ observacion.descripcion }}</p>
                 </div>
               </div>
             </div>
@@ -358,6 +394,10 @@ export default defineComponent({
   },
   data() {
     return {
+      selectListCodigoObra: [] as any,
+      selectListListaVerificacion: [] as any,
+      selectedListaVerificacionId: "",
+      selectedObraId: "",
       estadoList: [] as IEstadoEvaluacion[],
       observaciones: [] as IComentarioLista[],
       estadoSelected: "",
@@ -402,7 +442,8 @@ export default defineComponent({
     };
   },
   methods: {
-    async downloadPDF(): Promise<void> { // works in local, but not in prod
+    async downloadPDF(): Promise<void> {
+      // works in local, but not in prod
       try {
         fetch(`${BASE_URL}evaluacion/informe/${this.evaluacion.codigo}`, {
           method: "GET",
@@ -583,7 +624,7 @@ export default defineComponent({
         }
       }, 1000);
     },
-    async fetchListListaVerificacion() {
+    async fetchListaVerificacionPorCodigo() {
       try {
         const response = await fetch(
           `${BASE_URL}listaverificaciones/lista?filter=${this.codigoListaVerificacion}`,
@@ -602,10 +643,54 @@ export default defineComponent({
         console.log(err);
       }
     },
+    async fetchListListaVerificacion() {
+      try {
+        const response = await fetch(`${BASE_URL}listaverificaciones/lista`, {
+          method: "GET",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          }),
+        });
+        this.listasVerificacion =
+          (await response.json()) as IListaVerificacion[];
+
+        this.listasVerificacion.forEach((lv) => {
+          this.selectListListaVerificacion.push({
+            value: lv.listaVerificacionId,
+            label: lv.codigo + "-" + lv.nombre,
+          });
+          console.log(lv.codigo);
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async fetchListObras() {
+      try {
+        const response = await fetch(`${BASE_URL}obras/lista`, {
+          method: "GET",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          }),
+        });
+        this.obras = (await response.json()) as IObra[];
+
+        this.obras.forEach((o) => {
+          this.selectListCodigoObra.push({
+            value: o.obraId,
+            label: o.codigo + "-" + o.nombre,
+          });
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
     searchListaVerificacion() {
       clearTimeout(this.timeout);
       this.timeout = setTimeout(async () => {
-        await this.fetchListListaVerificacion();
+        await this.fetchListaVerificacionPorCodigo();
       }, 1000);
     },
     SelectObra(obra: IObra) {
@@ -629,8 +714,8 @@ export default defineComponent({
         EvaluacionCodigo: this.evaluacion.codigo,
         EstadoEvaluacion: this.evaluacion.estado,
         EvaluacionNombre: this.evaluacion.nombre,
-        ObraId: this.selectedObra.obraId,
-        ListaVerificacionId: this.selectedListaVerificacion.listaVerificacionId,
+        ObraId: this.selectedObraId,
+        ListaVerificacionId: this.selectedListaVerificacionId,
         UsuarioId: this.userInfoJson.id,
       };
 
@@ -688,8 +773,8 @@ export default defineComponent({
       } else if (this.action === "visualizar") {
         // se modifica la interfaz a modo edificion
         this.action = "editar";
-      } else { // estamos en modo edicion: aqui se actualiza la tabla evaluacion
-        
+      } else {
+        // estamos en modo edicion: aqui se actualiza la tabla evaluacion
 
         (async () => {
           const body = {
@@ -829,7 +914,9 @@ export default defineComponent({
 
       if (this.userInfoJson.rol == rol.ANALISTA) {
         this.isAnalista = true;
-        this.evaluacion.action = 'registrar';
+        this.evaluacion.action = "registrar";
+        this.fetchListObras();
+        this.fetchListListaVerificacion();
       }
 
       if (this.userInfoJson.rol == rol.JEFE_DE_RIESGOS) {
@@ -837,7 +924,7 @@ export default defineComponent({
       }
 
       if (this.userInfoJson.rol == rol.ESPECIALISTA) {
-        this.isEspecialista = true; 
+        this.isEspecialista = true;
       }
 
       if (this.userInfoJson.rol !== rol.ANALISTA) {
@@ -853,7 +940,7 @@ export default defineComponent({
           listaRecords: [],
           numeroPaginas: 1,
           totalRecords: 0,
-        }
+        };
 
         try {
           const response = await fetch(`${BASE_URL}evaluacion/ultimoCodigo`, {
@@ -889,11 +976,23 @@ export default defineComponent({
   cursor: pointer;
   border: 1px solid var(--placeholder);
   border-radius: 12px;
-  margin: 10px 0;
+  margin-top: 10px;
+  margin-bottom: 10px;
   padding: 5px;
-  height: 60px;
+  width: 100%;
+  /* height: 120px; */
   box-shadow: 0 2px 8px var(--box-shadow);
   transition: all 0.2s linear;
+}
+
+.card .comentario {
+  margin: 10px;
+}
+
+.comentario-lista {
+  padding: 5px;
+  height: 40vh;
+  overflow-y: scroll;
 }
 
 .comentario-lista img {
@@ -920,12 +1019,13 @@ export default defineComponent({
 }
 input,
 select,
+.ant-select,
 .link {
   display: block;
   margin-top: -34px;
   margin-left: 41px;
-  width: 165px;
-  height: 30px;
+  width: 230px;
+  height: 35px;
 }
 .Spanvisualizar {
   display: block;
@@ -995,15 +1095,19 @@ input.comentario-box {
   font-size: 10pt;
 }
 .iconHolder {
-  margin: 10px 1px !important;
+  position: relative;
+  flex-shrink: 0;
+  margin: 5px 1px !important;
   height: 40px !important;
-  width: 60px !important;
+  width: 40px !important;
   border-radius: 100%;
   background-color: black;
 }
 
 .iconHolder p {
-  margin-top: 0px;
+  position: absolute;
+  top: -1px;
+  left: 10px;
   text-transform: uppercase;
   color: #d6bd8f !important;
   letter-spacing: -4px;

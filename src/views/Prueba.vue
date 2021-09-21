@@ -187,7 +187,19 @@
             <p style="margin-top: 3px; font-weight: 100">
               {{ evidenciasFetched.find(ev => ev.evidenciaId == codigoEvidencia)?.adjunto }}
             </p> -->
-            <input
+            <a-select
+              select="selectEvidencia"
+              optionFilterProp="label"
+              show-search
+              placeholder="Buscar por código"
+              style="
+                border: 1px solid var(--placeholder);
+                border-radius: 4px;
+                outline: none;
+              "
+              :options="selectEvidencias"
+            ></a-select>
+            <!-- <input
               type="text"
               placeholder="Buscar por código"
               @keyup="fetchEvidencias"
@@ -213,7 +225,7 @@
               >
                 {{ evidencia.codigo + "-" + evidencia.nombre }}
               </p>
-            </div>
+            </div> -->
             <!-- <p
               v-if="hasSelectedEvidencia"
               style="margin-top: 3px; font-weight: 100; margin-left: 20px"
@@ -378,6 +390,7 @@ export default defineComponent({
 
   data() {
     return {
+      selectEvidencias: [] as any,
       userInfoJson: emptyUser() as IUser,
       date: new Date().toLocaleDateString(),
       start: false,
@@ -634,14 +647,35 @@ export default defineComponent({
         console.log(err);
       }
     },
+    // async fetchEvidencias(): Promise<void> {
+    //   clearTimeout(this.timeout);
+    //   this.timeout = setTimeout(async () => {
+    //     try {
+    // const response = await fetch(
+    //   `${BASE_URL}evidencia/lista?filter=${
+    //     this.evidencia[this.stepIndex].codigoEvidencia
+    //   }`,
+    //         {
+    //           method: "GET",
+    //           headers: new Headers({
+    //             "Content-Type": "application/json",
+    //             Authorization: "Bearer " + localStorage.getItem("token"),
+    //           }),
+    //         }
+    //       );
+    //       await handleErrors(response);
+    //       this.evidenciasFetched = (await response.json()) as IEvidencia[];
+    //     } catch (err) {
+    //       console.log(err);
+    //     }
+    //   }, 1000);
+    // },
     async fetchEvidencias(): Promise<void> {
       clearTimeout(this.timeout);
       this.timeout = setTimeout(async () => {
         try {
           const response = await fetch(
-            `${BASE_URL}evidencia/lista?filter=${
-              this.evidencia[this.stepIndex].codigoEvidencia
-            }`,
+            `${BASE_URL}evidencia/lista?filter=${"E"}`,
             {
               method: "GET",
               headers: new Headers({
@@ -652,6 +686,14 @@ export default defineComponent({
           );
           await handleErrors(response);
           this.evidenciasFetched = (await response.json()) as IEvidencia[];
+          console.log("evidenciasFetched");
+          console.log(this.evidenciasFetched);
+          this.evidenciasFetched.forEach((e) => {
+            this.selectEvidencias.push({
+              value: e,
+              label: e.codigo + "-" + e.nombre,
+            });
+          });
         } catch (err) {
           console.log(err);
         }
@@ -666,8 +708,8 @@ export default defineComponent({
             Authorization: "Bearer " + localStorage.getItem("token"),
           }),
         });
-        
-        const { codigo } = await response.json() as { codigo: string };
+
+        const { codigo } = (await response.json()) as { codigo: string };
         this.lastEvidenciaCodigo = codigo;
       } catch (err) {
         console.log(err);
@@ -677,6 +719,7 @@ export default defineComponent({
   mounted() {
     (async () => {
       this.userInfoJson = await getUsuario();
+      await this.fetchEvidencias();
       await this.evidenciasCount();
       let ListasVerificacion: IListaVerificacion[] = [];
       try {
@@ -876,7 +919,6 @@ export default defineComponent({
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: -3;
   background-image: url("../assets/images/quiz.jpg");
   height: 100%;
   background-position: center;
