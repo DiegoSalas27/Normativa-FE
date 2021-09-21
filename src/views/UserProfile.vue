@@ -10,7 +10,7 @@
     <section id="left-side">
       <h1>Perfil de usuario</h1>
       <!--<img :src="getUserImage" :alt="getUserImage" class="userImage" /> -->
-      <div class="iconHolder">
+      <div v-if="!update" class="iconHolder">
         <p>
           {{ userInfoJson.nombres[0] }}
           {{ userInfoJson.apellidos[0] }}

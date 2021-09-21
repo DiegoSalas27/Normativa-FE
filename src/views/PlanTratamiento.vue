@@ -31,6 +31,7 @@
   <section v-if="userValidated" id="main">
     <h1>{{ displayTitlePage }}</h1>
     <button
+      v-if="!esAltaGerencia"
       :class="
         $route.params.tr_codigo ? 'action-button' : 'action-button blocked'
       "
