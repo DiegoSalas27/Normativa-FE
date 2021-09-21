@@ -70,22 +70,22 @@ export default defineComponent({
         entity: entity.EVALUACION,
       },
        actions: [
-        { icon: "fas fa-trash-alt", type: actions.DELETE, method: this.delete },
+        { icon: "fas fa-trash-alt", type: actions.DELETE, method: this.delete() },
         { icon: "fas fa-eye", type: actions.EDIT, method: this.edit },
       ],
       modalTitle: "",
       showModalConfirmation: false,
       id: "",
       entity: "",
-      page: 1,
       message: null as unknown as string | null,
       loading: false,
       error: false,
       massiveDelete: false,
       expand: false,  
       url: "",
+      page: 1,      
       quantity: 5,
-      entityList: [] as any //string[],
+      entityList: [] as string[],
     };
   },
   mounted() {
@@ -141,7 +141,7 @@ export default defineComponent({
                 if (this.userInfoJson.rol == rol.ANALISTA) {
                   this.isAnalista=true;
                   this.actions = [
-                  { icon: "fas fa-trash-alt", type: actions.DELETE, method: this.delete },
+                  { icon: "fas fa-trash-alt", type: actions.DELETE, method: this.delete},
                    { icon: "fas fa-eye", type: actions.EDIT, method: this.editEvaluaciones }
                   ]
                 }else{
@@ -176,7 +176,7 @@ export default defineComponent({
       }
 
     },
-    selectedList(entityList: any /*string[]*/): void {
+    selectedList(entityList: string[]): void {
       this.entityList = entityList;
     },
     
@@ -221,19 +221,28 @@ export default defineComponent({
         this.massiveDelete = true;
         this.showModalConfirmation = true;
         this.modalTitle =
-          "¿Está seguro que desea eliminar las " +
-          "evaluaciones" +
-          " seleccionadas?";
+          "Esta acción eliminara las dependencias " +
+          "de los items seleccionados," +
+          "¿continuar?";
       } else {
-        this.message = "Debe seleccionar al menos una evaluacion";
+        this.message = "Debe seleccionar al menos un item";
         this.error = true;
       }
       this.page = 1;
     },    
-    delete(id: any/*string*/,codigo:string, entity:any /*string*/): void {
+    delete(id: string,codigo:string, entity: string): void {
       this.id = id;
+  let type = this.$route.params.type;
+      switch (type) {
+        case 'PlanesTratamiento':
+         this.modalTitle = "¿Está seguro que desea eliminar el tratamiento ?";
+          break;
+        case 'Evaluacion':
+         this.modalTitle = "¿Está seguro que desea eliminar la evaluacion ?";
+         break;
+      }
       this.entity = entity;
-      this.modalTitle = "¿Está seguro que desea eliminar " + entity + "?";
+      
       this.showModalConfirmation = true;
       this.page = 1;
     },
@@ -243,9 +252,30 @@ export default defineComponent({
         this.$router.push(this.url + codigo);
     },
     async confirmMassiveDelete(): Promise<void> {
-      console.log(this.entityList);
+       let type = this.$route.params.type;
+      switch (type) {
+        case 'PlanesTratamiento':
+                console.log(this.entityList);
       await Promise.all(
-        this.entityList.map(async (id: any) => {
+        this.entityList.map(async (id: string) => {
+          try {
+            const response = await fetch(`${BASE_URL}plantratamiento/${id}`, {
+              method: "DELETE",
+              headers: new Headers({
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              }),
+            });
+          } catch (error) {
+            console.log(error);
+          }
+        })
+      );
+          break;
+        case 'Evaluacion':
+                console.log(this.entityList);
+      await Promise.all(
+        this.entityList.map(async (id: string) => {
           try {
             const response = await fetch(`${BASE_URL}evaluacion/${id}`, {
               method: "DELETE",
@@ -258,13 +288,24 @@ export default defineComponent({
             console.log(error);
           }
         })
-      );
+      ); 
+      break;
+      }
+
+
 
       this.massiveDelete = false;
       this.showModalConfirmation = false;
       this.modalTitle = "";
 
-      this.message = `Las evaluaciones  fueron eliminados`;
+ switch (type) {
+        case 'PlanesTratamiento':
+      this.message = `Los tratamientos  fueron eliminados`;
+          break;
+        case 'Evaluacion':
+      this.message = `Las evaluaciones  fueron eliminadas`;          
+
+ }
 
       setTimeout(async () => {
         let type = this.$route.params.type;
@@ -278,6 +319,8 @@ export default defineComponent({
       }
         this.message = null;
       }, 2000);
+
+      
     },
 
 
@@ -323,9 +366,15 @@ export default defineComponent({
     },
 
     async confirmDelete(): Promise<void> {
+
+
       this.closeModal();
-      try {
-        const response = await fetch(`${BASE_URL}${this.entity}/${this.id}`, {
+       let type = this.$route.params.type;
+      switch (type) {
+        case 'PlanesTratamiento':
+               try {
+
+        const response = await fetch(`${BASE_URL}plantratamiento/${this.id}`, {
           method: "DELETE",
           headers: new Headers({
             "Content-Type": "application/json",
@@ -333,27 +382,54 @@ export default defineComponent({
           }),
         });
 
-        this.message = `El ${this.entity} fue eliminado`;
+        this.message = `El tratamiento fue eliminado`;
         this.id = "";
         this.entity = "";
 
         // const result = await response.json();
 
         setTimeout(async () => {
-          let type = this.$route.params.type;
-      switch (type) {
-        case 'PlanesTratamiento':
           await this.listPlanTratamiento();
-          break;
-        case 'Evaluacion':
-          await this.listEvaluacion();
-          break;
-      }
           this.message = null;
         }, 2000);
-      } catch (error) {
+      }
+      
+      catch (error) {
         console.log(error);
       }
+          break;
+        case 'Evaluacion':
+             try {
+
+        const response = await fetch(`${BASE_URL}evaluacion/${this.id}`, {
+          method: "DELETE",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          }),
+        });
+
+        this.message = `La evaluacion fue eliminada`;
+        this.id = "";
+        this.entity = "";
+
+        // const result = await response.json();
+
+        setTimeout(async () => {
+          await this.listEvaluacion();
+          this.message = null;
+        }, 2000);
+      }
+      
+      catch (error) {
+        console.log(error);
+      }
+          break;
+      }
+
+
+
+
     },
 
     async listEvaluacion(): Promise<void> {
@@ -368,9 +444,11 @@ export default defineComponent({
             }),
           }
         );
-     
+             console.log("this.dataSource");
+        console.log(this.dataSource);
         this.dataSource = (await response.json()) as IDataSource<any>;
-        
+                console.log("this.dataSource");
+        console.log(this.dataSource);
       } catch (error) {
         console.log(error);
       }

@@ -72,6 +72,8 @@ import { calculateAge } from "../../utils/formater";
 import { defineComponent } from "@vue/runtime-core";
 import DataSource from "../../models/DataSource";
 import User from "../../models/User";
+import evaluacion from "../../models/Evaluacion";
+
 
 export default defineComponent({
   props: {
@@ -125,7 +127,7 @@ export default defineComponent({
     massiveCheck(): void {
       if (this.massiveCheck) {
         this.checkedEntities = (
-          this.dataSource as DataSource<User>
+          this.dataSource as DataSource<any>
         ).listaRecords.map((user) => user.id as string);
       } else {
         this.checkedEntities = [];
