@@ -169,7 +169,7 @@ export default defineComponent({
        let type = this.$route.params.type;
       switch (type) {
         case 'PlanesTratamiento':
-          this.listPlanTratamiento
+          this.listPlanTratamiento();
           break;
         case 'Evaluacion':
           this.listEvaluacion();
