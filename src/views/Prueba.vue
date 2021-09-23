@@ -535,9 +535,9 @@ export default defineComponent({
         await this.obtenerPruebaResults();
         this.showResultado = true;
         this.loading = false;
-        this.$router.push(
-          `/evaluacion/${this.evaluacion.codigo}/prueba/${this.$route.params.pr_codigo}/resumen`
-        );
+        // this.$router.push(
+        //   `/evaluacion/${this.evaluacion.codigo}/prueba/${this.$route.params.pr_codigo}/resumen`
+        // );
       } else {
         !this.evidencia[this.stepIndex + 1] &&
           this.evidencia.push(emptyEvidencia());
