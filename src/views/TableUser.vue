@@ -472,7 +472,7 @@ export default defineComponent({
 .action-button {
   position: relative;
   width: 220px;
-  margin-right: 15px;
+  margin-right: -1400px;
 }
 @media (max-width : 1250px){
   .buttons {

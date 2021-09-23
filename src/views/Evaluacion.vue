@@ -829,7 +829,7 @@ export default defineComponent({
 
       if (this.userInfoJson.rol == rol.ANALISTA) {
         this.isAnalista = true;
-        this.evaluacion.action = 'registrar';
+        this.evaluacion.action = 'visualizar';
       }
 
       if (this.userInfoJson.rol == rol.JEFE_DE_RIESGOS) {
