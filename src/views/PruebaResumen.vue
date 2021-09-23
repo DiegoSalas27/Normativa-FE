@@ -510,6 +510,7 @@ td {
   position: relative;
   border-top-left-radius: 0px !important;
   border-bottom-left-radius: 0px !important;
+  height: 55.2px;
   top: -40.5px;
   border-left: 1px solid white;
 }
