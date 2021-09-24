@@ -36,14 +36,14 @@
           <span style="marginleft: 5px">{{ respuestaItem() }}</span>
         </div>
         <div class="body-item-content" style="paddingbottom: 20px">
-          <div class="flex-row">
+          <div class="flex-row" style="justify-content: flex-start; gap: 20px">
             <p>Justificación:</p>
             <textarea
               name="justificacion"
               id="justi"
               cols="80"
               rows="5"
-              style="width: 71.5%"
+              style="width: 85%"
               disabled="true"
               :value="evidenciaRequerimientoAccionMitigacion.justificacion"
             ></textarea>
@@ -55,14 +55,14 @@
             </div>
           </div>
           <br />
-          <div class="flex-row">
+          <div class="flex-row" style="justify-content: flex-start; gap: 20px">
             <p>Recomendación:</p>
             <textarea
               name="recomendacion"
               id="recom"
               cols="120"
               rows="5"
-              style="width: 75%"
+              style="width: 85%"
               disabled="true"
               :value="evidenciaRequerimientoAccionMitigacion.recomendacion"
             ></textarea>
