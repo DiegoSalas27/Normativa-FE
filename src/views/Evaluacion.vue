@@ -19,6 +19,9 @@
     :error="error"
     :loading="loading"
   ></modal>
+  <h3 class="back" @click="goBack">
+      <i class="fas fa-chevron-left"></i> Salir
+    </h3>
   <section id="main">
     <h1>
       {{
@@ -56,7 +59,9 @@
           <div v-if="action != 'visualizar'" class="non-editable">
             {{ evaluacion.codigo }}
           </div>
-          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{ evaluacion.codigo }}</span>
+          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{
+            evaluacion.codigo
+          }}</span>
         </div>
         <div v-if="action == 'registrar'">
           <br /><br />
@@ -117,7 +122,9 @@
           >
             {{ obra.codigo + "-" + obra.nombre }}
           </p>
-          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{ codigoObra }}</span>
+          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{
+            codigoObra
+          }}</span>
         </div>
         <div>
           <br /><br />
@@ -133,7 +140,9 @@
             :placeholder="evaluacion.nombre"
             v-model.trim="evaluacion.nombre"
           />
-          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{ evaluacion.nombre }}</span>
+          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{
+            evaluacion.nombre
+          }}</span>
         </div>
         <div>
           <br />
@@ -242,33 +251,36 @@
               </div>
               <br />
             </div>
-            <div v-if="observaciones.length != 0">
+            <div v-if="observaciones.length != 0" class="comentario-lista">
               <div
-                class="comentario-lista"
                 v-for="(observacion, index) in observaciones"
                 :key="observacion.descripcion"
               >
-                <div class="card" style="display: flex; gap: 1vw">
-                 <!-- <img
-                    :src="require('@/assets/images/adminImg.png')"
-                    alt="userImage"
-                    class="userImage"
-                  /> -->
-                  <div class="iconHolder">
-                    <p>
-                    {{ observacion.nombreUsuario[0] }}
+                <div class="card">
+                  <div style="display: flex; gap: 1vw">
+                    <!-- <img
+                      :src="require('@/assets/images/adminImg.png')"
+                      alt="userImage"
+                      class="userImage"
+                    /> -->
+                    <div class="iconHolder">
+                      <p>
+                        {{ observacion.nombreUsuario[0] }}
+                      </p>
+                    </div>
+                    <div>
+                      <h4>
+                        {{ observacion.nombreUsuario }}
+                        {{ "(" + observacion.usuarioRol + ")" }}
+                      </h4>
+                    </div>
+                    <!-- <p>{{ calculateTimeFromNow(observacion.fechaCreacion) }}</p> -->
+                    <p>{{ formateDate(observacion.fechaCreacion) }}</p>
+                    <p v-if="index == 0" style="color: #7aadff">
+                      Último mensaje
                     </p>
                   </div>
-                  <div>
-                    <h4>
-                      {{ observacion.nombreUsuario }}
-                      {{ "(" + observacion.usuarioRol + ")" }}
-                    </h4>
-                    <p>{{ observacion.descripcion }}</p>
-                  </div>
-                  <!-- <p>{{ calculateTimeFromNow(observacion.fechaCreacion) }}</p> -->
-                  <p>{{ observacion.fechaCreacion }}</p>
-                  <p v-if="index == 0" style="color: #7aadff">Último mensaje</p>
+                  <p class="comentario">{{ observacion.descripcion }}</p>
                 </div>
               </div>
             </div>
@@ -402,7 +414,8 @@ export default defineComponent({
     };
   },
   methods: {
-    async downloadPDF(): Promise<void> { // works in local, but not in prod
+    async downloadPDF(): Promise<void> {
+      // works in local, but not in prod
       try {
         fetch(`${BASE_URL}evaluacion/informe/${this.evaluacion.codigo}`, {
           method: "GET",
@@ -451,6 +464,9 @@ export default defineComponent({
       } catch (error) {
         console.log(error);
       }
+    },
+    formateDate(date: string) {
+      return date.split("T")[0];
     },
     calculateTimeFromNow(date: Date) {
       moment.tz.setDefault("America/Lima");
@@ -688,8 +704,8 @@ export default defineComponent({
       } else if (this.action === "visualizar") {
         // se modifica la interfaz a modo edificion
         this.action = "editar";
-      } else { // estamos en modo edicion: aqui se actualiza la tabla evaluacion
-        
+      } else {
+        // estamos en modo edicion: aqui se actualiza la tabla evaluacion
 
         (async () => {
           const body = {
@@ -717,6 +733,9 @@ export default defineComponent({
           this.$router.push("/dashboard");
         })();
       }
+    },
+    goBack(): void {
+      this.$router.back();
     },
     async fetchEvaluacion(): Promise<void> {
       try {
@@ -837,7 +856,7 @@ export default defineComponent({
       }
 
       if (this.userInfoJson.rol == rol.ESPECIALISTA) {
-        this.isEspecialista = true; 
+        this.isEspecialista = true;
       }
 
       if (this.userInfoJson.rol !== rol.ANALISTA) {
@@ -853,7 +872,7 @@ export default defineComponent({
           listaRecords: [],
           numeroPaginas: 1,
           totalRecords: 0,
-        }
+        };
 
         try {
           const response = await fetch(`${BASE_URL}evaluacion/ultimoCodigo`, {
@@ -872,7 +891,7 @@ export default defineComponent({
             fechaCreacion: new Date().toLocaleDateString(),
           });
         } catch (err) {
-          console.log(err)
+          console.log(err);
         }
       } else {
         await this.fetchEvaluacionEstados();
@@ -889,11 +908,22 @@ export default defineComponent({
   cursor: pointer;
   border: 1px solid var(--placeholder);
   border-radius: 12px;
-  margin: 10px 0;
+  margin-top: 10px;
+  margin-bottom: 10px;
   padding: 5px;
-  height: 60px;
+  /* height: 120px; */
   box-shadow: 0 2px 8px var(--box-shadow);
   transition: all 0.2s linear;
+}
+
+.card .comentario {
+  margin: 10px;
+}
+
+.comentario-lista {
+  padding: 5px;
+  height: 40vh;
+  overflow-y: auto;
 }
 
 .comentario-lista img {
@@ -974,7 +1004,6 @@ input.comentario-box {
   right: 0px;
   width: 240px;
 }
-
 .action-button.massive.evaluacion {
   position: relative;
   top: 10px;
@@ -995,15 +1024,24 @@ input.comentario-box {
   font-size: 10pt;
 }
 .iconHolder {
-  margin: 10px 1px !important;
+  position: relative;
+  flex-shrink: 0;
+  margin: 5px 1px !important;
   height: 40px !important;
-  width: 60px !important;
+  width: 40px !important;
   border-radius: 100%;
   background-color: black;
 }
-
+.back {
+  position: absolute;
+  top: 70px;
+  left: 25px;
+  cursor: pointer;
+}
 .iconHolder p {
-  margin-top: 0px;
+  position: absolute;
+  top: -1px;
+  left: 10px;
   text-transform: uppercase;
   color: #d6bd8f !important;
   letter-spacing: -4px;
