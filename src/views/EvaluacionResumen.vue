@@ -3,7 +3,7 @@
 <div v-if="listo" class="resumenE">
 
     <div class="containerizq">
-    <h1>Quiz</h1>
+    <h1>Resultados del Quiz</h1>
         <div class="col">
             <table class="grid">
                 <thead class="header-grid">
