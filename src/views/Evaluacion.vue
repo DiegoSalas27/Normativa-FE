@@ -722,7 +722,9 @@ export default defineComponent({
       }
     },
     goBack(): void {
-      this.$router.back();
+      // this.$router.back();
+      //('TableUser', { type: 'Evaluacion' })
+      this.$router.replace({ name: 'TableUser', params: { type: 'Evaluacion' } });
     },
     async fetchEvaluacion(): Promise<void> {
       try {
