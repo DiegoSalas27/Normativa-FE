@@ -481,10 +481,7 @@ export default defineComponent({
   mounted() {
     (async () => {
       this.userInfoJson = await getUsuario();
-      if (
-        this.userInfoJson.rol == rol.JEFE_DE_RIESGOS &&
-        this.$route.query.edit == "true"
-      ) {
+      if (this.userInfoJson.rol == rol.JEFE_DE_RIESGOS) {
         this.canEdit = true;
       } else this.canEdit = false;
       await this.realScenario();

@@ -629,7 +629,7 @@ export default defineComponent({
     },
     goToTestSummary() {
       this.$router.push(
-        `/lista-verificacion/${this.codigoListaVerificacion}/prueba/${this.codigoPrueba}/resumen?edit=true`
+        `/lista-verificacion/${this.codigoListaVerificacion}/prueba/${this.codigoPrueba}/resumen`
       );
     },
     async fetchTratamientoEstados(): Promise<void> {
