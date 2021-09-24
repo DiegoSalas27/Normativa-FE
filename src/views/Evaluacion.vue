@@ -20,8 +20,8 @@
     :loading="loading"
   ></modal>
   <h3 class="back" @click="goBack">
-      <i class="fas fa-chevron-left"></i> Salir
-    </h3>
+    <i class="fas fa-chevron-left"></i> Salir
+  </h3>
   <section id="main">
     <h1>
       {{
@@ -253,35 +253,32 @@
             </div>
             <div v-if="observaciones.length != 0" class="comentario-lista">
               <div
+                class="card"
                 v-for="(observacion, index) in observaciones"
                 :key="observacion.descripcion"
               >
-                <div class="card">
-                  <div style="display: flex; gap: 1vw">
-                    <!-- <img
+                <div style="display: flex; gap: 1vw">
+                  <!-- <img
                       :src="require('@/assets/images/adminImg.png')"
                       alt="userImage"
                       class="userImage"
                     /> -->
-                    <div class="iconHolder">
-                      <p>
-                        {{ observacion.nombreUsuario[0] }}
-                      </p>
-                    </div>
-                    <div>
-                      <h4>
-                        {{ observacion.nombreUsuario }}
-                        {{ "(" + observacion.usuarioRol + ")" }}
-                      </h4>
-                    </div>
-                    <!-- <p>{{ calculateTimeFromNow(observacion.fechaCreacion) }}</p> -->
-                    <p>{{ formateDate(observacion.fechaCreacion) }}</p>
-                    <p v-if="index == 0" style="color: #7aadff">
-                      Último mensaje
+                  <div class="iconHolder">
+                    <p>
+                      {{ observacion.nombreUsuario[0] }}
                     </p>
                   </div>
-                  <p class="comentario">{{ observacion.descripcion }}</p>
+                  <div>
+                    <h4>
+                      {{ observacion.nombreUsuario }}
+                      {{ "(" + observacion.usuarioRol + ")" }}
+                    </h4>
+                  </div>
+                  <!-- <p>{{ calculateTimeFromNow(observacion.fechaCreacion) }}</p> -->
+                  <p>{{ formateDate(observacion.fechaCreacion) }}</p>
+                  <p v-if="index == 0" style="color: #7aadff">Último mensaje</p>
                 </div>
+                <p class="comentario">{{ observacion.descripcion }}</p>
               </div>
             </div>
             <div v-else>
@@ -737,7 +734,10 @@ export default defineComponent({
     goBack(): void {
       // this.$router.back();
       //('TableUser', { type: 'Evaluacion' })
-      this.$router.replace({ name: 'TableUser', params: { type: 'Evaluacion' } });
+      this.$router.replace({
+        name: "TableUser",
+        params: { type: "Evaluacion" },
+      });
     },
     async fetchEvaluacion(): Promise<void> {
       try {
@@ -850,7 +850,7 @@ export default defineComponent({
 
       if (this.userInfoJson.rol == rol.ANALISTA) {
         this.isAnalista = true;
-       // this.evaluacion.action = 'registrar';
+        // this.evaluacion.action = 'registrar';
       }
 
       if (this.userInfoJson.rol == rol.JEFE_DE_RIESGOS) {
@@ -910,10 +910,12 @@ export default defineComponent({
   cursor: pointer;
   border: 1px solid var(--placeholder);
   border-radius: 12px;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
   margin-top: 10px;
   margin-bottom: 10px;
   padding: 5px;
-  /* height: 120px; */
+  width: 100%;
   box-shadow: 0 2px 8px var(--box-shadow);
   transition: all 0.2s linear;
 }
