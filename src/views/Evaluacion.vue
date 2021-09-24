@@ -272,7 +272,7 @@
                       </h4>
                     </div>
                     <!-- <p>{{ calculateTimeFromNow(observacion.fechaCreacion) }}</p> -->
-                    <p>{{ observacion.fechaCreacion }}</p>
+                    <p>{{ formateDate(observacion.fechaCreacion) }}</p>
                     <p v-if="index == 0" style="color: #7aadff">
                       Último mensaje
                     </p>
@@ -411,7 +411,8 @@ export default defineComponent({
     };
   },
   methods: {
-    async downloadPDF(): Promise<void> { // works in local, but not in prod
+    async downloadPDF(): Promise<void> {
+      // works in local, but not in prod
       try {
         fetch(`${BASE_URL}evaluacion/informe/${this.evaluacion.codigo}`, {
           method: "GET",
@@ -460,6 +461,9 @@ export default defineComponent({
       } catch (error) {
         console.log(error);
       }
+    },
+    formateDate(date: string) {
+      return date.split("T")[0];
     },
     calculateTimeFromNow(date: Date) {
       moment.tz.setDefault("America/Lima");
@@ -697,8 +701,8 @@ export default defineComponent({
       } else if (this.action === "visualizar") {
         // se modifica la interfaz a modo edificion
         this.action = "editar";
-      } else { // estamos en modo edicion: aqui se actualiza la tabla evaluacion
-        
+      } else {
+        // estamos en modo edicion: aqui se actualiza la tabla evaluacion
 
         (async () => {
           const body = {
@@ -838,7 +842,7 @@ export default defineComponent({
 
       if (this.userInfoJson.rol == rol.ANALISTA) {
         this.isAnalista = true;
-        this.evaluacion.action = 'visualizar';
+        this.evaluacion.action = "visualizar";
       }
 
       if (this.userInfoJson.rol == rol.JEFE_DE_RIESGOS) {
@@ -881,7 +885,7 @@ export default defineComponent({
             fechaCreacion: new Date().toLocaleDateString(),
           });
         } catch (err) {
-          console.log(err)
+          console.log(err);
         }
       } else {
         await this.fetchEvaluacionEstados();
@@ -913,7 +917,7 @@ export default defineComponent({
 .comentario-lista {
   padding: 5px;
   height: 40vh;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .comentario-lista img {
