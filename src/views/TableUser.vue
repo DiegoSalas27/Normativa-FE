@@ -17,6 +17,9 @@
     :loading="loading"
   ></modal>    
       <section id="main" :class="{expand: expand}">
+        <h3 class="back" @click="goBack">
+          <i class="fas fa-chevron-left"></i> Salir
+        </h3>
         <h2>REPORTE DE {{ calculateReport() }}</h2>
         <button v-if="isAnalista || isJefeRiesgos" class="action-button" @click="deleteMassive()"> Eliminación masiva </button>        
         <grid
@@ -29,7 +32,7 @@
         :rows="5" 
         ></grid>
       </section>
-    <!--  <button class="btn-table" @click="goTo('TableUser', { type: 'RiesgoNormativa' })">NIVEL DE RIESGO POR NORMATIVA</button>-->
+    
   </div>
 </template>
 
@@ -175,6 +178,9 @@ export default defineComponent({
           this.listEvaluacion();
       }
 
+    },
+    goBack(): void {
+      this.$router.back();
     },
     selectedList(entityList: string[]): void {
       this.entityList = entityList;
@@ -473,6 +479,12 @@ export default defineComponent({
   position: relative;
   width: 220px;
   margin-right: -1400px;
+}
+.back {
+  position: absolute;
+  top: 100px;
+  left: 260px;
+  cursor: pointer;
 }
 @media (max-width : 1250px){
   .buttons {

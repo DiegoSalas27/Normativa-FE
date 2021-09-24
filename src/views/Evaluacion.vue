@@ -19,6 +19,9 @@
     :error="error"
     :loading="loading"
   ></modal>
+  <h3 class="back" @click="goBack">
+      <i class="fas fa-chevron-left"></i> Salir
+    </h3>
   <section id="main">
     <h1>
       {{
@@ -731,6 +734,9 @@ export default defineComponent({
         })();
       }
     },
+    goBack(): void {
+      this.$router.back();
+    },
     async fetchEvaluacion(): Promise<void> {
       try {
         const response = await fetch(
@@ -998,7 +1004,6 @@ input.comentario-box {
   right: 0px;
   width: 240px;
 }
-
 .action-button.massive.evaluacion {
   position: relative;
   top: 10px;
@@ -1027,7 +1032,12 @@ input.comentario-box {
   border-radius: 100%;
   background-color: black;
 }
-
+.back {
+  position: absolute;
+  top: 70px;
+  left: 25px;
+  cursor: pointer;
+}
 .iconHolder p {
   position: absolute;
   top: -1px;
