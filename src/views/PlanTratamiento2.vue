@@ -21,7 +21,7 @@
   ></modal>
   <section id="main">
     <h1>{{ displayTitlePage }}</h1>
- <!--   <button
+    <!--   <button
       :class="
         $route.params.tr_codigo ? 'action-button' : 'action-button blocked'
       "
@@ -42,10 +42,16 @@
       <div class="grid-item">
         <h4>Código de tratamiento:</h4>
         <img src="../assets/images/llave.png" alt="codeva" class="imgIcon" />
-        <span v-if="($route.params.tr_codigo && !canEdit) ||  ($route.params.tr_codigo && canEdit && !update)">{{ tratamientoInfoJson.codigo }}</span>
+        <span
+          v-if="
+            ($route.params.tr_codigo && !canEdit) ||
+            ($route.params.tr_codigo && canEdit && !update)
+          "
+          >{{ tratamientoInfoJson.codigo }}</span
+        >
         <input
           v-if="(update || !$route.params.tr_codigo) && canEdit"
-          type="text" 
+          type="text"
           disabled="true"
           :placeholder="tratamientoInfoJson.codigo"
         />
@@ -53,7 +59,13 @@
       <div class="grid-item">
         <h4>Código de evaluación:</h4>
         <img src="../assets/images/llave.png" alt="codeva" class="imgIcon" />
-        <span v-if="($route.params.tr_codigo && !canEdit) ||  ($route.params.tr_codigo && canEdit && !update)">{{ codigoEvaluacion }}</span>
+        <span
+          v-if="
+            ($route.params.tr_codigo && !canEdit) ||
+            ($route.params.tr_codigo && canEdit && !update)
+          "
+          >{{ codigoEvaluacion }}</span
+        >
         <input
           v-if="(update || !$route.params.tr_codigo) && canEdit"
           type="text"
@@ -78,16 +90,26 @@
       <div class="grid-item">
         <h4>Código de prueba:</h4>
         <img src="../assets/images/llave.png" alt="codeva" class="imgIcon" />
-<!-- para volver label inneditable-->
-       <span v-if="($route.params.tr_codigo && !canEdit) ||  ($route.params.tr_codigo && canEdit && !update)">{{codigoPrueba}}</span>
-<!-- para volver label inneditable-->
-
-
+        <!-- para volver label inneditable-->
+        <span
+          v-if="
+            ($route.params.tr_codigo && !canEdit) ||
+            ($route.params.tr_codigo && canEdit && !update)
+          "
+          >{{ codigoPrueba }}</span
+        >
+        <!-- para volver label inneditable-->
       </div>
       <div class="grid-item">
         <h4>Nombre del plan de tratamiento:</h4>
         <img src="../assets/images/listav.png" alt="codeva" class="imgIcon" />
-        <span v-if="($route.params.tr_codigo && !canEdit) ||  ($route.params.tr_codigo && canEdit && !update)">{{ tratamientoInfoJson.nombre }}</span>
+        <span
+          v-if="
+            ($route.params.tr_codigo && !canEdit) ||
+            ($route.params.tr_codigo && canEdit && !update)
+          "
+          >{{ tratamientoInfoJson.nombre }}</span
+        >
         <input
           v-if="(update || !$route.params.tr_codigo) && canEdit"
           type="text"
@@ -101,7 +123,13 @@
       <div class="grid-item">
         <h4>Responsable:</h4>
         <img src="../assets/images/user.png" alt="codeva" class="imgIcon" />
-        <span v-if="($route.params.tr_codigo && !canEdit) ||  ($route.params.tr_codigo && canEdit && !update)">{{ analistaCalc() }}</span>
+        <span
+          v-if="
+            ($route.params.tr_codigo && !canEdit) ||
+            ($route.params.tr_codigo && canEdit && !update)
+          "
+          >{{ analistaCalc() }}</span
+        >
         <select
           v-if="(update || !$route.params.tr_codigo) && canEdit"
           class="select"
@@ -179,9 +207,14 @@
             </td>
             <td style="width: 60%; text-align: left">
               <div>
-                <span v-if="($route.params.tr_codigo && !canEdit) ||  (canEdit && !update)" style="width: 90%">{{
-                  accion.descripcion
-                }}</span>
+                <span
+                  v-if="
+                    ($route.params.tr_codigo && !canEdit) ||
+                    (canEdit && !update)
+                  "
+                  style="width: 90%"
+                  >{{ accion.descripcion }}</span
+                >
                 <input
                   v-if="update && canEdit"
                   type="text"
@@ -292,14 +325,14 @@ export default defineComponent({
     },
     displayTitlePage(): string {
       if (!this.$route.params.tr_codigo) {
-        return "Visualizar plan de tratamiento"
-      } else{
+        return "Visualizar plan de tratamiento";
+      } else {
         if (this.update) {
           return "Editar plan de tratamiento";
         }
         return "Visualizar plan de tratamiento";
       }
-    }
+    },
   },
   data() {
     return {
@@ -331,8 +364,7 @@ export default defineComponent({
   },
   watch: {
     async codigoPrueba() {
-      if (this.$route.params.tr_codigo)
-        await this.fetchAccionesMitigacion();
+      if (this.$route.params.tr_codigo) await this.fetchAccionesMitigacion();
     },
     massiveCheck(): void {
       if (this.massiveCheck) {
@@ -515,7 +547,7 @@ export default defineComponent({
     },
     goToTestSummary() {
       this.$router.push(
-        `/lista-verificacion/${this.codigoListaVerificacion}/prueba/${this.codigoPrueba}/resumen`
+        `/lista-verificacion/${this.codigoListaVerificacion}/prueba/${this.codigoPrueba}/resumen?edit=true`
       );
     },
     async fetchTratamiento(): Promise<void> {
@@ -622,7 +654,7 @@ export default defineComponent({
         } catch (error) {
           console.log(error);
         }
-      })
+      });
 
       this.massiveDelete = false;
       this.showModalConfirmation = false;
@@ -642,8 +674,7 @@ export default defineComponent({
       this.userInfoJson = await getUsuario();
       if (this.userInfoJson.rol == rol.JEFE_DE_RIESGOS) {
         this.canEdit = true;
-      } else 
-        this.canEdit = false;
+      } else this.canEdit = false;
       if (this.userInfoJson.rol == rol.ALTA_GERENCIA) {
         this.esAltaGerencia = true;
       }
@@ -651,17 +682,20 @@ export default defineComponent({
 
       if (!this.$route.params.tr_codigo) {
         try {
-          const response = await fetch(`${BASE_URL}plantratamiento/ultimoCodigo`, {
-            method: "GET",
-            headers: new Headers({
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + localStorage.getItem("token"),
-            }),
-          });
+          const response = await fetch(
+            `${BASE_URL}plantratamiento/ultimoCodigo`,
+            {
+              method: "GET",
+              headers: new Headers({
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              }),
+            }
+          );
 
-          const { codigo } = await response.json() as { codigo: string };
+          const { codigo } = (await response.json()) as { codigo: string };
 
-          this.tratamientoInfoJson.codigo = codigo
+          this.tratamientoInfoJson.codigo = codigo;
         } catch (err) {
           console.log(err);
         }

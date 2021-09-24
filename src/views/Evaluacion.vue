@@ -56,7 +56,9 @@
           <div v-if="action != 'visualizar'" class="non-editable">
             {{ evaluacion.codigo }}
           </div>
-          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{ evaluacion.codigo }}</span>
+          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{
+            evaluacion.codigo
+          }}</span>
         </div>
         <div v-if="action == 'registrar'">
           <br /><br />
@@ -117,7 +119,9 @@
           >
             {{ obra.codigo + "-" + obra.nombre }}
           </p>
-          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{ codigoObra }}</span>
+          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{
+            codigoObra
+          }}</span>
         </div>
         <div>
           <br /><br />
@@ -133,7 +137,9 @@
             :placeholder="evaluacion.nombre"
             v-model.trim="evaluacion.nombre"
           />
-          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{ evaluacion.nombre }}</span>
+          <span class="Spanvisualizar" v-if="action == 'visualizar'">{{
+            evaluacion.nombre
+          }}</span>
         </div>
         <div>
           <br />
@@ -249,14 +255,14 @@
                 :key="observacion.descripcion"
               >
                 <div class="card" style="display: flex; gap: 1vw">
-                 <!-- <img
+                  <!-- <img
                     :src="require('@/assets/images/adminImg.png')"
                     alt="userImage"
                     class="userImage"
                   /> -->
                   <div class="iconHolder">
                     <p>
-                    {{ observacion.nombreUsuario[0] }}
+                      {{ observacion.nombreUsuario[0] }}
                     </p>
                   </div>
                   <div>
@@ -402,7 +408,8 @@ export default defineComponent({
     };
   },
   methods: {
-    async downloadPDF(): Promise<void> { // works in local, but not in prod
+    async downloadPDF(): Promise<void> {
+      // works in local, but not in prod
       try {
         fetch(`${BASE_URL}evaluacion/informe/${this.evaluacion.codigo}`, {
           method: "GET",
@@ -688,8 +695,8 @@ export default defineComponent({
       } else if (this.action === "visualizar") {
         // se modifica la interfaz a modo edificion
         this.action = "editar";
-      } else { // estamos en modo edicion: aqui se actualiza la tabla evaluacion
-        
+      } else {
+        // estamos en modo edicion: aqui se actualiza la tabla evaluacion
 
         (async () => {
           const body = {
@@ -829,7 +836,7 @@ export default defineComponent({
 
       if (this.userInfoJson.rol == rol.ANALISTA) {
         this.isAnalista = true;
-        this.evaluacion.action = 'visualizar';
+        this.evaluacion.action = "visualizar";
       }
 
       if (this.userInfoJson.rol == rol.JEFE_DE_RIESGOS) {
@@ -837,7 +844,7 @@ export default defineComponent({
       }
 
       if (this.userInfoJson.rol == rol.ESPECIALISTA) {
-        this.isEspecialista = true; 
+        this.isEspecialista = true;
       }
 
       if (this.userInfoJson.rol !== rol.ANALISTA) {
@@ -853,7 +860,7 @@ export default defineComponent({
           listaRecords: [],
           numeroPaginas: 1,
           totalRecords: 0,
-        }
+        };
 
         try {
           const response = await fetch(`${BASE_URL}evaluacion/ultimoCodigo`, {
@@ -872,7 +879,7 @@ export default defineComponent({
             fechaCreacion: new Date().toLocaleDateString(),
           });
         } catch (err) {
-          console.log(err)
+          console.log(err);
         }
       } else {
         await this.fetchEvaluacionEstados();

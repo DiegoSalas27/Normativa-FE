@@ -666,8 +666,8 @@ export default defineComponent({
             Authorization: "Bearer " + localStorage.getItem("token"),
           }),
         });
-        
-        const { codigo } = await response.json() as { codigo: string };
+
+        const { codigo } = (await response.json()) as { codigo: string };
         this.lastEvidenciaCodigo = codigo;
       } catch (err) {
         console.log(err);
