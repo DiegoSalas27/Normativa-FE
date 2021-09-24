@@ -17,6 +17,9 @@
   ></modal>
   <section id="main" :class="{ expand: expand }">
     <div>
+      <h3 class="back" @click="goBack">
+        <i class="fas fa-chevron-left"></i> Salir
+      </h3>
       <h2>ADMINISTRACIÓN DE {{ calculateUser() }}</h2>
       <div class="buttons">
         <button class="action-button" @click="deleteMassive()"> Eliminación masiva </button>
@@ -122,6 +125,9 @@ export default defineComponent({
       }
 
       return this.userRol;
+    },
+    goBack(): void {
+      this.$router.back();
     },
     async listUsersByRol(): Promise<void> {
       try {
@@ -260,6 +266,12 @@ export default defineComponent({
   position: relative;
   width: 220px;
   margin-right: 15px;
+}
+.back {
+  position: absolute;
+  top: 100px;
+  left: 260px;
+  cursor: pointer;
 }
 @media (max-width : 1250px){
   .buttons {
