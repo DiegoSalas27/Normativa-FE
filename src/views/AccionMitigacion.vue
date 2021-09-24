@@ -198,7 +198,7 @@ export default defineComponent({
 
         await handleErrors(response);
 
-        this.message = "¡Se ha editado accion exitósamente!";
+        this.message = "¡La acción fue modificada correctamente!";
 
         setTimeout(() => {
           this.message = "";

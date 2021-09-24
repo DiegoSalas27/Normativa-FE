@@ -15,7 +15,10 @@
       <i class="fas fa-chevron-circle-left"></i> Volver
     </h1>
     <br />
-    <div v-if="canEdit" class="flex-row">
+    <div
+      v-if="canEdit"
+      style="display: flex; align-items: center; justify-content: space-between"
+    >
       <div>
         <h4 style="display: inline">
           Ingrese el porcentaje de cumplimiento deseado:
@@ -57,7 +60,7 @@
         <span>{{ porcentajeCumplimiento }}%</span>
       </div> -->
 
-      <div class="options-buttons">
+      <div class="options-buttons" style="display: flex; align-items: center">
         <button class="action-button" @click="summary">Resumen</button>
 
         <button
@@ -95,14 +98,17 @@
           </div>
 
           <div class="body-item-content" style="paddingbottom: 20px">
-            <div class="flex-row">
+            <div
+              class="flex-row"
+              style="justify-content: flex-start; gap: 20px"
+            >
               <p>Justificación:</p>
               <textarea
                 name="justificacion"
                 id="justi"
                 cols="80"
                 rows="5"
-                style="width: 71.5%"
+                style="width: 85%"
                 disabled="true"
                 :value="evidenciaRequerimiento[index]?.justificacion"
               ></textarea>
@@ -116,14 +122,18 @@
               </div>
             </div>
             <br />
-            <div class="flex-row" v-if="evidenciaRequerimiento[index]">
+            <div
+              class="flex-row"
+              style="justify-content: flex-start; gap: 20px"
+              v-if="evidenciaRequerimiento[index]"
+            >
               <p>Recomendación:</p>
               <textarea
                 name="recomendacion"
                 id="recom"
                 cols="120"
                 rows="5"
-                style="width: 75%"
+                style="width: 85%"
                 disabled="true"
                 v-model="evidenciaRequerimiento[index].recomendacion"
               ></textarea>
@@ -490,11 +500,9 @@ export default defineComponent({
   height: 26px;
 }
 .options-buttons button:first-child {
-  position: relative;
   border-top-right-radius: 0px !important;
   border-bottom-right-radius: 0px !important;
   height: 55.2px;
-  top: -32px;
   border-right: 1px solid white;
 }
 table {
@@ -507,11 +515,9 @@ td {
 }
 
 .options-buttons button:nth-child(2) {
-  position: relative;
   border-top-left-radius: 0px !important;
   border-bottom-left-radius: 0px !important;
   height: 55.2px;
-  top: -40.5px;
   border-left: 1px solid white;
 }
 .summary {
