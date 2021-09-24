@@ -3,7 +3,7 @@
     :name="userInfoJson?.nombres"
     :lastName="userInfoJson?.apellidos"
   ></nav-bar>
-  <modal 
+  <modal
     :show="loading"
     :title="message"
     @close="() => {}"
@@ -22,7 +22,8 @@
       <i class="fas fa-chevron-circle-left"></i> Volver
     </h1>
     <br />
-    <div class="summary">
+    <br />
+    <div style="margin: 0px -40px">
       <div class="summary-body">
         <div
           class="body-item-header flex-row"
@@ -70,7 +71,9 @@
         </div>
       </div>
     </div>
-    <div id="comentarios">
+    <br />
+    <br />
+    <div style="text-align: left">
       <h3>Comentarios</h3>
       <br />
       <input
@@ -84,7 +87,11 @@
         <span>Estado</span>&nbsp;&nbsp;
         <select
           class="select"
-          :value="evidenciaRequerimientoAccionMitigacion.estadoAccionMitigacion ? 'Terminado' : 'En Proceso'"
+          :value="
+            evidenciaRequerimientoAccionMitigacion.estadoAccionMitigacion
+              ? 'Terminado'
+              : 'En Proceso'
+          "
           @change="changedEstado"
           name="estado"
         >
@@ -93,7 +100,13 @@
           </option>
         </select>
       </div>
-      <button class="action-button blocked" style="margin-left: 140px;" @click="refreshComments">Refrescar</button>
+      <button
+        class="action-button blocked"
+        style="margin-left: 140px"
+        @click="refreshComments"
+      >
+        Refrescar
+      </button>
       <div
         class="comentario-lista"
         v-for="(
@@ -107,10 +120,10 @@
           class="userImage"
         /> -->
         <div class="iconHolder">
-                    <p>
-                    {{ comentario.nombreUsuario[0] }}
-                    </p>
-                  </div>
+          <p>
+            {{ comentario.nombreUsuario[0] }}
+          </p>
+        </div>
         <div class="flex-row" style="display: inline-flex">
           <div>
             <h4>
@@ -128,7 +141,7 @@
 </template>
 
 <script lang="ts">
-import moment from 'moment-timezone';
+import moment from "moment-timezone";
 import NavBar from "@/components/layout/NavBar.vue";
 import { defineComponent } from "@vue/runtime-core";
 import { BASE_URL, estadoAccionMitigacion } from "../common/constants";
@@ -159,13 +172,16 @@ export default defineComponent({
   methods: {
     async changedEstado(event: { target: HTMLInputElement }) {
       if (event.target.value == estadoAccionMitigacion[0]) {
-        this.evidenciaRequerimientoAccionMitigacion.estadoAccionMitigacion = false;
+        this.evidenciaRequerimientoAccionMitigacion.estadoAccionMitigacion =
+          false;
       } else {
-        this.evidenciaRequerimientoAccionMitigacion.estadoAccionMitigacion = true;
+        this.evidenciaRequerimientoAccionMitigacion.estadoAccionMitigacion =
+          true;
       }
       const body = {
-        Estado: this.evidenciaRequerimientoAccionMitigacion.estadoAccionMitigacion,
-      }
+        Estado:
+          this.evidenciaRequerimientoAccionMitigacion.estadoAccionMitigacion,
+      };
 
       try {
         const response = await fetch(
@@ -183,9 +199,9 @@ export default defineComponent({
         await handleErrors(response);
 
         this.message = "¡Se ha editado accion exitósamente!";
-        
+
         setTimeout(() => {
-          this.message = '';
+          this.message = "";
         }, 1500);
       } catch (error) {
         console.log(error);
@@ -245,10 +261,8 @@ export default defineComponent({
             this.userInfoJson.nombres + " " + this.userInfoJson.apellidos,
           fechaCreacion: new Date(),
           descripcion: this.comentarioInput,
-          usuarioRol: this.userInfoJson.rol as string
+          usuarioRol: this.userInfoJson.rol as string,
         });
-
-        
 
         this.comentarioInput = "";
       } catch (error) {
@@ -259,7 +273,7 @@ export default defineComponent({
     async refreshComments(): Promise<void> {
       this.loading = true;
       try {
-         const response = await fetch(
+        const response = await fetch(
           `${BASE_URL}evidenciarequerimiento/accion-mitigacion/${this.$route.params.acm_id}`,
           {
             method: "GET",
@@ -276,7 +290,9 @@ export default defineComponent({
           (await response.json()) as IEvidenciaRequerimientoAccionMitigacion;
 
         this.evidenciaRequerimientoAccionMitigacion.comentarioLista =
-          this.evidenciaRequerimientoAccionMitigacion.comentarioLista.filter(cml => cml.nombreUsuario != null);
+          this.evidenciaRequerimientoAccionMitigacion.comentarioLista.filter(
+            (cml) => cml.nombreUsuario != null
+          );
 
         this.loading = false;
         console.log(this.evidenciaRequerimientoAccionMitigacion);
@@ -284,7 +300,7 @@ export default defineComponent({
         this.loading = false;
         console.log(error);
       }
-    }
+    },
   },
   mounted() {
     this.loading = true;
@@ -326,22 +342,11 @@ export default defineComponent({
   top: -40.5px;
   border-left: 1px solid white;
 }
-.summary {
-  position: absolute;
-  width: 100%;
-  margin-left: -40px;
-}
 .header-summary {
   padding: 10px 0;
   background: #54a1d4;
   color: white;
 }
-#comentarios {
-  position: absolute;
-  top: 480px;
-  text-align: left;
-}
-
 .action-button {
   height: 35px;
   padding: 5px 2px;
@@ -387,7 +392,7 @@ textarea {
   margin-left: 55px;
 }
 .info-field {
-  display: inline-block; 
+  display: inline-block;
   position: relative;
   left: 100px;
 }
