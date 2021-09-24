@@ -132,7 +132,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/evaluacion/:ev_codigo/prueba/:pr_codigo/resumen',
     name: 'PruebaResultado',
-    component: () => import("../views/Prueba.vue"),
+    component: () => import("../views/EvaluacionResumen.vue"),
   },
 
   {

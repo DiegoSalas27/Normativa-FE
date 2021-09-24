@@ -508,7 +508,7 @@ export default defineComponent({
         );
       } else {
         this.$router.push(
-          `/lista-verificacion/${this.selectedListaVerificacion.codigo}/prueba/${selectedPrueba?.codigo}/resumen`
+          `/evaluacion/${this.evaluacion.codigo}/prueba/${selectedPrueba?.codigo}/resumen`
         );
       }
     },
