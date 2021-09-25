@@ -14,7 +14,7 @@
     :loading="loading"
   ></modal>
   <section id="main" :class="{ expand: expand }">
-    <h1>REPORTE DE EVALUACIONES </h1> 
+    <h1>REPORTE DE EVALUACIONES</h1>
     <grid
       :dataSource="dataSource"
       :columns="columns"
@@ -30,13 +30,12 @@
 import {
   actions,
   BASE_URL,
-  columnsEvaluacionesList, entity
+  columnsEvaluacionesList,
+  entity,
 } from "@/common/constants";
 import ConfirmationModal from "@/components/ui/ConfirmationModal.vue";
 import Grid from "@/components/ui/Grid.vue";
-import {
-  IEvaluacion
-} from "@/interfaces/evaluacion.interface";
+import { IEvaluacion } from "@/interfaces/evaluacion.interface";
 import { defineComponent } from "@vue/runtime-core";
 import Modal from "../components/ui/Modal.vue";
 import { IDataSource } from "../interfaces/dataSource";
@@ -118,7 +117,7 @@ export default defineComponent({
       }
     },
     edit(_: number, codigo: string, _2: string): void {
-      this.evaluacion.action = 'visualizar';
+      this.evaluacion.action = "visualizar";
       this.$router.push(`/evaluacion/${codigo}`);
     },
   },
@@ -131,10 +130,6 @@ export default defineComponent({
 </script>
 
 <style>
-body {
-  background-color: #d2d2d2;
-}
-
 .action-button {
   position: absolute;
   top: 95px;
