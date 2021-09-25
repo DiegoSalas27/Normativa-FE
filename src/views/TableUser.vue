@@ -244,7 +244,7 @@ export default defineComponent({
          this.modalTitle = "¿Está seguro que desea eliminar el tratamiento ?";
           break;
         case 'Evaluacion':
-         this.modalTitle = "¿Está seguro que desea eliminar la evaluacion ?";
+         this.modalTitle = "¿Está seguro que desea eliminar la evaluación ?";
          break;
       }
       this.entity = entity;
@@ -415,7 +415,7 @@ export default defineComponent({
           }),
         });
 
-        this.message = `La evaluacion fue eliminada`;
+        this.message = `La evaluación fue eliminada`;
         this.id = "";
         this.entity = "";
 
