@@ -277,6 +277,18 @@ export default defineComponent({
 
     calculateReport(): any {
       let type = this.$route.params.type;
+
+      if (!this.$route.params.type) { // add other routes
+        switch (this.$route.path) {
+          case "/dashboard/listas-verificacion":
+            type = "ListasVerificacion";
+            break;
+          default:
+            type = "ListasVerificacion";
+            break;
+        }
+      }
+
       switch (type) {
         case "PlanesTratamiento":
           return "PLANES DE TRATAMIENTO";
@@ -284,6 +296,8 @@ export default defineComponent({
           return "CUMPLIMIENTO POR LISTA DE VERIFICACIÓN";
         case "Evaluacion":
           return "RESULTADOS DE EVALUACIONES";
+        case "ListasVerificacion":
+          return "LISTAS DE VERIFICACIÓN";
       }
     },
 

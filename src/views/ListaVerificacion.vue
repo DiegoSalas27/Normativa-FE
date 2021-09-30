@@ -341,6 +341,8 @@ export default defineComponent({
         NivelesRiesgo: this.nivelesRiesgo,
         ListaVerificacion: this.listaVerificacion,
       };
+      console.log(body);
+      debugger
 
       try {
         const response = await fetch(`${BASE_URL}listaverificaciones`, {
@@ -403,6 +405,7 @@ export default defineComponent({
         }
       } else {
         this.listaVerificacion.listaVerificacionId = uuidv4();
+        this.listaVerificacion.fechaCreacion = new Date();
         this.criterios.push({
           criterioId: uuidv4(),
           descripcion: "Nuevo criterio",
