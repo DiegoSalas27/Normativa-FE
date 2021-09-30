@@ -103,8 +103,19 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: ' ',
         name: 'TableUser',
+        alias: ['listas-verificacion'], // colocar cualquier url para este componente dinamico como alias
         component: () => import("../views/TableUser.vue"),
       },
+      {
+        path: 'listas-verificacion/:lvCodigo',
+        name: 'ListasVerificacion',
+        component: () => import("../views/ListaVerificacion.vue"),
+      },
+      {
+        path: 'new/listas-verificacion',
+        name: 'ListasVerificacionCrear',
+        component: () => import("../views/ListaVerificacion.vue"),
+      }
     ]
   },
   // {

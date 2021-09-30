@@ -141,14 +141,20 @@
                   {{ numberEvaluaciones }}
                 </p>
               </div>
-              <div class="mycard mydonut" style="height: 350px; background-color: ghostwhite">
+              <div
+                class="mycard mydonut"
+                style="height: 350px; background-color: ghostwhite"
+              >
                 <div><strong>PORCENTAJE DE CUMPLIMIENTO</strong></div>
                 <div ref="gauge2" id="chart"></div>
               </div>
             </div>
 
             <div class="col">
-              <div class="mycard pie" style="height: 450px; background-color: ghostwhite" >
+              <div
+                class="mycard pie"
+                style="height: 450px; background-color: ghostwhite"
+              >
                 <div style="margin-bottom: 10px">
                   <!-- <strong>PORCENTAJE DE CUMPLIMIENTO POR OBRAS</strong>-->
                   <button
@@ -197,7 +203,11 @@
           <div
             v-for="rol_action in rolUserActions"
             :key="rol_action.description"
-            @click="goToList(rol_action.url)"
+            @click="
+              rol_action.url
+                ? goToList(rol_action.url)
+                : goTo(rol_action.name, rol_action.params)
+            "
             class="gridEspecialista"
           >
             <img :src="rol_action.src" :alt="rol_action.src" class="image" />
@@ -218,26 +228,33 @@ import {
   AnalistaUserActions,
   BASE_URL,
   EspecialistaUserActions,
-  rol
+  rol,
 } from "../common/constants";
 import {
-  configureAreaChartOptions, configureBarChartOptions, configureBarListOptions, configureGaugeOptions, configureGaugeOptions2, configureLineChartOptions,
-  configurePieChartOptions, configurePieChartOptions2,
+  configureAreaChartOptions,
+  configureBarChartOptions,
+  configureBarListOptions,
+  configureGaugeOptions,
+  configureGaugeOptions2,
+  configureLineChartOptions,
+  configurePieChartOptions,
+  configurePieChartOptions2,
   configureStackBarChartOptions,
-  configureTreeMapChartOptions
+  configureTreeMapChartOptions,
 } from "../common/graphics";
-import {
-  lineChartSeries, treeMapChartSeries
-} from "../common/mockdata";
+import { lineChartSeries, treeMapChartSeries } from "../common/mockdata";
 import { handleErrors } from "../common/utils";
 import {
-  IEvaluacion, IStatisticsEvaluacionCumplimiento, IStatisticsEvaluacionCumplimientoPrueba,
-  IStatisticsEvaluacionCumplimientoPruebaLista, IStatisticsEvaluacionResult
+  IEvaluacion,
+  IStatisticsEvaluacionCumplimiento,
+  IStatisticsEvaluacionCumplimientoPrueba,
+  IStatisticsEvaluacionCumplimientoPruebaLista,
+  IStatisticsEvaluacionResult,
 } from "../interfaces/evaluacion.interface";
 import {
   IStatisticsTratamientoResultAnalistasDto,
   IStatisticsTratamientoResultDto,
-  IStatisticsTratamientoResultListaDto
+  IStatisticsTratamientoResultListaDto,
 } from "../interfaces/tratamiento.interface";
 import { IUser } from "../interfaces/user.interface";
 import { getUsuario } from "../services/authService";
@@ -257,7 +274,8 @@ export default defineComponent({
     };
   },
   methods: {
-    async downloadPDF(): Promise<void> { // works in local, but not in prod
+    async downloadPDF(): Promise<void> {
+      // works in local, but not in prod
       try {
         fetch(`${BASE_URL}evaluacion/informe/EV002`, {
           method: "GET",
@@ -484,13 +502,10 @@ export default defineComponent({
         console.log(err);
       }
 
-      // Esto pertenece al analista
+      // para analista y jefe de riesgos
 
       const { series, xAxisCategories } =
-        (await this.devolerResultadosEvaluaciones()) as IStatisticsEvaluacionResult; // para analista y jefe de riesgos
-      const { pieChartSeries, pieChartLabels } =
-        (await this.devolverResultadosTratamientos()) as IStatisticsTratamientoResultDto;
-
+        (await this.devolerResultadosEvaluaciones()) as IStatisticsEvaluacionResult;
       const optionsbarChart = configureBarChartOptions(
         series,
         300,
@@ -502,143 +517,156 @@ export default defineComponent({
         40
       );
 
-      if (this.$refs.barChart) {
-        const barChart = new ApexCharts(this.$refs.barChart, optionsbarChart);
-        barChart.render();
-      }
+      // Hasta aqui es para analista y jefe de riesgos
 
-      const optionsPieChart = configurePieChartOptions(
-        pieChartSeries,
-        "70%",
-        pieChartLabels
-      );
+      // Esto pertenece al analista
 
-      if (this.$refs.pieChart) {
-        const pieChart = new ApexCharts(this.$refs.pieChart, optionsPieChart);
-        pieChart.render();
+      if (this.userInfoJson.rol === rol.ANALISTA) {
+        const { pieChartSeries, pieChartLabels } =
+          (await this.devolverResultadosTratamientos()) as IStatisticsTratamientoResultDto;
+
+        if (this.$refs.barChart) {
+          const barChart = new ApexCharts(this.$refs.barChart, optionsbarChart);
+          barChart.render();
+        }
+
+        const optionsPieChart = configurePieChartOptions(
+          pieChartSeries,
+          "70%",
+          pieChartLabels
+        );
+
+        if (this.$refs.pieChart) {
+          const pieChart = new ApexCharts(this.$refs.pieChart, optionsPieChart);
+          pieChart.render();
+        }
       }
 
       // Hasta aca es lo que le pertenece al analista
 
       // Esto pertenece al jefe de riesgos
 
-      const { gaugeSeries } =
-        (await this.devolverCumplimientoEvaluaciones()) as IStatisticsEvaluacionCumplimiento;
-      const { stackedBarSeries, xAxisCategoriesStacked } =
-        (await this.devolverPlanesTratamientoPorAnalista()) as IStatisticsTratamientoResultAnalistasDto;
+      if (this.userInfoJson.rol === rol.JEFE_DE_RIESGOS) {
+        const { gaugeSeries } =
+          (await this.devolverCumplimientoEvaluaciones()) as IStatisticsEvaluacionCumplimiento;
+        const { stackedBarSeries, xAxisCategoriesStacked } =
+          (await this.devolverPlanesTratamientoPorAnalista()) as IStatisticsTratamientoResultAnalistasDto;
 
-      const optionsGauge = configureGaugeOptions(gaugeSeries);
+        const optionsGauge = configureGaugeOptions(gaugeSeries);
 
-      if (this.$refs.gauge) {
-        const gauge = new ApexCharts(this.$refs.gauge, optionsGauge);
-        gauge.render();
-      }
+        if (this.$refs.gauge) {
+          const gauge = new ApexCharts(this.$refs.gauge, optionsGauge);
+          gauge.render();
+        }
 
-      const optionsStackedBar = configureStackBarChartOptions(
-        stackedBarSeries,
-        350,
-        xAxisCategoriesStacked
-      );
-
-      if (this.$refs.stackedBar) {
-        const stackedBar = new ApexCharts(
-          this.$refs.stackedBar,
-          optionsStackedBar
+        const optionsStackedBar = configureStackBarChartOptions(
+          stackedBarSeries,
+          350,
+          xAxisCategoriesStacked
         );
-        stackedBar.render();
+
+        if (this.$refs.stackedBar) {
+          const stackedBar = new ApexCharts(
+            this.$refs.stackedBar,
+            optionsStackedBar
+          );
+          stackedBar.render();
+        }
       }
 
       // Hasta aca es lo que le pertenece al jefe de riesgos
 
       // esto le pertence a alta gerencia
 
-      const { gaugeSeries2 } =
-        (await this.devolverCumplimientoEvaluacionesPruebas()) as IStatisticsEvaluacionCumplimientoPrueba;
-      const optionsSemiDonut = configureGaugeOptions2(gaugeSeries2);
+      if (this.userInfoJson.rol === rol.ALTA_GERENCIA) {
+        const { gaugeSeries2 } =
+          (await this.devolverCumplimientoEvaluacionesPruebas()) as IStatisticsEvaluacionCumplimientoPrueba;
+        const optionsSemiDonut = configureGaugeOptions2(gaugeSeries2);
 
-      if (this.$refs.gauge2) {
-        const gauge2 = new ApexCharts(this.$refs.gauge2, optionsSemiDonut);
-        gauge2.render();
-      }
+        if (this.$refs.gauge2) {
+          const gauge2 = new ApexCharts(this.$refs.gauge2, optionsSemiDonut);
+          gauge2.render();
+        }
 
-      const { pieChartSeriesLista, pieChartLabelsLista } =
-        (await this.devolverResultadosTratamientosLista()) as IStatisticsTratamientoResultListaDto;
+        const { pieChartSeriesLista, pieChartLabelsLista } =
+          (await this.devolverResultadosTratamientosLista()) as IStatisticsTratamientoResultListaDto;
 
-      const { stackedBarSeriesPrueba, xAxisPruebaStacked } =
-        (await this.devolverCumplimientoEvaluacionesPruebasLista()) as IStatisticsEvaluacionCumplimientoPruebaLista;
+        const { stackedBarSeriesPrueba, xAxisPruebaStacked } =
+          (await this.devolverCumplimientoEvaluacionesPruebasLista()) as IStatisticsEvaluacionCumplimientoPruebaLista;
 
-      const optionsStackedBarPrueba = configureBarListOptions(
-        stackedBarSeriesPrueba,
-        xAxisPruebaStacked
-      );
-
-      const {
-        stackedBarSeriesListaVerificacion,
-        xAxisListaVerificacionStacked,
-      } = (await this.devolverListaVerificacion()) as IStatisticsListaVerificacion;
-
-      const optionsStackedBarListaVerificacion = configureAreaChartOptions(
-        stackedBarSeriesListaVerificacion,
-        "ISO 45001",
-        xAxisListaVerificacionStacked
-      );
-
-      const optionsPieChart2 = configurePieChartOptions2(
-        pieChartSeriesLista,
-        "70%",
-        pieChartLabelsLista
-      );
-
-      const optionsLineChart = configureLineChartOptions(lineChartSeries);
-      const optionsTreeMapChart =
-        configureTreeMapChartOptions(treeMapChartSeries);
-
-      if (this.$refs.StackedBarPrueba) {
-        const StackedBarPrueba = new ApexCharts(
-          this.$refs.StackedBarPrueba,
-          optionsStackedBarPrueba
+        const optionsStackedBarPrueba = configureBarListOptions(
+          stackedBarSeriesPrueba,
+          xAxisPruebaStacked
         );
-        StackedBarPrueba.render();
-      }
 
-      if (this.$refs.StackedBarListaVerificacion) {
-        const StackedBarListaVerificacion = new ApexCharts(
-          this.$refs.StackedBarListaVerificacion,
-          optionsStackedBarListaVerificacion
-        );
-        StackedBarListaVerificacion.render();
-      }
+        const {
+          stackedBarSeriesListaVerificacion,
+          xAxisListaVerificacionStacked,
+        } = (await this.devolverListaVerificacion()) as IStatisticsListaVerificacion;
 
-      if (this.$refs.barChartJefe) {
-        const barChart = new ApexCharts(
-          this.$refs.barChartJefe,
-          optionsbarChart
+        const optionsStackedBarListaVerificacion = configureAreaChartOptions(
+          stackedBarSeriesListaVerificacion,
+          "ISO 45001",
+          xAxisListaVerificacionStacked
         );
-        barChart.render();
-      }
 
-      if (this.$refs.pieChart2) {
-        const pieChart2 = new ApexCharts(
-          this.$refs.pieChart2,
-          optionsPieChart2
+        const optionsPieChart2 = configurePieChartOptions2(
+          pieChartSeriesLista,
+          "70%",
+          pieChartLabelsLista
         );
-        pieChart2.render();
-      }
 
-      if (this.$refs.lineChart) {
-        const lineChart = new ApexCharts(
-          this.$refs.lineChart,
-          optionsLineChart
-        );
-        lineChart.render();
-      }
+        const optionsLineChart = configureLineChartOptions(lineChartSeries);
+        const optionsTreeMapChart =
+          configureTreeMapChartOptions(treeMapChartSeries);
 
-      if (this.$refs.treeMapChart) {
-        const treeMapChart = new ApexCharts(
-          this.$refs.treeMapChart,
-          optionsTreeMapChart
-        );
-        treeMapChart.render();
+        if (this.$refs.StackedBarPrueba) {
+          const StackedBarPrueba = new ApexCharts(
+            this.$refs.StackedBarPrueba,
+            optionsStackedBarPrueba
+          );
+          StackedBarPrueba.render();
+        }
+
+        if (this.$refs.StackedBarListaVerificacion) {
+          const StackedBarListaVerificacion = new ApexCharts(
+            this.$refs.StackedBarListaVerificacion,
+            optionsStackedBarListaVerificacion
+          );
+          StackedBarListaVerificacion.render();
+        }
+
+        if (this.$refs.barChartJefe) {
+          const barChart = new ApexCharts(
+            this.$refs.barChartJefe,
+            optionsbarChart
+          );
+          barChart.render();
+        }
+
+        if (this.$refs.pieChart2) {
+          const pieChart2 = new ApexCharts(
+            this.$refs.pieChart2,
+            optionsPieChart2
+          );
+          pieChart2.render();
+        }
+
+        if (this.$refs.lineChart) {
+          const lineChart = new ApexCharts(
+            this.$refs.lineChart,
+            optionsLineChart
+          );
+          lineChart.render();
+        }
+
+        if (this.$refs.treeMapChart) {
+          const treeMapChart = new ApexCharts(
+            this.$refs.treeMapChart,
+            optionsTreeMapChart
+          );
+          treeMapChart.render();
+        }
       }
 
       //hasta aca le pertenece alta gerencia
@@ -675,7 +703,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped> /* Usar scope para aplicar estilos solo a esta interfaz y que no perjudique al resto */
 h1 {
   font-weight: 900;
   font-size: xx-large;

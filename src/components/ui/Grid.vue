@@ -33,7 +33,7 @@
         </td>
         <td v-for="column in columns" :key="column.field">
           <p :style="{ textAlign: column.align ? column.align : 'left' }">
-            {{ getValue(column.field, dataSource.listaRecords, row - 1) }}
+            {{ getValue(column.field, dataSource.listaRecords, row - 1, column.type) }}
           </p>
         </td>
         <td v-if="actions?.length > 0">
@@ -144,14 +144,15 @@ export default defineComponent({
     getValue(
       columnField: string,
       data: any[],
-      row: number
+      row: number,
+      type: 'date' | 'text' | 'number'
     ): string | number | undefined {
       if (data) {
         if (data[row]) {
           if (columnField === "fechaNacimiento") {
             return calculateAge(data[row][columnField]);
           }
-          return data[row][columnField];
+          return type === 'date' ? new Date(data[row][columnField]).toLocaleDateString() : data[row][columnField];
         } else {
           return "";
         }

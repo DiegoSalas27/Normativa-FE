@@ -310,6 +310,11 @@ export const requerimientos = [
 
 ];
 
+export const DataSourceListasVerificacion = [
+  {codigo: 'LV001', nombre: 'Ley 29723', numeroRequerimientos: '25', fechaCreacion: '24/05/2021' },
+  {codigo: 'LV002', nombre: 'Ley 29724', numeroRequerimientos: '30', fechaCreacion: '24/05/2021' },
+];
+
 export const DataSourcetratamiento = [
   {codigo: 'TR001', fechaInicio: '05/06/2021',fechaFin:'11/06/2021', estado:'Solucionado',evaluacion:'EV001-Departamento Bohem',responsable:'Luis Quispe'},
 	{codigo: 'TR002', fechaInicio: '01/01/2021',fechaFin:'07/01/2021', estado:'Asignado',evaluacion:'EV002-Departamento Plaza 27',responsable:'Marcelo Lopez'}

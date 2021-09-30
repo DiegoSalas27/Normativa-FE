@@ -1,11 +1,14 @@
-import { ICriterio, ICriterioResultado } from './criterio.interface';
+import { ICriterio } from './criterio.interface';
 import { IEvidenciaRequerimiento } from './evidenciaRequerimiento.interface';
 
 export interface IRequerimiento {
-  requerimientoId: string;
+  requerimientoId?: string;
   descripcion: string;
-  criterio: ICriterio;
+  criterio?: ICriterio;
   posicion?: number;
+  recomendacion?: string;
+  criterioId?: string;
+  listaVerificacionId?: string;
 }
 
 export interface IRequerimientoResultado {

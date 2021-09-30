@@ -330,7 +330,7 @@ export default defineComponent({
         const listasVerificacion =
           (await response.json()) as IListaVerificacion[];
         const criteriosPrev = listasVerificacion[0].requerimientos
-          .map((req: IRequerimiento) => req.criterio)
+          .map((req: IRequerimiento) => req.criterio!)
           .sort((a, b) => a.descripcion.localeCompare(b.descripcion));
         const map = new Map();
         for (const criterio of criteriosPrev) {
@@ -340,7 +340,7 @@ export default defineComponent({
           }
         }
         this.requerimientos = listasVerificacion[0].requerimientos.sort(
-          (a, b) => a.criterio.descripcion.localeCompare(b.criterio.descripcion)
+          (a, b) => a.criterio!.descripcion.localeCompare(b.criterio!.descripcion)
         );
       } catch (err) {
         console.log(err);

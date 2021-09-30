@@ -18,7 +18,7 @@ export const urlConstants = {
   REALIZAR_PRUEBA_EVALUACION: 'Prueba',
   VISUALIZAR_INFORME: 'TipoInforme',
 
-  GENERAR_LISTA: 'Especialistas',
+  GENERAR_LISTA: 'ListasVerificacionCrear',
   MODIFICAR_LISTA: 'ModificarListaVerificacion',
   MODIFICAR_EVALUACIONES: 'ModificarEvaluaciones'
 }
@@ -90,6 +90,33 @@ export const columnsRolList2: IColumnsGrid[] = [
     type: 'text'
   }
 ]
+
+export const columnsListaVerificacionDiegoSalas: IColumnsGrid[] = [
+  {
+    field: 'codigo',
+    title: 'Código',
+    align: 'center',
+    type: 'text'
+  },
+  {
+    field: 'nombre',
+    title: 'Nombre',
+    align: 'center',
+    type: 'text'
+  },
+  {
+    field: 'numeroRequerimientos',
+    title: 'Número de requerimientos',
+    align: 'center',
+    type: 'text'
+  },
+  {
+    field: 'fechaCreacion',
+    title: 'Fecha de creación',
+    align: 'center',
+    type: 'date'
+  },
+];
 
 export const columnsPlanesTratamientoList: IColumnsGrid[] = [
   {
@@ -178,8 +205,6 @@ export const columnsVerificacionList2: IColumnsGrid[] = [
     type: 'text'
 
   },
-
-
 ]
 
 
@@ -349,7 +374,8 @@ export const EspecialistaUserActions = [
   {
     src: require("@/assets/images/ModificarListaVerificación_Especialista.jpg"),
     description: "Modificar lista de verificación",
-    url: urlConstants.MODIFICAR_LISTA,
+    name: 'TableUser',
+    params:  { type: 'ListasVerificacion' }
   },
   {
     src: require("@/assets/images/ModificarEvaluaciones_Especialista.png"),
@@ -365,7 +391,7 @@ export const estadoAccionMitigacion = [
 ]
 
 
- export const BASE_URL = "https://sistemaexperto.azurewebsites.net/api/";
+//  export const BASE_URL = "https://sistemaexperto.azurewebsites.net/api/";
 // export const BASE_URL = "http://localhost:55016/api/";
-//export const BASE_URL = "http://localhost:5000/api/";
+export const BASE_URL = "http://localhost:5000/api/";
 //export const BASE_URL = "https://localhost:44357/api/";

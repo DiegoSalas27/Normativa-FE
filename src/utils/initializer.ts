@@ -41,6 +41,7 @@ export const emptyVerificationList = (): IListaVerificacion => ({
 	fechaCreacion: '',
   requerimientosCount: 0,
 	requerimientos: [],
+	nivelesRiesgos: []
 })
 
 export const emptyObra = (): IObra => ({

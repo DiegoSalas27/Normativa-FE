@@ -734,7 +734,7 @@ export default defineComponent({
           }
         );
         const criteriosPrev = ListasVerificacion[0].requerimientos
-          .map((req: IRequerimiento) => req.criterio)
+          .map((req: IRequerimiento) => req.criterio!)
           .sort((a, b) => a.descripcion.localeCompare(b.descripcion));
         const map = new Map();
         for (const criterio of criteriosPrev) {
@@ -745,7 +745,7 @@ export default defineComponent({
         }
         this.requerimientos =
           this.selectedListaVerificacion.requerimientos.sort((a, b) =>
-            a.criterio.descripcion.localeCompare(b.criterio.descripcion)
+            a.criterio!.descripcion.localeCompare(b.criterio!.descripcion)
           );
         this.evidencia.push(emptyEvidencia());
         this.evidencia[0].codigo = this.lastEvidenciaCodigo;
