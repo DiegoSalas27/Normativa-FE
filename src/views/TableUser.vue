@@ -21,21 +21,24 @@
         <i class="fas fa-chevron-left"></i> Salir
       </h3>
       <h2>REPORTE DE {{ calculateReport() }}</h2>
-      <button
-        v-if="isAnalista || isJefeRiesgos"
-        class="action-button"
-        @click="deleteMassive()"
-      >
-        Eliminación masiva
-      </button>
+      <div class="buttons">
+        <button
+          v-if="isAnalista || isJefeRiesgos || isEspecialista"
+          class="action-button"
+          @click="deleteMassive()"
+        >
+          Eliminación masiva
+        </button>
+      </div>
+
       <grid
         :dataSource="dataSource"
         :columns="columns"
         :config="config"
         :actions="actions"
+        :rows="5"
         @movePage="movePage"
         @selectedList="selectedList"
-        :rows="5"
       ></grid>
     </section>
   </div>
@@ -81,6 +84,7 @@ export default defineComponent({
       dataSource: emptyDataSource() as IDataSource<any>,
       isAnalista: false,
       isJefeRiesgos: false,
+      isEspecialista: false,
       config: {
         deleteEntity: "",
         entity: entity.EVALUACION,
@@ -89,7 +93,7 @@ export default defineComponent({
         {
           icon: "fas fa-trash-alt",
           type: actions.DELETE,
-          method: this.delete(),
+          method: this.delete,
         },
         { icon: "fas fa-eye", type: actions.EDIT, method: this.edit },
       ],
@@ -106,41 +110,46 @@ export default defineComponent({
       page: 1,
       quantity: 5,
       entityList: [] as string[],
+      type: "",
     };
   },
   mounted() {
-    let type = this.$route.params.type;
+    this.type = this.$route.params.type as string;
     (async () => {
       // on page reload this.$route.params.type is undefined so...
 
       if (!this.$route.params.type) {
         switch (this.$route.path) {
           case "/dashboard/listas-verificacion":
-            type = "ListasVerificacion";
+            this.type = "ListasVerificacion";
             break;
-          default:
-            type = "ListasVerificacion";
-            break;
+          // default:
+          //   this.$route.params.type = "ListasVerificacion";
+          //   type = "ListasVerificacion";
+          //   break;
         }
       }
 
       this.userInfoJson = await getUsuario();
-      switch (type) {
+      switch (this.type) {
         case "ListasVerificacion":
+          if (this.userInfoJson.rol == rol.ESPECIALISTA) {
+            this.isEspecialista = true;
+          }
           this.columns = columnsListaVerificacionDiegoSalas;
           this.url = "listas-verificacion";
           this.$router.replace(this.url); // se crea url dinamica para un mismo componente
 
           this.actions = [
             {
-              icon: "fas fa-pen",
-              type: actions.EDIT,
-              method: this.edit,
-            },
-            {
               icon: "fas fa-trash-alt",
               type: actions.DELETE,
               method: this.delete,
+            },
+            {
+              icon: "fas fa-pen",
+              type: actions.EDIT,
+              method: this.edit,
             },
           ];
           await this.listListaVerificacion();
@@ -249,8 +258,7 @@ export default defineComponent({
   methods: {
     movePage(pageNumber: number) {
       this.page = pageNumber;
-      let type = this.$route.params.type;
-      switch (type) {
+      switch (this.type) {
         case "PlanesTratamiento":
           this.listPlanTratamiento();
           break;
@@ -276,20 +284,19 @@ export default defineComponent({
     },
 
     calculateReport(): any {
-      let type = this.$route.params.type;
-
-      if (!this.$route.params.type) { // add other routes
+      if (!this.$route.params.type) {
+        // add other routes
         switch (this.$route.path) {
           case "/dashboard/listas-verificacion":
-            type = "ListasVerificacion";
+            this.type = "ListasVerificacion";
             break;
-          default:
-            type = "ListasVerificacion";
-            break;
+          // default:
+          //   type = "ListasVerificacion";
+          //   break;
         }
       }
 
-      switch (type) {
+      switch (this.type) {
         case "PlanesTratamiento":
           return "PLANES DE TRATAMIENTO";
         case "RiesgoNormativa":
@@ -334,13 +341,15 @@ export default defineComponent({
     },
     delete(id: string, codigo: string, entity: string): void {
       this.id = id;
-      let type = this.$route.params.type;
-      switch (type) {
+      switch (this.type) {
         case "PlanesTratamiento":
           this.modalTitle = "¿Está seguro que desea eliminar el tratamiento ?";
           break;
         case "Evaluacion":
           this.modalTitle = "¿Está seguro que desea eliminar la evaluación ?";
+          break;
+        case "ListasVerificacion":
+          this.modalTitle = "¿Está seguro que desea eliminar la lista de verificación?";
           break;
       }
       this.entity = entity;
@@ -354,8 +363,9 @@ export default defineComponent({
       this.$router.push(this.url + codigo);
     },
     async confirmMassiveDelete(): Promise<void> {
-      let type = this.$route.params.type;
-      switch (type) {
+      console.log(this.type);
+      debugger
+      switch (this.type) {
         case "PlanesTratamiento":
           console.log(this.entityList);
           await Promise.all(
@@ -395,28 +405,50 @@ export default defineComponent({
             })
           );
           break;
+        case "ListasVerificacion":
+          await Promise.all(
+            this.entityList.map(async (id: string) => {
+              try {
+                const response = await fetch(`${BASE_URL}listaverificaciones/${id}`, {
+                  method: "DELETE",
+                  headers: new Headers({
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + localStorage.getItem("token"),
+                  }),
+                });
+              } catch (error) {
+                console.log(error);
+              }
+            })
+          );
       }
 
       this.massiveDelete = false;
       this.showModalConfirmation = false;
       this.modalTitle = "";
 
-      switch (type) {
+      switch (this.type) {
         case "PlanesTratamiento":
           this.message = `Los tratamientos  fueron eliminados`;
           break;
         case "Evaluacion":
           this.message = `Las evaluaciones  fueron eliminadas`;
+          break;
+        case "ListasVerificacion":
+          this.message = `Las listas de verificación fueron eliminadas`;
+          break;
       }
 
       setTimeout(async () => {
-        let type = this.$route.params.type;
-        switch (type) {
+        switch (this.type) {
           case "PlanesTratamiento":
             await this.listPlanTratamiento();
             break;
           case "Evaluacion":
             await this.listEvaluacion();
+            break;
+          case "ListasVerificacion":
+            await this.listListaVerificacion();
             break;
         }
         this.message = null;
@@ -480,8 +512,7 @@ export default defineComponent({
 
     async confirmDelete(): Promise<void> {
       this.closeModal();
-      let type = this.$route.params.type;
-      switch (type) {
+      switch (this.type) {
         case "PlanesTratamiento":
           try {
             const response = await fetch(
@@ -533,6 +564,30 @@ export default defineComponent({
             console.log(error);
           }
           break;
+        case "ListasVerificacion":
+          try {
+            const response = await fetch(`${BASE_URL}listaverificaciones/${this.id}`, {
+              method: "DELETE",
+              headers: new Headers({
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              })
+            });
+
+            this.message = `La lista de verificación fue eliminada`;
+            this.id = "";
+            this.entity = "";
+
+            // const result = await response.json();
+
+            setTimeout(async () => {
+              await this.listListaVerificacion();
+              this.message = null;
+            }, 2000);
+          } catch (error) {
+            console.log(error);
+          }
+          break;
       }
     },
 
@@ -570,7 +625,7 @@ export default defineComponent({
 .action-button {
   position: relative;
   width: 220px;
-  margin-right: -1400px;
+  margin-right: 15px;
 }
 .back {
   position: absolute;
