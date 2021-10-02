@@ -246,6 +246,7 @@ export default defineComponent({
       checkedRequerimientos: [] as string[],
       activeKey: [] as string[],
       currentlySelectedCriterio: "",
+      criteriosDelete: [] as string[],
     };
   },
   computed: {
@@ -290,6 +291,8 @@ export default defineComponent({
       ];
     },
     deleteCriterios() {
+      this.criteriosDelete = this.checkedEntities;
+
       this.criterios = this.criterios.filter(
         (c) => !this.checkedEntities.includes(c.criterioId!)
       );
@@ -299,8 +302,7 @@ export default defineComponent({
       );
 
       this.requerimientosFiltered = this.requerimientos.filter(
-        (r) =>
-          r.criterioId == this.currentlySelectedCriterio
+        (r) => r.criterioId == this.currentlySelectedCriterio
       );
     },
     deleteRequerimientos() {
@@ -309,8 +311,7 @@ export default defineComponent({
       );
 
       this.requerimientosFiltered = this.requerimientos.filter(
-        (r) =>
-          r.criterioId == this.currentlySelectedCriterio
+        (r) => r.criterioId == this.currentlySelectedCriterio
       );
     },
     addCriterio() {
@@ -330,33 +331,69 @@ export default defineComponent({
       });
 
       this.requerimientosFiltered = this.requerimientos.filter(
-        (r) =>
-          r.criterioId == this.currentlySelectedCriterio
+        (r) => r.criterioId == this.currentlySelectedCriterio
       );
     },
     async submit(): Promise<void> {
-      const body = {
+      const method = this.$route.params.lvCodigo ? "PUT" : "POST";
+      const id = this.$route.params.lvCodigo
+        ? this.listaVerificacion.listaVerificacionId
+        : "";
+
+      let body: any = {
         Criterios: this.criterios,
         Requerimientos: this.requerimientos,
         NivelesRiesgo: this.nivelesRiesgo,
         ListaVerificacion: this.listaVerificacion,
       };
-      console.log(body);
-      debugger
 
-      try {
-        const response = await fetch(`${BASE_URL}listaverificaciones`, {
-          method: "POST",
-          headers: new Headers({
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + localStorage.getItem("token"),
-          }),
-          body: JSON.stringify(body),
-        });
+      if (method == "PUT") {
+        try {
+          const response = await fetch(`${BASE_URL}listaverificaciones/${id}`, {
+            method: "DELETE",
+            headers: new Headers({
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+            body: JSON.stringify(body),
+          });
 
-        await handleErrors(response);
-      } catch (error) {
-        console.log(error);
+          await handleErrors(response);
+        } catch (error) {
+          console.log(error);
+        }
+        setTimeout(async () => {
+          body.Update = true;
+        try {
+          const response = await fetch(`${BASE_URL}listaverificaciones`, {
+            method: 'POST',
+            headers: new Headers({
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+            body: JSON.stringify(body),
+          });
+
+          await handleErrors(response);
+        } catch (error) {
+          console.log(error);
+        }
+        }, 500);
+      } else {
+        try {
+          const response = await fetch(`${BASE_URL}listaverificaciones`, {
+            method: 'POST',
+            headers: new Headers({
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }),
+            body: JSON.stringify(body),
+          });
+
+          await handleErrors(response);
+        } catch (error) {
+          console.log(error);
+        }
       }
     },
   },
@@ -404,6 +441,25 @@ export default defineComponent({
           console.log(err);
         }
       } else {
+        try {
+          const response = await fetch(
+            `${BASE_URL}listaverificaciones/ultimoCodigo`,
+            {
+              method: "GET",
+              headers: new Headers({
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              }),
+            }
+          );
+
+          const { codigo } = (await response.json()) as { codigo: string };
+
+          this.listaVerificacion.codigo = codigo;
+        } catch (err) {
+          console.log(err);
+        }
+
         this.listaVerificacion.listaVerificacionId = uuidv4();
         this.listaVerificacion.fechaCreacion = new Date();
         this.criterios.push({
