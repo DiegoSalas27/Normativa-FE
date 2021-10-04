@@ -21,6 +21,20 @@
         <i class="fas fa-chevron-left"></i> Salir
       </h3>
       <h2>REPORTE DE {{ calculateReport() }}</h2>
+      <br>
+      <span>Escriba la obra que desea buscar: </span>
+      <input type="text" name="txtobra" id="txtobra" v-model="filtro_obra" >
+      <br>
+      <br>
+      <span>Seleccione la lista que desea buscar : </span>
+      <a-select default-value="TODOS" style="width: 300px"  @change="changeFiltroListaVerificacion"  >
+      <a-select-option  v-for="(item,index) in itemsListaVerificacion" :key="index" :value="item.nombre" >{{item.nombre}}</a-select-option>
+      </a-select>
+      
+      <!--select name="selectobra" id="selectobra" v-model="filtro_lista_verificacion" @change="listEvaluacion">
+        <option v-for="(item,index) in itemsListaVerificacion" :key="index" :value="item.nombre" >{{item.nombre}}</option>
+      </select-->
+
       <div class="buttons">
         <button
           v-if="isAnalista || isJefeRiesgos || isEspecialista"
@@ -70,7 +84,7 @@ import {
 } from "../common/mockdata";
 import { DataSourceEvaluaciones } from "../common/mockdata";
 import { DataSourceRiesgo } from "../common/mockdata";
-
+var clearSetTime='' as any;
 export default defineComponent({
   components: {
     Grid,
@@ -79,6 +93,9 @@ export default defineComponent({
   },
   data() {
     return {
+      filtro_obra:'',
+      filtro_lista_verificacion:'',
+      itemsListaVerificacion:[{id:'',nombre:'TODOS'},{id:1,nombre:'ISO 45002'},{id:1,nombre:'LEY Nº 29783  Ley de Seguridad y Salud en el Trabajo'}],
       userInfoJson: emptyUser() as IUser,
       columns: {} as any,
       dataSource: emptyDataSource() as IDataSource<any>,
@@ -113,8 +130,21 @@ export default defineComponent({
       type: "",
     };
   },
+  watch:{
+    filtro_obra(v){
+      if(v){
+        if(clearSetTime){
+          clearTimeout(clearSetTime);
+        }
+        clearSetTime = setTimeout(() => {
+            this.listEvaluacion();
+        }, 500);
+      }
+    }
+  },
   mounted() {
     this.type = this.$route.params.type as string;
+    
     (async () => {
       // on page reload this.$route.params.type is undefined so...
 
@@ -129,7 +159,7 @@ export default defineComponent({
           //   break;
         }
       }
-
+     
       this.userInfoJson = await getUsuario();
       switch (this.type) {
         case "ListasVerificacion":
@@ -256,6 +286,10 @@ export default defineComponent({
     })();
   },
   methods: {
+    changeFiltroListaVerificacion(value=''){
+      this.filtro_lista_verificacion = value;
+      this.listEvaluacion();
+    },
     movePage(pageNumber: number) {
       this.page = pageNumber;
       switch (this.type) {
@@ -264,6 +298,10 @@ export default defineComponent({
           break;
         case "Evaluacion":
           this.listEvaluacion();
+          break;
+        case "RiesgoNormativa":
+          this.listRiesgoNormativa();
+          break;
       }
     },
     goBack(): void {
@@ -594,7 +632,7 @@ export default defineComponent({
     async listEvaluacion(): Promise<void> {
       try {
         const response = await fetch(
-          `${BASE_URL}evaluacion/listado?page=${this.page}&quantity=${this.quantity}`,
+          `${BASE_URL}evaluacion/listado?page=${this.page}&quantity=${this.quantity}&obra=${this.filtro_obra}&listVerif=${this.filtro_lista_verificacion}`,
           {
             method: "GET",
             headers: new Headers({
