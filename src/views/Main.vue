@@ -572,6 +572,13 @@ export default defineComponent({
           );
           stackedBar.render();
         }
+        if (this.$refs.barChartJefe) {
+          const barChart = new ApexCharts(
+            this.$refs.barChartJefe,
+            optionsbarChart
+          );
+          barChart.render();
+        }        
       }
 
       // Hasta aca es lo que le pertenece al jefe de riesgos
@@ -636,13 +643,7 @@ export default defineComponent({
           StackedBarListaVerificacion.render();
         }
 
-        if (this.$refs.barChartJefe) {
-          const barChart = new ApexCharts(
-            this.$refs.barChartJefe,
-            optionsbarChart
-          );
-          barChart.render();
-        }
+
 
         if (this.$refs.pieChart2) {
           const pieChart2 = new ApexCharts(

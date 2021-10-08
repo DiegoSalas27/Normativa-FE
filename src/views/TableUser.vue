@@ -22,6 +22,7 @@
       </h3>
       <h2>REPORTE DE {{ calculateReport() }}</h2>
       <br>
+      <span v-if="isEvaluaciones">
       <span>Escriba la obra que desea buscar: </span>
       <input type="text" name="txtobra" id="txtobra" v-model="filtro_obra" >
       <br>
@@ -30,6 +31,7 @@
       <a-select default-value="TODOS" style="width: 300px"  @change="changeFiltroListaVerificacion"  >
       <a-select-option  v-for="(item,index) in itemsListaVerificacion" :key="index" :value="item.nombre" >{{item.nombre}}</a-select-option>
       </a-select>
+      </span>
       
       <!--select name="selectobra" id="selectobra" v-model="filtro_lista_verificacion" @change="listEvaluacion">
         <option v-for="(item,index) in itemsListaVerificacion" :key="index" :value="item.nombre" >{{item.nombre}}</option>
@@ -101,6 +103,7 @@ export default defineComponent({
       dataSource: emptyDataSource() as IDataSource<any>,
       isAnalista: false,
       isJefeRiesgos: false,
+      isEvaluaciones: false,
       isEspecialista: false,
       config: {
         deleteEntity: "",
@@ -237,6 +240,7 @@ export default defineComponent({
           await this.listRiesgoNormativa();
           break;
         case "Evaluacion":
+          this.isEvaluaciones = true;
           this.columns = columnsEvaluacionesList;
           this.dataSource = {
             listaRecords: DataSourceEvaluaciones,
