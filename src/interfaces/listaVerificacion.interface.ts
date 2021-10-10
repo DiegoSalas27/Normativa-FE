@@ -15,6 +15,8 @@ export interface IStatisticsListaVerificacion{
   
 	stackedBarSeriesListaVerificacion: StackedBarSeriesListaVerificacion[];
 	xAxisListaVerificacionStacked: any;
+	stackedBarListas:any;
+
   
   }
   
