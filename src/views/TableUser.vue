@@ -43,7 +43,13 @@
       <a-select-option  v-for="(item,index) in itemsEstado" :key="index" :value="item.nombre" >{{item.nombre}}</a-select-option>
       </a-select>
       </span>
-      
+
+      <span v-if="isRiesgos">
+      <span>Escriba la lista que desea buscar: </span>
+      <input type="text" name="txtlistVerif" id="txtlistVerif" v-model="filtro_lista_verificacion" >
+      <br>
+      </span>      
+
       
       <!--select name="selectobra" id="selectobra" v-model="filtro_lista_verificacion" @change="listEvaluacion">
         <option v-for="(item,index) in itemsListaVerificacion" :key="index" :value="item.nombre" >{{item.nombre}}</option>
@@ -120,6 +126,7 @@ export default defineComponent({
       isJefeRiesgos: false,
       isEvaluaciones: false,
       isPlantamientos: false,
+      isRiesgos: false,
       isEspecialista: false,
       config: {
         deleteEntity: "",
@@ -169,7 +176,17 @@ export default defineComponent({
             this.listPlanTratamiento();
         }, 500);
       }
-    }
+    },
+    filtro_lista_verificacion(v){
+      if(v){
+        if(clearSetTime){
+          clearTimeout(clearSetTime);
+        }
+        clearSetTime = setTimeout(() => {
+            this.listRiesgoNormativa();
+        }, 500);
+      }
+    }    
   },
   
   mounted() {
@@ -251,6 +268,7 @@ export default defineComponent({
           await this.listPlanTratamiento();
           break;
         case "RiesgoNormativa":
+          this.isRiesgos = true;              
           this.columns = columnsRiesgoNormativaList;
           this.dataSource = {
             listaRecords: DataSourceRiesgo,
@@ -568,7 +586,7 @@ export default defineComponent({
     async listRiesgoNormativa(): Promise<void> {
       try {
         const response = await fetch(
-          `${BASE_URL}evaluacion/listado?page=${this.page}&quantity=${this.quantity}`,
+          `${BASE_URL}evaluacion/listado?page=${this.page}&quantity=${this.quantity}&obra=${this.filtro_obra}&listVerif=${this.filtro_lista_verificacion}`,
           {
             method: "GET",
             headers: new Headers({

@@ -215,13 +215,13 @@ export const columnsRiesgoNormativaList: IColumnsGrid[] = [
     title: 'Lista de Verificacion',
     type: 'text'
   },
-
+/*
   {
     field: 'codigo',
     title: 'Cod. de evaluacion',
     type: 'text'
   },
-
+*/
   {
     field: 'nombre',
     title: 'Nombre de evaluacion',
