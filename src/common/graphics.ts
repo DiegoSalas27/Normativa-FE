@@ -122,7 +122,7 @@ export const configureAreaxdOptions =(
       },
       
       title: {
-        text: 'Area with Negative Values',
+        text: 'Listas de verificación',
         align: 'left',
         style: {
           fontSize: '14px'

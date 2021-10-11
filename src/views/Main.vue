@@ -179,7 +179,7 @@
                   NIVEL DE RIESGO POR NORMATIVA
                 </button>
                 <!-- <div ref="StackedBarListaVerificacion" id="chart"></div> -->
-                <div ref="StackedBarListaVerificacion" id="chart"></div>
+                <div ref="xd" id="chart"></div>
               </div>
             </div>
 
@@ -244,7 +244,12 @@ import {
   configureTreeMapChartOptions,
   configureAreaxdOptions,
 } from "../common/graphics";
-import { Chartxd, lineChartSeries, stackedBarSeries, treeMapChartSeries } from "../common/mockdata";
+import {
+  Chartxd,
+  lineChartSeries,
+  stackedBarSeries,
+  treeMapChartSeries,
+} from "../common/mockdata";
 import { handleErrors } from "../common/utils";
 import {
   IEvaluacion,
@@ -262,7 +267,6 @@ import { IUser } from "../interfaces/user.interface";
 import { getUsuario } from "../services/authService";
 import { emptyUser } from "../utils/initializer";
 
-
 export default defineComponent({
   computed: {
     evaluacion(): IEvaluacion {
@@ -274,11 +278,9 @@ export default defineComponent({
       rolUserActions: [] as any,
       userInfoJson: emptyUser() as IUser,
       numberEvaluaciones: 3000,
-      Objeto: [] as any
+      Objeto: [] as any,
     };
   },
-
-
 
   methods: {
     async downloadPDF(): Promise<void> {
@@ -308,44 +310,51 @@ export default defineComponent({
     goTo(url: string, params: any): void {
       this.$router.push({ name: url, params: params });
     },
-/*
-asignar(algo:IStatisticsListaVerificacion)
-{
-  //debugger
-  //console.log(algo.stackedBarListas)
- 
-    //console.log(algo.stackedBarListas)
-    for (var i = 0; i < algo.stackedBarListas.length; i++) {
-      this.Objeto.push({
-      name: algo.stackedBarListas[i],
-      data: [
-          {
-            x: algo.xAxisListaVerificacionStacked[i],
-            y: algo.stackedBarSeriesListaVerificacion[i],
+
+    asignar(algo: IStatisticsListaVerificacion) {
+
+
+      var temp = [] as any;
+      for (var l = 0; l < algo.stackedBarListas.length; l++) {
+        temp.push(algo.stackedBarListas[l]);
+      }
+    
+      let unicos = Array.from(new Set(temp));
+      for (var k = 0; k < unicos.length; k++) {
+        var otro = [];
+        for (var i = 0; i < algo.stackedBarListas.length; i++) {
+          if (unicos[k] == algo.stackedBarListas[i]) {
+            otro.push(
+              {
+                x: algo.xAxisListaVerificacionStacked[i],
+                y: algo.stackedBarSeriesListaVerificacion[i],
+              },
+            );
+          }
         }
-      ]
-    });
-  }
-  return this.Objeto
+        this.Objeto.push({
+          name: unicos[k],
+          data: otro,
+        });
+      }
 
-},
-*/
-//       prueba ()
-// {
-// /* 
-//           stackedBarSeriesListaVerificacion,
-//           StackedBarListas,
-//           xAxisListaVerificacionStacked,
-// */
 
-//   var rebote=[]
+      return this.Objeto;
+    },
 
-  
-//   return rebote
-  
-//   },
+    //       prueba ()
+    // {
+    // /*
+    //           stackedBarSeriesListaVerificacion,
+    //           StackedBarListas,
+    //           xAxisListaVerificacionStacked,
+    // */
 
-  
+    //   var rebote=[]
+
+    //   return rebote
+
+    //   },
 
     calculateDashBoard() {
       switch (this.userInfoJson.rol) {
@@ -509,15 +518,16 @@ asignar(algo:IStatisticsListaVerificacion)
           }
         );
 
-//var temporal=(await response.json()) as IStatisticsListaVerificacion
-//this.asignar(temporal)
-        await handleErrors(response);
-        //this.asignar(temporal)
-        return (await response.json()) as IStatisticsListaVerificacion;
+        //var temporal = (await response.json()) as IStatisticsListaVerificacion;
+           await handleErrors(response);
+        return this.asignar((await response.json())) as IStatisticsListaVerificacion;
+     
+        //return (await response.json()) as IStatisticsListaVerificacion;
       } catch (err) {
         console.log(err);
       }
     },
+    
 
     async devolverPlanesTratamientoPorAnalista(): Promise<
       IStatisticsTratamientoResultAnalistasDto | undefined
@@ -565,8 +575,6 @@ asignar(algo:IStatisticsListaVerificacion)
         "right",
         40
       );
-
-      
 
       // Hasta aqui es para analista y jefe de riesgos
 
@@ -629,7 +637,7 @@ asignar(algo:IStatisticsListaVerificacion)
             optionsbarChart
           );
           barChart.render();
-        }        
+        }
       }
 
       // Hasta aca es lo que le pertenece al jefe de riesgos
@@ -654,40 +662,27 @@ asignar(algo:IStatisticsListaVerificacion)
 
         const optionsStackedBarPrueba = configureBarListOptions(
           stackedBarSeriesPrueba,
-          xAxisPruebaStacked,
-       
+          xAxisPruebaStacked
         );
 
+        const optionsxd = configureAreaxdOptions(this.Objeto);
 
-  /*              
-        const optionsxd=configureAreaxdOptions(
-          this.Objeto,
-          
-        );
+        if (this.$refs.xd) {
+          const xd = new ApexCharts(this.$refs.xd, optionsxd);
+          xd.render();
+        }
 
-
-
-      if (this.$refs.xd) {
-        const xd= new ApexCharts(
-          this.$refs.xd,
-           optionsxd
-           );
-        xd.render();
-      }
-*/
         const {
-          
           stackedBarSeriesListaVerificacion,
-           stackedBarListas,
-         
+          stackedBarListas,
+
           xAxisListaVerificacionStacked,
-          
         } = (await this.devolverListaVerificacion()) as IStatisticsListaVerificacion;
 
         const optionsStackedBarListaVerificacion = configureAreaChartOptions(
           stackedBarSeriesListaVerificacion,
-         "Lista de Verificación",
-          xAxisListaVerificacionStacked,
+          stackedBarListas,
+          xAxisListaVerificacionStacked
         );
 
         const optionsPieChart2 = configurePieChartOptions2(
@@ -715,8 +710,6 @@ asignar(algo:IStatisticsListaVerificacion)
           );
           StackedBarListaVerificacion.render();
         }
-
-
 
         if (this.$refs.pieChart2) {
           const pieChart2 = new ApexCharts(
@@ -951,7 +944,7 @@ h1 {
   height: 420px;
 }
 .line {
-  height: 420px;
+  height: 480px;
 }
 
 .btn-table {
