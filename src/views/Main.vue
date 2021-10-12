@@ -336,8 +336,12 @@ export default defineComponent({
           name: unicos[k],
           data: otro,
         });
+       
       }
-
+      
+     for (var v = 0  ; v < this.Objeto.length; v++){
+       console.log(this.Objeto[v]);
+     }
 
       return this.Objeto;
     },
@@ -368,6 +372,13 @@ export default defineComponent({
           this.rolUserActions = EspecialistaUserActions;
         // case  rol.ALTA_GERENCIA: this.rolUserActions = AdminUserActions; break;
       }
+    },
+    printer(){
+        const optionsxd = configureAreaxdOptions(this.Objeto);
+        if (this.$refs.xd) {
+          const xd = new ApexCharts(this.$refs.xd, optionsxd);
+          xd.render();
+        }
     },
     generarPlan() {
       this.$router.push("/plan-tratamiento");
@@ -520,7 +531,9 @@ export default defineComponent({
 
         //var temporal = (await response.json()) as IStatisticsListaVerificacion;
            await handleErrors(response);
-        return this.asignar((await response.json())) as IStatisticsListaVerificacion;
+           var f = this.asignar((await response.json()));
+           console.log("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN" + f.length + "\n\n");
+        return f  as IStatisticsListaVerificacion;
      
         //return (await response.json()) as IStatisticsListaVerificacion;
       } catch (err) {
@@ -552,7 +565,9 @@ export default defineComponent({
     },
   },
   mounted() {
+   
     (async () => {
+       this.printer()
       try {
         this.userInfoJson = await getUsuario();
         console.log(this.userInfoJson);
@@ -666,9 +681,10 @@ export default defineComponent({
         );
 
         const optionsxd = configureAreaxdOptions(this.Objeto);
-
+        console.log("ZZZZZZZZZZZZZZZZ" + this.$refs.xd);
         if (this.$refs.xd) {
           const xd = new ApexCharts(this.$refs.xd, optionsxd);
+          console.log("Renderizando....")
           xd.render();
         }
 
