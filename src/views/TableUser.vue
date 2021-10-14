@@ -32,6 +32,24 @@
       <a-select-option  v-for="(item,index) in itemsListaVerificacion" :key="index" :value="item.nombre" >{{item.nombre}}</a-select-option>
       </a-select>
       </span>
+
+      <span v-if="isPlantamientos">
+      <span>Escriba el plan que desea buscar: </span>
+      <input type="text" name="txtplan" id="txtplan" v-model="filtro_plan" >
+      <br>
+      <br>
+      <span>Seleccione el estado que desea buscar: </span>
+      <a-select default-value="TODOS" style="width: 300px"  @change="changeFiltroEstado"  >
+      <a-select-option  v-for="(item,index) in itemsEstado" :key="index" :value="item.nombre" >{{item.nombre}}</a-select-option>
+      </a-select>
+      </span>
+
+      <span v-if="isRiesgos">
+      <span>Escriba la lista que desea buscar: </span>
+      <input type="text" name="txtlistVerif" id="txtlistVerif" v-model="filtro_lista_verificacion" >
+      <br>
+      </span>      
+
       
       <!--select name="selectobra" id="selectobra" v-model="filtro_lista_verificacion" @change="listEvaluacion">
         <option v-for="(item,index) in itemsListaVerificacion" :key="index" :value="item.nombre" >{{item.nombre}}</option>
@@ -98,12 +116,17 @@ export default defineComponent({
       filtro_obra:'',
       filtro_lista_verificacion:'',
       itemsListaVerificacion:[{id:'',nombre:'TODOS'},{id:1,nombre:'ISO 45002'},{id:1,nombre:'LEY Nº 29783  Ley de Seguridad y Salud en el Trabajo'}],
+      itemsEstado:[{id:'',nombre:'TODOS'},{id:1,nombre:'Asignado'},{id:1,nombre:'Sin asignar'}],
+      filtro_plan:'',
+      filtro_estado_plan:'',
       userInfoJson: emptyUser() as IUser,
       columns: {} as any,
       dataSource: emptyDataSource() as IDataSource<any>,
       isAnalista: false,
       isJefeRiesgos: false,
       isEvaluaciones: false,
+      isPlantamientos: false,
+      isRiesgos: false,
       isEspecialista: false,
       config: {
         deleteEntity: "",
@@ -143,8 +166,29 @@ export default defineComponent({
             this.listEvaluacion();
         }, 500);
       }
-    }
+    },
+    filtro_plan(v){
+      if(v){
+        if(clearSetTime){
+          clearTimeout(clearSetTime);
+        }
+        clearSetTime = setTimeout(() => {
+            this.listPlanTratamiento();
+        }, 500);
+      }
+    },
+    filtro_lista_verificacion(v){
+      if(v){
+        if(clearSetTime){
+          clearTimeout(clearSetTime);
+        }
+        clearSetTime = setTimeout(() => {
+            this.listRiesgoNormativa();
+        }, 500);
+      }
+    }    
   },
+  
   mounted() {
     this.type = this.$route.params.type as string;
     
@@ -188,6 +232,7 @@ export default defineComponent({
           await this.listListaVerificacion();
           break;
         case "PlanesTratamiento":
+          this.isPlantamientos = true;          
           this.columns = columnsPlanesTratamientoList;
           this.dataSource = {
             listaRecords: DataSourcetratamiento,
@@ -223,6 +268,7 @@ export default defineComponent({
           await this.listPlanTratamiento();
           break;
         case "RiesgoNormativa":
+          this.isRiesgos = true;              
           this.columns = columnsRiesgoNormativaList;
           this.dataSource = {
             listaRecords: DataSourceRiesgo,
@@ -293,6 +339,10 @@ export default defineComponent({
     changeFiltroListaVerificacion(value=''){
       this.filtro_lista_verificacion = value;
       this.listEvaluacion();
+    },
+    changeFiltroEstado(value=''){
+      this.filtro_estado_plan=value;
+      this.listPlanTratamiento();
     },
     movePage(pageNumber: number) {
       this.page = pageNumber;
@@ -518,7 +568,7 @@ export default defineComponent({
     async listPlanTratamiento(): Promise<void> {
       try {
         const response = await fetch(
-          `${BASE_URL}plantratamiento/lista?page=${this.page}&quantity=${this.quantity}`,
+          `${BASE_URL}plantratamiento/lista?page=${this.page}&quantity=${this.quantity}&plan=${this.filtro_plan}&estadoPlan=${this.filtro_estado_plan}`,
           {
             method: "GET",
             headers: new Headers({
@@ -536,7 +586,7 @@ export default defineComponent({
     async listRiesgoNormativa(): Promise<void> {
       try {
         const response = await fetch(
-          `${BASE_URL}evaluacion/listado?page=${this.page}&quantity=${this.quantity}`,
+          `${BASE_URL}evaluacion/listado?page=${this.page}&quantity=${this.quantity}&obra=${this.filtro_obra}&listVerif=${this.filtro_lista_verificacion}`,
           {
             method: "GET",
             headers: new Headers({

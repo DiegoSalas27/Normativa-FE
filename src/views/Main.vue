@@ -178,7 +178,8 @@
                 >
                   NIVEL DE RIESGO POR NORMATIVA
                 </button>
-                <div ref="StackedBarListaVerificacion" id="chart"></div>
+                <!-- <div ref="StackedBarListaVerificacion" id="chart"></div> -->
+                <div ref="xd" id="chart"></div>
               </div>
             </div>
 
@@ -241,8 +242,14 @@ import {
   configurePieChartOptions2,
   configureStackBarChartOptions,
   configureTreeMapChartOptions,
+  configureAreaxdOptions,
 } from "../common/graphics";
-import { lineChartSeries, treeMapChartSeries } from "../common/mockdata";
+import {
+  Chartxd,
+  lineChartSeries,
+  stackedBarSeries,
+  treeMapChartSeries,
+} from "../common/mockdata";
 import { handleErrors } from "../common/utils";
 import {
   IEvaluacion,
@@ -271,8 +278,10 @@ export default defineComponent({
       rolUserActions: [] as any,
       userInfoJson: emptyUser() as IUser,
       numberEvaluaciones: 3000,
+      Objeto: [] as any,
     };
   },
+
   methods: {
     async downloadPDF(): Promise<void> {
       // works in local, but not in prod
@@ -301,6 +310,56 @@ export default defineComponent({
     goTo(url: string, params: any): void {
       this.$router.push({ name: url, params: params });
     },
+
+    asignar(algo: IStatisticsListaVerificacion) {
+
+
+      var temp = [] as any;
+      for (var l = 0; l < algo.stackedBarListas.length; l++) {
+        temp.push(algo.stackedBarListas[l]);
+      }
+    
+      let unicos = Array.from(new Set(temp));
+      for (var k = 0; k < unicos.length; k++) {
+        var otro = [];
+        for (var i = 0; i < algo.stackedBarListas.length; i++) {
+          if (unicos[k] == algo.stackedBarListas[i]) {
+            otro.push(
+              {
+                x: algo.xAxisListaVerificacionStacked[i],
+                y: algo.stackedBarSeriesListaVerificacion[i],
+              },
+            );
+          }
+        }
+        this.Objeto.push({
+          name: unicos[k],
+          data: otro,
+        });
+       
+      }
+      
+     for (var v = 0  ; v < this.Objeto.length; v++){
+       console.log(this.Objeto[v]);
+     }
+
+      return this.Objeto;
+    },
+
+    //       prueba ()
+    // {
+    // /*
+    //           stackedBarSeriesListaVerificacion,
+    //           StackedBarListas,
+    //           xAxisListaVerificacionStacked,
+    // */
+
+    //   var rebote=[]
+
+    //   return rebote
+
+    //   },
+
     calculateDashBoard() {
       switch (this.userInfoJson.rol) {
         case rol.ADMINISTRADOR:
@@ -313,6 +372,13 @@ export default defineComponent({
           this.rolUserActions = EspecialistaUserActions;
         // case  rol.ALTA_GERENCIA: this.rolUserActions = AdminUserActions; break;
       }
+    },
+    printer(){
+        const optionsxd = configureAreaxdOptions(this.Objeto);
+        if (this.$refs.xd) {
+          const xd = new ApexCharts(this.$refs.xd, optionsxd);
+          xd.render();
+        }
     },
     generarPlan() {
       this.$router.push("/plan-tratamiento");
@@ -463,12 +529,18 @@ export default defineComponent({
           }
         );
 
-        await handleErrors(response);
-        return (await response.json()) as IStatisticsListaVerificacion;
+        //var temporal = (await response.json()) as IStatisticsListaVerificacion;
+           await handleErrors(response);
+           var f = this.asignar((await response.json()));
+           console.log("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN" + f.length + "\n\n");
+        return f  as IStatisticsListaVerificacion;
+     
+        //return (await response.json()) as IStatisticsListaVerificacion;
       } catch (err) {
         console.log(err);
       }
     },
+    
 
     async devolverPlanesTratamientoPorAnalista(): Promise<
       IStatisticsTratamientoResultAnalistasDto | undefined
@@ -493,7 +565,9 @@ export default defineComponent({
     },
   },
   mounted() {
+   
     (async () => {
+       this.printer()
       try {
         this.userInfoJson = await getUsuario();
         console.log(this.userInfoJson);
@@ -578,7 +652,7 @@ export default defineComponent({
             optionsbarChart
           );
           barChart.render();
-        }        
+        }
       }
 
       // Hasta aca es lo que le pertenece al jefe de riesgos
@@ -606,14 +680,24 @@ export default defineComponent({
           xAxisPruebaStacked
         );
 
+        const optionsxd = configureAreaxdOptions(this.Objeto);
+        console.log("ZZZZZZZZZZZZZZZZ" + this.$refs.xd);
+        if (this.$refs.xd) {
+          const xd = new ApexCharts(this.$refs.xd, optionsxd);
+          console.log("Renderizando....")
+          xd.render();
+        }
+
         const {
           stackedBarSeriesListaVerificacion,
+          stackedBarListas,
+
           xAxisListaVerificacionStacked,
         } = (await this.devolverListaVerificacion()) as IStatisticsListaVerificacion;
 
         const optionsStackedBarListaVerificacion = configureAreaChartOptions(
           stackedBarSeriesListaVerificacion,
-          "ISO 45001",
+          stackedBarListas,
           xAxisListaVerificacionStacked
         );
 
@@ -642,8 +726,6 @@ export default defineComponent({
           );
           StackedBarListaVerificacion.render();
         }
-
-
 
         if (this.$refs.pieChart2) {
           const pieChart2 = new ApexCharts(
@@ -704,7 +786,8 @@ export default defineComponent({
 });
 </script>
 
-<style scoped> /* Usar scope para aplicar estilos solo a esta interfaz y que no perjudique al resto */
+<style scoped>
+/* Usar scope para aplicar estilos solo a esta interfaz y que no perjudique al resto */
 h1 {
   font-weight: 900;
   font-size: xx-large;
@@ -877,7 +960,7 @@ h1 {
   height: 420px;
 }
 .line {
-  height: 420px;
+  height: 480px;
 }
 
 .btn-table {

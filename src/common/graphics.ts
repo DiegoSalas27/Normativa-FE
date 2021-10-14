@@ -102,6 +102,87 @@ export const configureGaugeOptions = (
   };
 };
 
+export const configureAreaxdOptions =(
+  series:any[],
+
+  ) => {
+    console.log(series)
+    return {
+      series: series,
+      
+      chart: {
+        type: 'area',
+        height: 350
+      },
+      dataLabels: {
+        enabled: false
+      },
+      stroke: {
+        curve: 'straight'
+      },
+      
+      title: {
+        text: 'Listas de verificación',
+        align: 'left',
+        style: {
+          fontSize: '14px'
+        }
+      },
+      xaxis: {
+        type: 'datetime',
+        axisBorder: {
+          show: false
+        },
+        axisTicks: {
+          show: false
+        }
+      },
+      yaxis: {
+        tickAmount: 4,
+        floating: false,
+      
+        labels: {
+          style: {
+            colors: '#8e8da4',
+          },
+          offsetY: -7,
+          offsetX: 0,
+        },
+        axisBorder: {
+          show: false,
+        },
+        axisTicks: {
+          show: false
+        }
+      },
+      fill: {
+        opacity: 0.5
+      },
+      tooltip: {
+        x: {
+          format: "yyyy",
+        },
+        fixed: {
+          enabled: false,
+          position: 'topRight'
+        }
+      },
+      grid: {
+        yaxis: {
+          lines: {
+            offsetX: -30
+          }
+        },
+        padding: {
+          left: 20
+        }
+      }
+    };        
+  };
+
+
+
+
 export const configurePieChartOptions = (
   series: any[],
   width: any,

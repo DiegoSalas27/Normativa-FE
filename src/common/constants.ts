@@ -215,13 +215,13 @@ export const columnsRiesgoNormativaList: IColumnsGrid[] = [
     title: 'Lista de Verificacion',
     type: 'text'
   },
-
+/*
   {
     field: 'codigo',
     title: 'Cod. de evaluacion',
     type: 'text'
   },
-
+*/
   {
     field: 'nombre',
     title: 'Nombre de evaluacion',
@@ -391,7 +391,7 @@ export const estadoAccionMitigacion = [
 ]
 
 
-//  export const BASE_URL = "https://sistemaexperto.azurewebsites.net/api/";
+  export const BASE_URL = "https://sistemaexperto.azurewebsites.net/api/";
 // export const BASE_URL = "http://localhost:55016/api/";
-export const BASE_URL = "http://localhost:5000/api/";
+//export const BASE_URL = "http://localhost:5000/api/";
 //export const BASE_URL = "https://localhost:44357/api/";
