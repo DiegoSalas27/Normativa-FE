@@ -48,7 +48,13 @@
       <span>Escriba la lista que desea buscar: </span>
       <input type="text" name="txtlistVerif" id="txtlistVerif" v-model="filtro_lista_verificacion" >
       <br>
-      </span>      
+      </span>
+      
+      <span v-if="isListas">
+      <span>Escriba la lista que desea buscar: </span>
+      <input type="text" name="txtlistaVerif" id="txtlistaVerif" v-model="filtro_listas_verificaciones" >
+      <br>
+      </span>               
 
       
       <!--select name="selectobra" id="selectobra" v-model="filtro_lista_verificacion" @change="listEvaluacion">
@@ -115,6 +121,7 @@ export default defineComponent({
     return {
       filtro_obra:'',
       filtro_lista_verificacion:'',
+      filtro_listas_verificaciones:'',
       itemsListaVerificacion:[{id:'',nombre:'TODOS'},{id:1,nombre:'ISO 45002'},{id:1,nombre:'LEY Nº 29783  Ley de Seguridad y Salud en el Trabajo'}],
       itemsEstado:[{id:'',nombre:'TODOS'},{id:1,nombre:'Asignado'},{id:1,nombre:'Sin asignar'}],
       filtro_plan:'',
@@ -127,6 +134,7 @@ export default defineComponent({
       isEvaluaciones: false,
       isPlantamientos: false,
       isRiesgos: false,
+      isListas: false,
       isEspecialista: false,
       config: {
         deleteEntity: "",
@@ -186,7 +194,17 @@ export default defineComponent({
             this.listRiesgoNormativa();
         }, 500);
       }
-    }    
+    },
+      filtro_listas_verificaciones(v){
+      if(v){
+        if(clearSetTime){
+          clearTimeout(clearSetTime);
+        }
+        clearSetTime = setTimeout(() => {
+            this.listListaVerificacion();
+        }, 500);
+      }
+    }      
   },
   
   mounted() {
@@ -213,6 +231,7 @@ export default defineComponent({
           if (this.userInfoJson.rol == rol.ESPECIALISTA) {
             this.isEspecialista = true;
           }
+          this.isListas=true;
           this.columns = columnsListaVerificacionDiegoSalas;
           this.url = "listas-verificacion";
           this.$router.replace(this.url); // se crea url dinamica para un mismo componente
@@ -549,7 +568,7 @@ export default defineComponent({
     async listListaVerificacion(): Promise<void> {
       try {
         const response = await fetch(
-          `${BASE_URL}listaverificaciones/listar?page=${this.page}&quantity=${this.quantity}`,
+          `${BASE_URL}listaverificaciones/listar?page=${this.page}&quantity=${this.quantity}&listaVerif=${this.filtro_listas_verificaciones}`,
           {
             method: "GET",
             headers: new Headers({
