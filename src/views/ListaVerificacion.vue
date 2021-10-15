@@ -1,4 +1,27 @@
 <template>
+<confirmation-modal
+    :error="null"
+    :show="showModalConfirmation"
+    :title="modalTitle"
+    @confirm="submit"
+    @cancel="closeModal"
+  ></confirmation-modal>
+    <!-- Confirmation modal -->
+  <modal
+    :show="!!message"
+    :title="message"
+    @close="handleError"
+    :error="error"
+    :loading="loading"
+  ></modal>
+  <!-- Confirmation modal -->
+    <modal
+    :show="!!loadingPrevent"
+    :title="message"
+    @close="loadingPrevent = false"
+    :error="true"
+    :loading="loadingPrevent"
+  ></modal>
   <section id="main">
     <h1>
       {{
@@ -143,7 +166,7 @@
             <button
               class="action-button"
               style="margin-right: 20%"
-              @click="submit"
+              @click="$route.params.lvCodigo ? submitConfirm() :  submit()"
             >
               Guardar
             </button>
@@ -223,6 +246,8 @@
 </template>
 
 <script lang="ts">
+import ConfirmationModal from "@/components/ui/ConfirmationModal.vue";
+import Modal from "../components/ui/Modal.vue";
 import { defineComponent } from "@vue/runtime-core";
 import { BASE_URL } from "../common/constants";
 import { handleErrors } from "../common/utils";
@@ -234,6 +259,10 @@ import { uuidv4 } from "../utils/guid";
 import { emptyVerificationList } from "../utils/initializer";
 
 export default defineComponent({
+  components: {
+    ConfirmationModal,
+    Modal,
+  },
   data() {
     return {
       criterios: [] as ICriterio[],
@@ -247,6 +276,12 @@ export default defineComponent({
       activeKey: [] as string[],
       currentlySelectedCriterio: "",
       criteriosDelete: [] as string[],
+      message: null as string | null,
+      loading: false,
+      loadingPrevent: false,
+      error: false,
+      modalTitle: "",
+      showModalConfirmation: false,
     };
   },
   computed: {
@@ -266,6 +301,12 @@ export default defineComponent({
     },
   },
   methods: {
+    closeModal(): void {
+      this.showModalConfirmation = false;
+    },
+    handleError() {
+      this.message = null;
+    },
     handleChange(value: string) {
       this.currentlySelectedCriterio = value;
       this.requerimientosFiltered = this.requerimientos.filter(
@@ -310,6 +351,17 @@ export default defineComponent({
         (c) => !this.checkedRequerimientos.includes(c.requerimientoId!)
       );
 
+      const requerimientoEmpty = this.requerimientos.filter(
+        (r) => r.criterioId == this.currentlySelectedCriterio
+      );
+
+      console.log(requerimientoEmpty);
+      if (requerimientoEmpty.length == 0) {
+        this.loadingPrevent = true;
+        this.message = "Eliminar el criterio.";
+        return;
+      }
+
       this.requerimientosFiltered = this.requerimientos.filter(
         (r) => r.criterioId == this.currentlySelectedCriterio
       );
@@ -334,7 +386,20 @@ export default defineComponent({
         (r) => r.criterioId == this.currentlySelectedCriterio
       );
     },
+    submitConfirm() {
+      if (+this.criterios.reduce((acc, el) => +el.peso + +acc, 0).toFixed(2) > 1) {
+        this.error = true;
+        this.message = `El peso de los criterios debe equivaler a 1`;
+        return 
+      }
+      this.modalTitle =
+        `Los cambios realizados afectaran a las evaluaciones vinculadas a esta lista. ¿Desea continuar?`;
+      this.showModalConfirmation = true;
+    },
     async submit(): Promise<void> {
+      this.showModalConfirmation = false;
+      this.loading = true;
+
       const method = this.$route.params.lvCodigo ? "PUT" : "POST";
       const id = this.$route.params.lvCodigo
         ? this.listaVerificacion.listaVerificacionId
@@ -347,22 +412,23 @@ export default defineComponent({
         ListaVerificacion: this.listaVerificacion,
       };
 
+      this.requerimientos.forEach(re => delete re.criterio);
+
       if (method == "PUT") {
         try {
-          const response = await fetch(`${BASE_URL}listaverificaciones/${id}`, {
+          const response = await fetch(`${BASE_URL}listaverificaciones/${id}?Update=true`, {
             method: "DELETE",
             headers: new Headers({
               "Content-Type": "application/json",
               Authorization: "Bearer " + localStorage.getItem("token"),
             }),
-            body: JSON.stringify(body),
           });
 
           await handleErrors(response);
         } catch (error) {
           console.log(error);
         }
-        setTimeout(async () => {
+
           body.Update = true;
         try {
           const response = await fetch(`${BASE_URL}listaverificaciones`, {
@@ -378,7 +444,19 @@ export default defineComponent({
         } catch (error) {
           console.log(error);
         }
-        }, 500);
+
+
+        this.message =
+              "Lista de verificación actualizada";
+
+        setTimeout(() => {
+            this.message = "";
+            this.loading = false;
+            this.$router.push(
+              `/dashboard`
+            );
+        }, 2000);
+          
       } else {
         try {
           const response = await fetch(`${BASE_URL}listaverificaciones`, {
@@ -394,6 +472,17 @@ export default defineComponent({
         } catch (error) {
           console.log(error);
         }
+
+        this.message =
+              "¡La lista de verificación ha sido registrada exitósamente!";
+
+        setTimeout(() => {
+            this.message = "";
+            this.loading = false;
+            this.$router.push(
+              `/dashboard`
+            );
+        }, 2000);
       }
     },
   },
