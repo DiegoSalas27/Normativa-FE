@@ -15,6 +15,18 @@
   ></modal>
   <section id="main" :class="{ expand: expand }">
     <h1>REPORTE DE EVALUACIONES</h1>
+  <br>
+   
+      <span>Escriba la obra que desea buscar: </span>
+      <input type="text" name="txtobra" id="txtobra" v-model="filtro_obra" >
+      <br>
+      <br>
+      <span>Seleccione la lista que desea buscar : </span>
+      <a-select default-value="TODOS" style="width: 300px"  @change="changeFiltroListaVerificacion"  >
+      <a-select-option  v-for="(item,index) in itemsListaVerificacion" :key="index" :value="item.nombre" >{{item.nombre}}</a-select-option>
+      </a-select>
+   
+
     <grid
       :dataSource="dataSource"
       :columns="columns"
@@ -40,6 +52,7 @@ import { defineComponent } from "@vue/runtime-core";
 import Modal from "../components/ui/Modal.vue";
 import { IDataSource } from "../interfaces/dataSource";
 import { emptyDataSource } from "../utils/initializer";
+var clearSetTime='' as any;
 
 export default defineComponent({
   components: {
@@ -63,6 +76,9 @@ export default defineComponent({
       //   entity: entity.USER,
       // },
       actions: [{ icon: "fas fa-eye", type: actions.EDIT, method: this.edit }],
+      filtro_obra:'',
+      filtro_lista_verificacion:'',
+      itemsListaVerificacion:[{id:'',nombre:'TODOS'},{id:1,nombre:'ISO 45002'},{id:1,nombre:'LEY Nº 29783  Ley de Seguridad y Salud en el Trabajo'}],
       modalTitle: "",
       showModalConfirmation: false,
       id: "",
@@ -77,7 +93,26 @@ export default defineComponent({
       quantity: 5,
     };
   },
+  watch:{
+    filtro_obra(v){
+      if(v){
+        if(clearSetTime){
+          clearTimeout(clearSetTime);
+        }
+        clearSetTime = setTimeout(() => {
+            this.listEvaluaciones();
+        }, 500);
+      }
+    }
+  },
+  
   methods: {
+
+    changeFiltroListaVerificacion(value=''){
+      this.filtro_lista_verificacion = value;
+      this.listEvaluaciones();
+    },
+    
     movePage(pageNumber: number) {
       this.page = pageNumber;
       this.listEvaluaciones();
@@ -97,7 +132,7 @@ export default defineComponent({
     async listEvaluaciones(): Promise<void> {
       try {
         const response = await fetch(
-          `${BASE_URL}evaluacion/listado?page=${this.page}&quantity=${this.quantity}`,
+         `${BASE_URL}evaluacion/listado?page=${this.page}&quantity=${this.quantity}&obra=${this.filtro_obra}&listVerif=${this.filtro_lista_verificacion}`,
           // `${BASE_URL}usuario/listar/ANALISTAS?page=${this.page}&quantity=${this.quantity}`,
           {
             method: "GET",
