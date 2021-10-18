@@ -45,9 +45,16 @@
       </span>
 
       <span v-if="isRiesgos">
-      <span>Escriba la lista que desea buscar: </span>
-      <input type="text" name="txtlistVerif" id="txtlistVerif" v-model="filtro_lista_verificacion" >
+      <span>Escriba la evaluación que desea buscar: </span>
+      <input type="text" name="txtevaluacion" id="txtevaluacion" v-model="filtro_evaluacion" >
+      <br>  
       <br>
+      <span>Seleccione la lista que desea buscar : </span>
+      <a-select default-value="TODOS" style="width: 300px"  @change="changeFiltroListaVerificacion"  >
+      <a-select-option  v-for="(item,index) in itemsListaVerificacion" :key="index" :value="item.nombre" >{{item.nombre}}</a-select-option>
+      </a-select>      
+      
+      
       </span>
       
       <span v-if="isListas">
@@ -121,6 +128,7 @@ export default defineComponent({
     return {
       filtro_obra:'',
       filtro_lista_verificacion:'',
+      filtro_evaluacion:'',
       filtro_listas_verificaciones:'',
       itemsListaVerificacion:[{id:'',nombre:'TODOS'},{id:1,nombre:'ISO 45002'},{id:1,nombre:'LEY Nº 29783  Ley de Seguridad y Salud en el Trabajo'}],
       itemsEstado:[{id:'',nombre:'TODOS'},{id:1,nombre:'Asignado'},{id:1,nombre:'Sin asignar'}],
@@ -185,7 +193,7 @@ export default defineComponent({
         }, 500);
       }
     },
-    filtro_lista_verificacion(v){
+    filtro_evaluacion(v){
       if(v){
         if(clearSetTime){
           clearTimeout(clearSetTime);
@@ -605,7 +613,7 @@ export default defineComponent({
     async listRiesgoNormativa(): Promise<void> {
       try {
         const response = await fetch(
-          `${BASE_URL}evaluacion/listado?page=${this.page}&quantity=${this.quantity}&obra=${this.filtro_obra}&listVerif=${this.filtro_lista_verificacion}`,
+          `${BASE_URL}evaluacion/listado?page=${this.page}&quantity=${this.quantity}&obra=${this.filtro_obra}&listVerif=${this.filtro_lista_verificacion}&evaluacion=${this.filtro_evaluacion}`,
           {
             method: "GET",
             headers: new Headers({
@@ -705,7 +713,7 @@ export default defineComponent({
     async listEvaluacion(): Promise<void> {
       try {
         const response = await fetch(
-          `${BASE_URL}evaluacion/listado?page=${this.page}&quantity=${this.quantity}&obra=${this.filtro_obra}&listVerif=${this.filtro_lista_verificacion}`,
+          `${BASE_URL}evaluacion/listado?page=${this.page}&quantity=${this.quantity}&obra=${this.filtro_obra}&listVerif=${this.filtro_lista_verificacion}&evaluacion=${this.filtro_evaluacion}`,
           {
             method: "GET",
             headers: new Headers({
