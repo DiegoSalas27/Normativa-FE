@@ -213,7 +213,7 @@ export default defineComponent({
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: -3;
+  z-index: 1000;
   background-image: url("../assets/images/quiz.jpg");
   height: 100%;
   background-position: center;
