@@ -596,10 +596,13 @@ export default defineComponent({
         }
       }, 1000);
     },
+    
     async fetchListListaVerificacion() {
+      var hardcodeo=1
       try {
         const response = await fetch(
-          `${BASE_URL}listaverificaciones/lista?filter=${this.codigoListaVerificacion}`,
+          
+          `${BASE_URL}listaverificaciones/lista?filter=${this.codigoListaVerificacion}&nuevo=${hardcodeo}`,
           {
             method: "GET",
             headers: new Headers({

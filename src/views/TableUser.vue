@@ -383,6 +383,9 @@ export default defineComponent({
         case "RiesgoNormativa":
           this.listRiesgoNormativa();
           break;
+        case "ListasVerificacion":
+          this.listListaVerificacion();
+          break;
       }
     },
     goBack(): void {

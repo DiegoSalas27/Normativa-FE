@@ -315,10 +315,11 @@ export default defineComponent({
     },
 
     async realScenario(): Promise<void> {
+      var hardcodeo=1
       this.message = "Cargando...";
       try {
         const response = await fetch(
-          `${BASE_URL}listaverificaciones/lista?filter=${this.$route.params.lv_codigo}`,
+          `${BASE_URL}listaverificaciones/lista?filter=${this.$route.params.lv_codigo}&nuevo=${hardcodeo}`,
           {
             method: "GET",
             headers: new Headers({
