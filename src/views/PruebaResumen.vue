@@ -19,6 +19,8 @@
       v-if="canEdit"
       style="display: flex; align-items: center; justify-content: space-between"
     >
+<div>
+
       <div>
         <h4 style="display: inline">
           Ingrese el porcentaje de cumplimiento deseado:
@@ -33,9 +35,31 @@
         <abbr
           :title="'El valor debe ser mayor o igual a ' + porcentajeCumplimiento"
         >
+          <i class="fas fa-info-circle"></i 
+        ></abbr>
+      </div>
+
+<!--ga -->
+<br>
+      <div>
+        <h4 style="display: inline">
+          Ingrese el margen de error que usted desee:
+        </h4>
+        <input
+          class="percentage"
+          type="number"
+          min="0"
+         @change="setValue2"
+          
+          :value="margen"
+        />
+        <abbr
+          :title="'Puede el poner el margen que desee pero se le recomienda un máximo de 10 '"
+        >
           <i class="fas fa-info-circle"></i
         ></abbr>
       </div>
+</div> 
 
       <div>
         <table class="grid">
@@ -77,6 +101,8 @@
         </button>
       </div>
     </div>
+
+    
 
     <div class="summary">
       <div class="header-summary">
@@ -196,6 +222,7 @@ export default defineComponent({
       criterios: [] as ICriterio[],
       porcentajeCumplimiento: 0,
       porcentajeCumplimientoDeseado: 0,
+      margen:0,
       nivelDeRiesgo: "",
       accionesMitigacionCreadas: 0,
       message: null as string | null,
@@ -239,6 +266,12 @@ export default defineComponent({
       }
       this.porcentajeCumplimientoDeseado = +event.target.value;
     },
+
+  setValue2(event:{ target: HTMLInputElement }) {
+
+      this.margen = +event.target.value;
+  },
+
     back(): void {
       this.$router.back();
     },
@@ -246,12 +279,15 @@ export default defineComponent({
       await this.realScenario();
     },
     async idealScenario(): Promise<void> {
-      if (this.porcentajeCumplimientoDeseado < this.porcentajeCumplimiento)
+      if (this.porcentajeCumplimientoDeseado < this.porcentajeCumplimiento &&this.margen>=0)
+      
         return;
+  
+
       this.message = "Cargando...";
       try {
         const response = await fetch(
-          `${BASE_URL}prueba/${this.$route.params.pr_codigo}/${this.porcentajeCumplimientoDeseado}`,
+          `${BASE_URL}prueba/${this.$route.params.pr_codigo}/${this.porcentajeCumplimientoDeseado}/${this.margen}`,
           {
             method: "GET",
             headers: new Headers({
