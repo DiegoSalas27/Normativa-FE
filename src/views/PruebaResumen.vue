@@ -9,6 +9,7 @@
     @close="handleError"
     :error="error"
     :loading="loading"
+    
   ></modal>
   <section id="main">
     <h1 style="text-align: left; cursor: pointer" @click="back">
@@ -21,6 +22,7 @@
     >
 <div>
 
+
       <div>
         <h4 style="display: inline">
           Ingrese el porcentaje de cumplimiento deseado:
@@ -29,8 +31,10 @@
           class="percentage"
           type="number"
           :min="porcentajeCumplimiento"
+          max="101"
           @change="setValue"
           :value="porcentajeCumplimientoDeseado"
+          oninput="this.value = Math.abs(this.value)"
         />
         <abbr
           :title="'El valor debe ser mayor o igual a ' + porcentajeCumplimiento"
@@ -45,10 +49,12 @@
         <h4 style="display: inline">
           Ingrese el margen de error que usted desee:
         </h4>
-        <input
+        <input 
           class="percentage"
           type="number"
           min="0"
+          max="100"
+          oninput="this.value = Math.abs(this.value)"
          @change="setValue2"
           
           :value="margen"
@@ -264,13 +270,34 @@ export default defineComponent({
       if (Number(event.target.value) < this.porcentajeCumplimiento) {
         event.target.value = this.porcentajeCumplimiento.toString();
       }
+      if (Number(event.target.value) >= 100) {
+            event.target.value = "100";
+      }
       this.porcentajeCumplimientoDeseado = +event.target.value;
+
+      if(this.porcentajeCumplimientoDeseado+this.margen>100)
+      {
+        //this.porcentajeCumplimientoDeseado=this.porcentajeCumplimientoDeseado-1;
+        this.margen= Math.round((100-this.porcentajeCumplimientoDeseado)*100)/100;
+      }
+ 
+console.log(this.porcentajeCumplimientoDeseado)
     },
 
   setValue2(event:{ target: HTMLInputElement }) {
 
       this.margen = +event.target.value;
+
+      if(this.porcentajeCumplimientoDeseado+this.margen>100)
+      {
+        this.porcentajeCumplimientoDeseado= Math.round((100-this.margen)*100)/100;
+        
+       // this.margen=this.margen-1;
+       console.log(this.porcentajeCumplimientoDeseado)
+      }     
   },
+
+
 
     back(): void {
       this.$router.back();
@@ -279,12 +306,14 @@ export default defineComponent({
       await this.realScenario();
     },
     async idealScenario(): Promise<void> {
-      if (this.porcentajeCumplimientoDeseado < this.porcentajeCumplimiento &&this.margen>=0)
+
+
+      if (this.porcentajeCumplimientoDeseado < this.porcentajeCumplimiento)
       
         return;
-  
 
-      this.message = "Cargando...";
+
+     this.message = "Cargando...";
       try {
         const response = await fetch(
           `${BASE_URL}prueba/${this.$route.params.pr_codigo}/${this.porcentajeCumplimientoDeseado}/${this.margen}`,
@@ -347,6 +376,8 @@ export default defineComponent({
         const errorObj = JSON.parse(error.message);
         const mensaje = errorObj.errores.mensaje;
         this.message = mensaje;
+        console.log("GAAAAAAAAAAAAAAAAAAAAAAAAA");
+        console.log(this.porcentajeCumplimientoDeseado);
       }
     },
 
@@ -375,6 +406,7 @@ export default defineComponent({
             map.set(criterio.descripcion, true);
             this.criterios.push(criterio);
           }
+          
         }
         this.requerimientos = listasVerificacion[0].requerimientos.sort(
           (a, b) => a.criterio!.descripcion.localeCompare(b.criterio!.descripcion)
@@ -527,6 +559,7 @@ export default defineComponent({
       await this.realScenario();
       await this.obtenerPruebaResults();
     })();
+    console.log();
   },
 });
 </script>
