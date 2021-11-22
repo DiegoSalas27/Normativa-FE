@@ -130,7 +130,7 @@ export default defineComponent({
       filtro_lista_verificacion:'',
       filtro_evaluacion:'',
       filtro_listas_verificaciones:'',
-      itemsListaVerificacion:[{id:'',nombre:'TODOS'},{id:1,nombre:'ISO 45002'},{id:1,nombre:'LEY Nº 29783  Ley de Seguridad y Salud en el Trabajo'}],
+      itemsListaVerificacion:[{id:'',nombre:'TODOS'},{id:1,nombre:'ISO 45002'},{id:1,nombre:'LEY Nº 29783  Ley de Seguridad y Salud en el Trabajo'},{id:1,nombre:'Proyecto A'},{id:1,nombre:'Checklist SST-V2021-3'}],
       itemsEstado:[{id:'',nombre:'TODOS'},{id:1,nombre:'Asignado'},{id:1,nombre:'Sin asignar'}],
       filtro_plan:'',
       filtro_estado_plan:'',
