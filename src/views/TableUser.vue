@@ -130,7 +130,7 @@ export default defineComponent({
       filtro_evaluacion:'',
       filtro_listas_verificaciones:'',
       itemsListaVerificacion: [] as any,
-      itemsEstado:[{id:'',nombre:'TODOS'},{id:1,nombre:'Asignado'},{id:1,nombre:'Sin asignar'}],
+      itemsEstado:[{id:'',nombre:'TODOS'},{id:1,nombre:'Asignado'},{id:1,nombre:'Sin asignar'},{id:1,nombre:'En proceso'},{id:1,nombre:'Solucionado'},{id:1,nombre:'Cancelado'}],
       filtro_plan:'',
       filtro_estado_plan:'',
       userInfoJson: emptyUser() as IUser,
