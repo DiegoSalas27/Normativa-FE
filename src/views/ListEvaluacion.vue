@@ -23,7 +23,7 @@
       <br>
       <span>Seleccione la lista que desea buscar : </span>
       <a-select default-value="TODOS" style="width: 300px"  @change="changeFiltroListaVerificacion"  >
-      <a-select-option  v-for="(item,index) in itemsListaVerificacion" :key="index" :value="item.nombre" >{{item.nombre}}</a-select-option>
+      <a-select-option  v-for="(item) in itemsListaVerificacion" :key="item"  >{{item}}</a-select-option>
       </a-select>
    
 
@@ -78,7 +78,7 @@ export default defineComponent({
       actions: [{ icon: "fas fa-eye", type: actions.EDIT, method: this.edit }],
       filtro_obra:'',
       filtro_lista_verificacion:'',
-      itemsListaVerificacion:[{id:'',nombre:'TODOS'},{id:1,nombre:'ISO 45002'},{id:1,nombre:'LEY Nº 29783  Ley de Seguridad y Salud en el Trabajo'}],
+      itemsListaVerificacion: [] as any,
       modalTitle: "",
       showModalConfirmation: false,
       id: "",
@@ -150,7 +150,46 @@ export default defineComponent({
       } catch (error) {
         console.log(error);
       }
+      
     },
+
+async loquesea(): Promise<void>{
+        try {
+          const response = await fetch(
+            `${BASE_URL}listaverificaciones/listados`,
+            {
+              method: "GET",
+              headers: new Headers({
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              }),
+            }
+          );
+
+          var truquito=[];
+
+          truquito= (await response.json()).stackedBarListas;
+        // debugger;
+             console.log(truquito);
+          this.itemsListaVerificacion.push('TODOS');
+         for (let index = 0; index < truquito.length; index++) {
+           console.log(truquito[index])
+           this.itemsListaVerificacion.push(truquito[index]);
+           console.log("abajo ta el truquito");
+           console.log(truquito[index]);
+         }
+          
+
+          console.log("GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+          console.log(this.itemsListaVerificacion);
+        } catch (err) {
+          console.log(err);
+
+        }
+},
+
+
+
     edit(_: number, codigo: string, _2: string): void {
       this.evaluacion.action = "visualizar";
       this.$router.push(`/evaluacion/${codigo}`);
@@ -159,7 +198,10 @@ export default defineComponent({
   mounted() {
     (async () => {
       await this.listEvaluaciones();
+      
     })();
+    this.loquesea();
+    
   },
 });
 </script>

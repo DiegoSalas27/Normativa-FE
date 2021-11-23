@@ -29,7 +29,7 @@
       <br>
       <span>Seleccione la lista que desea buscar : </span>
       <a-select default-value="TODOS" style="width: 300px"  @change="changeFiltroListaVerificacion"  >
-      <a-select-option  v-for="(item,index) in itemsListaVerificacion" :key="index" :value="item.nombre" >{{item.nombre}}</a-select-option>
+      <a-select-option  v-for="(item) in itemsListaVerificacion" :key="item"  >{{item}}</a-select-option>
       </a-select>
       </span>
 
@@ -51,10 +51,8 @@
       <br>
       <span>Seleccione la lista que desea buscar : </span>
       <a-select default-value="TODOS" style="width: 300px"  @change="changeFiltroListaVerificacion"  >
-      <a-select-option  v-for="(item,index) in itemsListaVerificacion" :key="index" :value="item.nombre" >{{item.nombre}}</a-select-option>
-      </a-select>      
-      
-      
+      <a-select-option  v-for="(item) in itemsListaVerificacion" :key="item"  >{{item}}</a-select-option>
+      </a-select>
       </span>
       
       <span v-if="isListas">
@@ -117,6 +115,7 @@ import {
 } from "../common/mockdata";
 import { DataSourceEvaluaciones } from "../common/mockdata";
 import { DataSourceRiesgo } from "../common/mockdata";
+import { IListaVerificacion, IStatisticsListaVerificacion } from "@/interfaces/listaVerificacion.interface";
 var clearSetTime='' as any;
 export default defineComponent({
   components: {
@@ -130,8 +129,8 @@ export default defineComponent({
       filtro_lista_verificacion:'',
       filtro_evaluacion:'',
       filtro_listas_verificaciones:'',
-      itemsListaVerificacion:[{id:'',nombre:'TODOS'},{id:1,nombre:'ISO 45002'},{id:1,nombre:'LEY Nº 29783  Ley de Seguridad y Salud en el Trabajo'},{id:1,nombre:'Proyecto A'},{id:1,nombre:'Checklist SST-V2021-3'}],
-      itemsEstado:[{id:'',nombre:'TODOS'},{id:1,nombre:'Asignado'},{id:1,nombre:'Sin asignar'}],
+      itemsListaVerificacion: [] as any,
+      itemsEstado:[{id:'',nombre:'TODOS'},{id:1,nombre:'Asignado'},{id:1,nombre:'Sin asignar'},{id:1,nombre:'En proceso'},{id:1,nombre:'Solucionado'},{id:1,nombre:'Cancelado'}],
       filtro_plan:'',
       filtro_estado_plan:'',
       userInfoJson: emptyUser() as IUser,
@@ -232,7 +231,9 @@ export default defineComponent({
           //   break;
         }
       }
-     
+
+      this.loquesea();
+
       this.userInfoJson = await getUsuario();
       switch (this.type) {
         case "ListasVerificacion":
@@ -359,13 +360,19 @@ export default defineComponent({
           ];
           await this.listPlanTratamiento();
           break;
+          
+
       }
+      
     })();
+    
   },
   methods: {
     changeFiltroListaVerificacion(value=''){
       this.filtro_lista_verificacion = value;
       this.listEvaluacion();
+      console.log();
+      
     },
     changeFiltroEstado(value=''){
       this.filtro_estado_plan=value;
@@ -712,6 +719,41 @@ export default defineComponent({
           break;
       }
     },
+async loquesea(): Promise<void>{
+        try {
+          const response = await fetch(
+            `${BASE_URL}listaverificaciones/listados`,
+            {
+              method: "GET",
+              headers: new Headers({
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              }),
+            }
+          );
+
+          var truquito=[];
+
+          truquito= (await response.json()).stackedBarListas;
+        // debugger;
+             console.log(truquito);
+          this.itemsListaVerificacion.push('TODOS');
+         for (let index = 0; index < truquito.length; index++) {
+           console.log(truquito[index])
+           this.itemsListaVerificacion.push(truquito[index]);
+           console.log("abajo ta el truquito");
+           console.log(truquito[index]);
+         }
+          
+
+          console.log("GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+          console.log(this.itemsListaVerificacion);
+        } catch (err) {
+          console.log(err);
+
+        }
+        
+},
 
     async listEvaluacion(): Promise<void> {
       try {
@@ -733,9 +775,13 @@ export default defineComponent({
       } catch (error) {
         console.log(error);
       }
+        
     },
+    
   },
-});
+  
+}
+);
 </script>
 
 <style scoped>
