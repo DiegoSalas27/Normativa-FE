@@ -305,6 +305,8 @@ console.log(this.porcentajeCumplimientoDeseado)
     async summary(): Promise<void> {
       await this.realScenario();
     },
+
+
     async idealScenario(): Promise<void> {
 
 
@@ -322,14 +324,22 @@ console.log(this.porcentajeCumplimientoDeseado)
             headers: new Headers({
               "Content-Type": "application/json",
               Authorization: "Bearer " + localStorage.getItem("token"),
+              
             }),
           }
         );
-
+        console.log("GAAAAAAAAAAAAAAAAAAAAAAAAA");
+        console.log(this.porcentajeCumplimientoDeseado);
         await handleErrors(response);
 
-        let evidenciasRequerimientos =
-          (await response.json()) as IEvidenciaRequerimiento[];
+        let nuevoporcentaje =
+          (await response.json())as any;
+          let evidenciasRequerimientos=(nuevoporcentaje.reque2) as any[];
+console.log(nuevoporcentaje.limit)
+
+alert("Toma en cuenta que tu porcentaje de cumplimiento obtenido es "+ nuevoporcentaje.limit+"%");
+
+
         this.requerimientos = this.requerimientos.filter((req, index) =>
           evidenciasRequerimientos.some((evR) => {
             if (evR.requerimientoId == req.requerimientoId) {
@@ -373,13 +383,14 @@ console.log(this.porcentajeCumplimientoDeseado)
         this.message = "";
       } catch (error) {
         this.error = true;
-        const errorObj = JSON.parse(error.message);
+        const errorObj = JSON.parse(error?.message);
         const mensaje = errorObj.errores.mensaje;
         this.message = mensaje;
         console.log("GAAAAAAAAAAAAAAAAAAAAAAAAA");
         console.log(this.porcentajeCumplimientoDeseado);
       }
     },
+
 
     async realScenario(): Promise<void> {
       var hardcodeo=1
